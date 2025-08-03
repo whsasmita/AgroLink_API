@@ -1,0 +1,44 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Runtime files
+*.log
+
+# Dependency directories
+/vendor/
+
+# Go workspace file (Go 1.18+)
+go.work
+go.work.sum
+
+# Build output
+bin/
+build/
+dist/
+
+# IDE/editor folders
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Env files
+.env
+.env.local
+.env.*.local
+
+# Coverage
+*.coverprofile
+
+# Node modules (jika ada bagian frontend / hybrid monorepo)
+node_modules/
