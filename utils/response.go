@@ -14,13 +14,20 @@ func SuccessResponse(c *gin.Context, code int, message string, data interface{})
 	})
 }
 
-func ErrorResponse(c *gin.Context, code int, message string, err error) {
-	c.JSON(code, gin.H{
-		"status":  "error",
-		"message": message,
-		"error":   err.Error(),
-	})
+func ErrorResponse(c *gin.Context, statusCode int, message string, err error) {
+    var errorMessage string
+    // Periksa apakah error tidak nil sebelum memanggil .Error()
+    if err != nil {
+        errorMessage = err.Error()
+    }
+    // Jika err adalah nil, errorMessage akan menjadi string kosong.
+    c.JSON(statusCode, gin.H{
+        "status":  "error",
+        "message": message,
+        "error":   errorMessage, // Gunakan variabel yang sudah aman
+    })
 }
+
 
 
 func JSON(c *gin.Context, status int, data gin.H) {

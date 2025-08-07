@@ -25,8 +25,10 @@ type RegisterRequest struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required,min=6"`
 	Role     string `json:"role" binding:"required,oneof=farmer worker expedition admin"`
+	PhoneNumber string 	`json:"phone_number" binding:"required"`
 }
 
+// TODO pertimbangkan untuk menggunakan email verifikasi
 func (h *AuthHandler) Register(c *gin.Context) {
 	var req RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -35,17 +37,22 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	}
 
 	// user, err := h.AuthService.Register(req.Email, req.Password, req.Role, req.Name)
-	user, err := h.AuthService.Register(req.Email, req.Password, req.Role, req.Name)
+	user, token ,err := h.AuthService.Register(req.Email, req.Password, req.Role, req.Name, req.PhoneNumber)
 	if err != nil {
 		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to register user", err)
 		return
 	}
 
-	resp := dto.UserResponse{
+	userData := dto.UserResponse{
 		ID:    user.ID.String(),
 		Name:  user.Name,
 		Email: user.Email,
 		Role:  user.Role,
+		PhoneNumber: user.PhoneNumber,
+	}
+	resp := gin.H{
+		"user":  userData,
+		"token": token,
 	}
 
 	utils.SuccessResponse(c, http.StatusCreated, "User registered successfully", resp)
@@ -73,41 +80,30 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	utils.SuccessResponse(c, http.StatusOK, "Login successful", gin.H{"token": token})
 }
 
+// Di dalam file handlers/auth_handlers.go
+
 func (h *AuthHandler) GetProfile(c *gin.Context) {
-	userID, exists := c.Get("userID")
-	if !exists {
-		utils.ErrorResponse(c, http.StatusUnauthorized, "Unauthorized", nil)
-		return
-	}
+    // 1. Ambil data dengan kunci "user" yang sudah di-set oleh middleware Anda.
+    userInterface, exists := c.Get("user")
+    if !exists {
+        // Ini seharusnya tidak terjadi jika middleware berjalan dengan benar,
+        // tapi ini adalah pemeriksaan keamanan yang baik.
+        utils.ErrorResponse(c, http.StatusUnauthorized, "User context not found", nil)
+        return
+    }
 
-	user, err := h.AuthService.GetProfile(userID.(string))
-	if err != nil {
-		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to get user profile", err)
-		return
-	}
+    // 2. Lakukan type assertion dari interface{} ke *models.User
+    user, ok := userInterface.(*models.User)
+    if !ok {
+        // Error ini terjadi jika data yang disimpan di konteks bukan *models.User
+        utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to process user data from context", nil)
+        return
+    }
 
-	utils.SuccessResponse(c, http.StatusOK, "User profile fetched", user)
+    // 3. TIDAK PERLU MEMANGGIL SERVICE LAGI!
+    // Objek 'user' sudah berisi data lengkap yang di-fetch oleh middleware 
+    // (termasuk hasil Preload jika ada).
+    // Langsung kirimkan data ini sebagai respons sukses.
+    utils.SuccessResponse(c, http.StatusOK, "User profile fetched successfully", user)
 }
 
-func (h *AuthHandler) Me(c *gin.Context) {
-	user, exists := c.Get("user")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
-
-	// Convert to *models.User and exclude sensitive fields
-	u, ok := user.(*models.User)
-	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user type"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"id":        u.ID,
-		"name":      u.Name,
-		"email":     u.Email,
-		"role":      u.Role,
-		"createdAt": u.CreatedAt,
-	})
-}

@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// TODO checking untuk pemilihan tipa data untuk masalah financial
 // User represents the main user table
 type User struct {
 	ID             uuid.UUID `gorm:"type:char(36);primary_key;default:(UUID())" json:"id"`
@@ -25,7 +26,7 @@ type User struct {
 	// Relationships
 	Farmer     *Farmer     `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"farmer,omitempty"`
 	Worker     *Worker     `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"worker,omitempty"`
-	Driver *Driver `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"expedition,omitempty"`
+	Driver *Driver `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"driver,omitempty"`
 }
 
 // BeforeCreate hook to generate UUID
@@ -40,16 +41,11 @@ func (u *User) BeforeCreate(tx *gorm.DB) error {
 type Farmer struct {
 	UserID             uuid.UUID `gorm:"type:char(36);primary_key" json:"user_id"`
 	Address            *string   `gorm:"type:text" json:"address"`
-	LandLocationLat    *float64  `gorm:"type:decimal(10,8)" json:"land_location_lat"`
-	LandLocationLng    *float64  `gorm:"type:decimal(11,8)" json:"land_location_lng"`
-	FarmSize           *float64  `gorm:"type:decimal(10,2);comment:Luas dalam hektar" json:"farm_size"`
-	FarmingExperience  *int      `gorm:"comment:Tahun pengalaman" json:"farming_experience"`
-	Certification      *string   `gorm:"type:text" json:"certification"`
 	AdditionalInfo     *string   `gorm:"type:text" json:"additional_info"`
 	CreatedAt          time.Time `json:"created_at"`
 
 	// Relationships
-	User          User           `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE"`
+	User          User           `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"-"`
 	FarmLocations []FarmLocation `gorm:"foreignKey:FarmerID;constraint:OnDelete:CASCADE"`
 	Projects      []Project      `gorm:"foreignKey:FarmerID;constraint:OnDelete:CASCADE"`
 }
@@ -71,7 +67,7 @@ type Worker struct {
 	CreatedAt            time.Time `json:"created_at"`
 
 	// Relationships
-	User                User                  `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE"`
+	User                User                  `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"-"`
 	ProjectApplications []ProjectApplication  `gorm:"foreignKey:WorkerID;constraint:OnDelete:CASCADE"`
 	ProjectAssignments  []ProjectAssignment   `gorm:"foreignKey:WorkerID;constraint:OnDelete:CASCADE"`
 	WorkerAvailability  []WorkerAvailability  `gorm:"foreignKey:WorkerID;constraint:OnDelete:CASCADE"`
@@ -91,7 +87,7 @@ type Driver struct {
 	CreatedAt        time.Time `json:"created_at"`
 
 	// Relationships
-	User       User       `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE"`
+	User       User       `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"-"`
 	Deliveries []Delivery `gorm:"foreignKey:ExpeditionID;constraint:OnDelete:CASCADE"`
 }
 

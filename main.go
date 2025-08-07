@@ -1,5 +1,6 @@
 package main
 
+// TODO pertimbangkan untuk menggunakan cloud storage
 import (
 	"log"
 	"os"
@@ -11,6 +12,8 @@ import (
 	"github.com/joho/godotenv"
 
 	"github.com/whsasmita/AgroLink_API/config"
+	"github.com/whsasmita/AgroLink_API/middleware"
+	"github.com/whsasmita/AgroLink_API/repositories"
 	"github.com/whsasmita/AgroLink_API/routes"
 )
 
@@ -52,6 +55,10 @@ func main() {
 	// Initialize Gin router
 	r := gin.Default()
 
+	// Menyajikan file statis dari folder 'public' di URL '/static'
+	// Contoh: file di public/images/logo.png bisa diakses di http://localhost:8080/static/images/logo.png
+	r.Static("/static", "./public")
+
 	// Configure CORS
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:8080"},
@@ -68,101 +75,20 @@ func main() {
 			"message": "Agri Platform API is running",
 		})
 	})
+	// create instance
+	userRepo := repositories.NewUserRepository(db)
 
 	// API version grouping
 	v1 := r.Group("/api/v1")
 	{
-		// Auth routes
-		authGroup := v1.Group("/auth")
-		routes.RegisterRoutes(authGroup, db)
+		// Public Routes
+		publicRoutes := v1.Group("/")
+		routes.PublicRoutes(publicRoutes, db)
 
-		// Profile routes
-		profile := v1.Group("/profile")
+		protectedGroup := v1.Group("/")
+		protectedGroup.Use(middleware.AuthMiddleware(userRepo)) // <-- pasang middleware di sini
 		{
-			profile.GET("/", func(c *gin.Context) {
-				c.JSON(200, gin.H{"message": "Get profile - coming soon"})
-			})
-			profile.PUT("/", func(c *gin.Context) {
-				c.JSON(200, gin.H{"message": "Update profile - coming soon"})
-			})
-			profile.POST("/upload-photo", func(c *gin.Context) {
-				c.JSON(200, gin.H{"message": "Upload photo - coming soon"})
-			})
-		}
-
-		// Search routes
-		search := v1.Group("/search")
-		{
-			search.GET("/workers", func(c *gin.Context) {
-				c.JSON(200, gin.H{"message": "Search workers - coming soon"})
-			})
-			search.GET("/expeditions", func(c *gin.Context) {
-				c.JSON(200, gin.H{"message": "Search expeditions - coming soon"})
-			})
-		}
-
-		// Project routes
-		projects := v1.Group("/projects")
-		{
-			projects.GET("/", func(c *gin.Context) {
-				c.JSON(200, gin.H{"message": "Get projects - coming soon"})
-			})
-			projects.POST("/", func(c *gin.Context) {
-				c.JSON(200, gin.H{"message": "Create project - coming soon"})
-			})
-			projects.GET("/:id", func(c *gin.Context) {
-				c.JSON(200, gin.H{"message": "Get project detail - coming soon"})
-			})
-			projects.PUT("/:id", func(c *gin.Context) {
-				c.JSON(200, gin.H{"message": "Update project - coming soon"})
-			})
-			projects.POST("/:id/assign", func(c *gin.Context) {
-				c.JSON(200, gin.H{"message": "Assign worker - coming soon"})
-			})
-		}
-
-		// Contract routes
-		contracts := v1.Group("/contracts")
-		{
-			contracts.GET("/:id", func(c *gin.Context) {
-				c.JSON(200, gin.H{"message": "Get contract - coming soon"})
-			})
-			contracts.POST("/sign", func(c *gin.Context) {
-				c.JSON(200, gin.H{"message": "Sign contract - coming soon"})
-			})
-		}
-
-		// Payment routes
-		payments := v1.Group("/payments")
-		{
-			payments.POST("/proof", func(c *gin.Context) {
-				c.JSON(200, gin.H{"message": "Upload payment proof - coming soon"})
-			})
-			payments.PUT("/release", func(c *gin.Context) {
-				c.JSON(200, gin.H{"message": "Release payment - coming soon"})
-			})
-		}
-
-		// Review routes
-		reviews := v1.Group("/reviews")
-		{
-			reviews.POST("/", func(c *gin.Context) {
-				c.JSON(200, gin.H{"message": "Create review - coming soon"})
-			})
-			reviews.GET("/user/:id", func(c *gin.Context) {
-				c.JSON(200, gin.H{"message": "Get user reviews - coming soon"})
-			})
-		}
-
-		// Notification routes
-		notifications := v1.Group("/notifications")
-		{
-			notifications.GET("/", func(c *gin.Context) {
-				c.JSON(200, gin.H{"message": "Get notifications - coming soon"})
-			})
-			notifications.PUT("/read", func(c *gin.Context) {
-				c.JSON(200, gin.H{"message": "Mark as read - coming soon"})
-			})
+			routes.ProtectedRoutes(protectedGroup, db)
 		}
 	}
 
