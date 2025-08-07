@@ -1,0 +1,620 @@
+{
+	"info": {
+		"_postman_id": "a52fc045-0f41-4156-b8e8-e673b989298c",
+		"name": "Agro Link API",
+		"description": "# 🚀 Get started here\n\nThis collection guides you through CRUD operations (GET, POST, PUT, DELETE), variables, and tests.\n\n## 🔖 **How to use this collection**\n\n#### **Step 1: Send requests**\n\nRESTful APIs allow you to perform CRUD operations using the POST, GET, PUT, and DELETE HTTP methods.\n\nThis collection contains each of these request types. Open each request and click \"Send\" to see what happens.\n\n#### **Step 2: View responses**\n\nObserve the response tab for status code (200 OK), response time, and size.\n\n#### **Step 3: Send new Body data**\n\nUpdate or add new data in \"Body\" in the POST request. Typically, Body data is also used in PUT and PATCH requests.\n\n```\n{\n    \"name\": \"Add your name in the body\"\n}\n\n```\n\n#### **Step 4: Update the variable**\n\nVariables enable you to store and reuse values in Postman. We have created a variable called `base_url` with the sample request [https://postman-api-learner.glitch.me](https://postman-api-learner.glitch.me). Replace it with your API endpoint to customize this collection.\n\n#### **Step 5: Add tests in the \"Tests\" tab**\n\nTests help you confirm that your API is working as expected. You can write test scripts in JavaScript and view the output in the \"Test Results\" tab.\n\n<img src=\"https://content.pstmn.io/b5f280a7-4b09-48ec-857f-0a7ed99d7ef8/U2NyZWVuc2hvdCAyMDIzLTAzLTI3IGF0IDkuNDcuMjggUE0ucG5n\">\n\n## 💪 Pro tips\n\n- Use folders to group related requests and organize the collection.\n- Add more scripts in \"Tests\" to verify if the API works as expected and execute flows.\n    \n\n## ℹ️ Resources\n\n[Building requests](https://learning.postman.com/docs/sending-requests/requests/)  \n[Authorizing requests](https://learning.postman.com/docs/sending-requests/authorization/)  \n[Using variables](https://learning.postman.com/docs/sending-requests/variables/)  \n[Managing environments](https://learning.postman.com/docs/sending-requests/managing-environments/)  \n[Writing scripts](https://learning.postman.com/docs/writing-scripts/intro-to-scripts/)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31404082",
+		"_collection_link": "https://darmws.postman.co/workspace/Belajar-Golang~a2ccd6c6-6f35-4afc-aac8-e3b4007a6387/collection/31404082-a52fc045-0f41-4156-b8e8-e673b989298c?action=share&source=collection_link&creator=31404082"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\" : \"Darma@gmail.com\",\r\n    \"password\" : \"AdminPassword\",\r\n    \"role\" : \"farmer\",\r\n    \"name\" : \"Darma Arya\",\r\n    \"phone_number\" : \"08584478893\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Register",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\" : \"Darma@gmail.com\",\r\n    \"password\" : \"AdminPassword\",\r\n    \"role\" : \"farmer\",\r\n    \"name\" : \"Darma Arya\",\r\n    \"phone_number\" : \"08584478893\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/auth/register",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth",
+										"register"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 06 Aug 2025 08:39:05 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "492"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyYzIyZjkxZi1iZjM2LTRlZjktOTQwZi1iMDkzYzAyMzFmYTIiLCJleHAiOjE3NTQ1NTU5NDUsIm5iZiI6MTc1NDQ2OTU0NSwiaWF0IjoxNzU0NDY5NTQ1LCJlbWFpbCI6IkRhcm1hQGdtYWlsLmNvbSIsInJvbGUiOiJmYXJtZXIifQ.y7VlFJL2KeRb4Ai0jGuBnpZOBEnOpbB6e38khm_T82s\",\n        \"user\": {\n            \"id\": \"2c22f91f-bf36-4ef9-940f-b093c0231fa2\",\n            \"name\": \"Darma Arya\",\n            \"email\": \"Darma@gmail.com\",\n            \"role\": \"farmer\",\n            \"phone_number\": \"08584478893\"\n        }\n    },\n    \"message\": \"User registered successfully\",\n    \"status\": \"success\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\" : \"Admin@gmail.com\",\r\n    \"password\" : \"AdminPassword\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Login Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\" : \"Bunga@gmail.com\",\r\n    \"password\" : \"AdminPassword\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/auth/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 03 Aug 2025 16:07:35 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "261"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTQzMjM2NTUsInJvbGUiOiJmYXJtZXIiLCJ1c2VyX2lkIjoiOTkwYjJhYmQtYWUxMy00NDQ1LWJhN2EtNGZiZWQ2NzkwZWIyIn0.BdPmgHDHerB_4vd7m8fqqTtBZ3vpJq0-Xs5ayK9lvs8\"\n    },\n    \"message\": \"Login successful\",\n    \"status\": \"success\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Profile",
+			"item": [
+				{
+					"name": "Get Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"profile"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" : \"Bunga Update\",\r\n    \"phone_number\" : \"909090990900\",\r\n    \"profile_picture\" : \"url_profile_picture\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdatePhotoProfile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "photo",
+									"type": "file",
+									"src": "postman-cloud:///1ee9f07a-f2af-46c0-9fa9-64f7b611eb63"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/profile/upload-photo",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"profile",
+								"upload-photo"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "photo",
+											"type": "file",
+											"src": "postman-cloud:///1ee9f07a-f2af-46c0-9fa9-64f7b611eb63"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/profile/upload-photo",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"profile",
+										"upload-photo"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 05 Aug 2025 09:44:33 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "511"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"id\": \"990b2abd-ae13-4445-ba7a-4fbed6790eb2\",\n        \"name\": \"Bunga Update\",\n        \"email\": \"Bunga@gmail.com\",\n        \"phone_number\": \"909090990900\",\n        \"role\": \"farmer\",\n        \"profile_picture\": \"http://localhost:8080/static/images/profiles/990b2abd-ae13-4445-ba7a-4fbed6790eb2-fdf2b4e6-afa4-4973-82cf-708d3770c20c.png\",\n        \"is_active\": true,\n        \"email_verified\": false,\n        \"phone_verified\": false,\n        \"created_at\": \"2025-08-03T20:48:55.788+08:00\",\n        \"updated_at\": \"2025-08-05T17:44:33.649+08:00\"\n    },\n    \"message\": \"Profile photo uploaded successfully\",\n    \"status\": \"success\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Detail Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"details\": {\r\n        \"address\": \"Jl. Raya Bedugul No. 123\",\r\n        \"farm_size\": 15.5,\r\n        \"farming_experience\": 10,\r\n        \"certification\": \"Organik\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/profile/details",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"profile",
+								"details"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Update Detail Profile",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"details\": {\r\n        \"address\": \"Jl. Raya Bedugul No. 123\",\r\n        \"farm_size\": 15.5,\r\n        \"farming_experience\": 10,\r\n        \"certification\": \"OSN\"\r\n    }\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/profile/details",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"profile",
+										"details"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 06 Aug 2025 06:51:56 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "969"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"id\": \"c72dad24-5dac-4588-a787-88229195d59c\",\n        \"name\": \"Darma Wiguna\",\n        \"email\": \"Admin@gmail.com\",\n        \"phone_number\": \"0858447883\",\n        \"role\": \"farmer\",\n        \"profile_picture\": null,\n        \"is_active\": true,\n        \"email_verified\": false,\n        \"phone_verified\": false,\n        \"created_at\": \"2025-08-06T13:52:40.347+08:00\",\n        \"updated_at\": \"2025-08-06T13:52:40.349+08:00\",\n        \"farmer\": {\n            \"user_id\": \"c72dad24-5dac-4588-a787-88229195d59c\",\n            \"address\": \"Jl. Raya Bedugul No. 123\",\n            \"land_location_lat\": null,\n            \"land_location_lng\": null,\n            \"farm_size\": 15.5,\n            \"farming_experience\": 10,\n            \"certification\": \"Organik\",\n            \"additional_info\": null,\n            \"created_at\": \"2025-08-06T14:38:40.939+08:00\",\n            \"User\": {\n                \"id\": \"00000000-0000-0000-0000-000000000000\",\n                \"name\": \"\",\n                \"email\": \"\",\n                \"phone_number\": null,\n                \"role\": \"\",\n                \"profile_picture\": null,\n                \"is_active\": false,\n                \"email_verified\": false,\n                \"phone_verified\": false,\n                \"created_at\": \"0001-01-01T00:00:00Z\",\n                \"updated_at\": \"0001-01-01T00:00:00Z\"\n            },\n            \"FarmLocations\": null,\n            \"Projects\": null\n        }\n    },\n    \"message\": \"Role details updated successfully\",\n    \"status\": \"success\"\n}"
+						}
+					]
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Post data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\" : \"Bunga putri\",\n    \"email\": \"ayani@gmail.com\",\n    \"password\": \"AdminPassword\",\n    \"role\": \"farmer\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://f1c8c4f33b80.ngrok-free.app/api/v1/auth/register",
+					"protocol": "https",
+					"host": [
+						"f1c8c4f33b80",
+						"ngrok-free",
+						"app"
+					],
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"register"
+					]
+				},
+				"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+			},
+			"response": []
+		},
+		{
+			"name": "Update data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful PUT request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 204]);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"Add your name in the body\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/info?id=1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"info"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				},
+				"description": "This is a PUT request and it is used to overwrite an existing piece of data. For instance, after you create an entity with a POST request, you may want to modify that later. You can do that using a PUT request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful PUT request typically returns a `200 OK`, `201 Created`, or `204 No Content` response code."
+			},
+			"response": []
+		},
+		{
+			"name": "Delete data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful DELETE request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 202, 204]);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/info?id=1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"info"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				},
+				"description": "This is a DELETE request, and it is used to delete data that was previously created via a POST request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful DELETE request typically returns a `200 OK`, `202 Accepted`, or `204 No Content` response code."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Data using Query",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/books?title=Bumi Manusia",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"books"
+					],
+					"query": [
+						{
+							"key": "title",
+							"value": "Bumi Manusia"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "id",
+			"value": "1"
+		},
+		{
+			"key": "base_url",
+			"value": "https://postman-rest-api-learner.glitch.me/"
+		},
+		{
+			"key": "jwt_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
