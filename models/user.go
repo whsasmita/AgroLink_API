@@ -15,7 +15,7 @@ type User struct {
 	Email          string    `gorm:"type:varchar(100);uniqueIndex;not null" json:"email"`
 	Password       string    `gorm:"type:varchar(255);not null" json:"-"`
 	PhoneNumber    *string   `gorm:"type:varchar(20)" json:"phone_number"`
-	Role           string    `gorm:"type:enum('farmer','worker','expedition','admin','cs');not null" json:"role"`
+	Role           string    `gorm:"type:enum('farmer','worker','driver','admin','cs');not null" json:"role"`
 	ProfilePicture *string   `gorm:"type:text" json:"profile_picture"`
 	IsActive       bool      `gorm:"default:true" json:"is_active"`
 	EmailVerified  bool      `gorm:"default:false" json:"email_verified"`
@@ -24,8 +24,8 @@ type User struct {
 	UpdatedAt      time.Time `json:"updated_at"`
 
 	// Relationships
-	Farmer     *Farmer     `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"farmer,omitempty"`
-	Worker     *Worker     `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"worker,omitempty"`
+	Farmer *Farmer `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"farmer,omitempty"`
+	Worker *Worker `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"worker,omitempty"`
 	Driver *Driver `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"driver,omitempty"`
 }
 
@@ -39,10 +39,10 @@ func (u *User) BeforeCreate(tx *gorm.DB) error {
 
 // Farmer represents farmer profile details
 type Farmer struct {
-	UserID             uuid.UUID `gorm:"type:char(36);primary_key" json:"user_id"`
-	Address            *string   `gorm:"type:text" json:"address"`
-	AdditionalInfo     *string   `gorm:"type:text" json:"additional_info"`
-	CreatedAt          time.Time `json:"created_at"`
+	UserID         uuid.UUID `gorm:"type:char(36);primary_key" json:"user_id"`
+	Address        *string   `gorm:"type:text" json:"address"`
+	AdditionalInfo *string   `gorm:"type:text" json:"additional_info"`
+	CreatedAt      time.Time `json:"created_at"`
 
 	// Relationships
 	User          User           `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"-"`
@@ -56,35 +56,31 @@ type Worker struct {
 	Skills               string    `gorm:"type:json;not null" json:"skills"` // JSON array as string
 	HourlyRate           *float64  `gorm:"type:decimal(10,2)" json:"hourly_rate"`
 	DailyRate            *float64  `gorm:"type:decimal(10,2)" json:"daily_rate"`
-	ExperienceYears      *int      `json:"experience_years"`
+	Address              *string   `gorm:"type:text" json:"address"`
 	AvailabilitySchedule *string   `gorm:"type:json" json:"availability_schedule"`
 	CurrentLocationLat   *float64  `gorm:"type:decimal(10,8)" json:"current_location_lat"`
 	CurrentLocationLng   *float64  `gorm:"type:decimal(11,8)" json:"current_location_lng"`
 	Rating               float64   `gorm:"default:0" json:"rating"`
 	TotalJobsCompleted   int       `gorm:"default:0" json:"total_jobs_completed"`
-	Certification        *string   `gorm:"type:text" json:"certification"`
-	WorkRadius           int       `gorm:"default:50;comment:Radius kerja dalam KM" json:"work_radius"`
 	CreatedAt            time.Time `json:"created_at"`
 
 	// Relationships
-	User                User                  `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"-"`
-	ProjectApplications []ProjectApplication  `gorm:"foreignKey:WorkerID;constraint:OnDelete:CASCADE"`
-	ProjectAssignments  []ProjectAssignment   `gorm:"foreignKey:WorkerID;constraint:OnDelete:CASCADE"`
-	WorkerAvailability  []WorkerAvailability  `gorm:"foreignKey:WorkerID;constraint:OnDelete:CASCADE"`
+	User                User                 `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"-"`
+	ProjectApplications []ProjectApplication `gorm:"foreignKey:WorkerID;constraint:OnDelete:CASCADE"`
+	ProjectAssignments  []ProjectAssignment  `gorm:"foreignKey:WorkerID;constraint:OnDelete:CASCADE"`
+	WorkerAvailability  []WorkerAvailability `gorm:"foreignKey:WorkerID;constraint:OnDelete:CASCADE"`
 }
 
 // Expedition represents expedition company profile details
 type Driver struct {
-	UserID           uuid.UUID `gorm:"type:char(36);primary_key" json:"user_id"`
-	Address   *string   `gorm:"type:text" json:"company_address"`
-	ServiceAreas     string    `gorm:"type:json;not null" json:"service_areas"` // JSON array as string
-	PricingScheme    string    `gorm:"type:json;not null" json:"pricing_scheme"`
-	VehicleTypes     string    `gorm:"type:json;not null" json:"vehicle_types"` // JSON array as string
-	Rating           float64   `gorm:"default:0" json:"rating"`
-	TotalDeliveries  int       `gorm:"default:0" json:"total_deliveries"`
-	InsuranceInfo    *string   `gorm:"type:text" json:"insurance_info"`
-	OperatingHours   *string   `gorm:"type:json" json:"operating_hours"`
-	CreatedAt        time.Time `json:"created_at"`
+	UserID          uuid.UUID `gorm:"type:char(36);primary_key" json:"user_id"`
+	Address         *string   `gorm:"type:text" json:"company_address"`
+	// ServiceAreas    string    `gorm:"type:json;not null" json:"service_areas"` // JSON array as string
+	PricingScheme   string    `gorm:"type:json;not null" json:"pricing_scheme"`
+	VehicleTypes    string    `gorm:"type:json;not null" json:"vehicle_types"` // JSON array as string
+	Rating          float64   `gorm:"default:0" json:"rating"`
+	TotalDeliveries int       `gorm:"default:0" json:"total_deliveries"`
+	CreatedAt       time.Time `json:"created_at"`
 
 	// Relationships
 	User       User       `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"-"`
@@ -93,19 +89,17 @@ type Driver struct {
 
 // FarmLocation represents individual farm locations
 type FarmLocation struct {
-	ID            uuid.UUID `gorm:"type:char(36);primary_key;default:(UUID())" json:"id"`
-	FarmerID      uuid.UUID `gorm:"type:char(36);not null" json:"farmer_id"`
-	Name          string    `gorm:"type:varchar(100);not null" json:"name"`
-	Latitude      float64   `gorm:"type:decimal(10,8);not null" json:"latitude"`
-	Longitude     float64   `gorm:"type:decimal(11,8);not null" json:"longitude"`
-	AreaSize      float64   `gorm:"type:decimal(10,2);not null;comment:Luas dalam hektar" json:"area_size"`
-	CropType      *string   `gorm:"type:varchar(50)" json:"crop_type"`
-	PlantingSeason *string  `gorm:"type:enum('wet','dry','all_season')" json:"planting_season"`
-	SoilType      *string   `gorm:"type:varchar(50)" json:"soil_type"`
-	IrrigationType *string  `gorm:"type:varchar(50)" json:"irrigation_type"`
-	Description   *string   `gorm:"type:text" json:"description"`
-	IsActive      bool      `gorm:"default:true" json:"is_active"`
-	CreatedAt     time.Time `json:"created_at"`
+	ID             uuid.UUID `gorm:"type:char(36);primary_key;default:(UUID())" json:"id"`
+	FarmerID       uuid.UUID `gorm:"type:char(36);not null" json:"farmer_id"`
+	Name           string    `gorm:"type:varchar(100);not null" json:"name"`
+	Latitude       float64   `gorm:"type:decimal(10,8);not null" json:"latitude"`
+	Longitude      float64   `gorm:"type:decimal(11,8);not null" json:"longitude"`
+	AreaSize       float64   `gorm:"type:decimal(10,2);not null;comment:Luas dalam are" json:"area_size"`
+	CropType       *string   `gorm:"type:varchar(50)" json:"crop_type"`
+	IrrigationType *string   `gorm:"type:varchar(50)" json:"irrigation_type"`
+	Description    *string   `gorm:"type:text" json:"description"`
+	IsActive       bool      `gorm:"default:true" json:"is_active"`
+	CreatedAt      time.Time `json:"created_at"`
 
 	// Relationships
 	Farmer   Farmer    `gorm:"foreignKey:FarmerID;constraint:OnDelete:CASCADE"`
