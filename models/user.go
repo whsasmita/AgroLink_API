@@ -102,7 +102,7 @@ type FarmLocation struct {
 	CreatedAt      time.Time `json:"created_at"`
 
 	// Relationships
-	Farmer   Farmer    `gorm:"foreignKey:FarmerID;constraint:OnDelete:CASCADE"`
+	Farmer   Farmer    `gorm:"foreignKey:FarmerID;constraint:OnDelete:CASCADE" json:"-"`
 	Projects []Project `gorm:"foreignKey:FarmLocationID"`
 }
 

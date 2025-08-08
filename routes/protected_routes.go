@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/whsasmita/AgroLink_API/handlers"
+	"github.com/whsasmita/AgroLink_API/middleware"
 	"github.com/whsasmita/AgroLink_API/repositories"
 	"github.com/whsasmita/AgroLink_API/services"
 	"gorm.io/gorm"
@@ -23,6 +24,11 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	profileService := services.NewProfileService(userRepo)
 	profileHandler := handlers.NewProfileHandler(profileService)
 
+	// Komponen untuk Farm (Farm Management)
+	farmRepo := repositories.NewFarmRepository(db)
+	farmService := services.NewFarmService(farmRepo)
+	farmHandler := handlers.NewFarmHandler(farmService)
+
 	// (Nantinya, inisialisasi untuk Project, dll. juga di sini)
 	// projectRepo := repositories.NewProjectRepository(db)
 	// projectService := services.NewProjectService(projectRepo)
@@ -40,6 +46,18 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	// POST /api/v1/profile/upload-photo -> (Placeholder)
 	router.POST("/profile/upload-photo", profileHandler.UploadProfilePhoto)
 	router.POST("/profile/details", profileHandler.UpdateRoleDetails)
+
+	// Farm Routes (Only for Farmers)
+	farms := router.Group("/farms")
+	farms.Use(middleware.RoleMiddleware("farmer")) // Only farmers can access farm routes
+	{
+		farms.POST("/", farmHandler.CreateFarm)           // POST /api/v1/farms
+		farms.GET("/my", farmHandler.GetMyFarms)          // GET /api/v1/farms/my
+		farms.GET("/:id", farmHandler.GetFarmByID)        // GET /api/v1/farms/:id
+		farms.PUT("/:id", farmHandler.UpdateFarm)         // PUT /api/v1/farms/:id
+		farms.DELETE("/:id", farmHandler.DeleteFarm)      // DELETE /api/v1/farms/:id
+		farms.GET("/", farmHandler.GetAllFarms)           // GET /api/v1/farms?farmer_id=uuid
+	}
 
 	// Project Routes (Placeholder)
 	projects := router.Group("/projects")
