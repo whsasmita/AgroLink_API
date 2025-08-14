@@ -18,7 +18,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\" : \"Darma@gmail.com\",\r\n    \"password\" : \"AdminPassword\",\r\n    \"role\" : \"farmer\",\r\n    \"name\" : \"Darma Arya\",\r\n    \"phone_number\" : \"08584478893\"\r\n}",
+							"raw": "{\r\n    \"email\" : \"farmer@gmail.com\",\r\n    \"password\" : \"AdminPassword\",\r\n    \"role\" : \"farmer\",\r\n    \"name\" : \"Darma wiguna\",\r\n    \"phone_number\" : \"08549780893\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -91,7 +91,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\" : \"Admin@gmail.com\",\r\n    \"password\" : \"AdminPassword\"\r\n}",
+							"raw": "{\r\n    \"email\" : \"farmer@gmail.com\",\r\n    \"password\" : \"AdminPassword\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -342,7 +342,12 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"details\": {\r\n        \"address\": \"Jl. Raya Bedugul No. 123\",\r\n        \"farm_size\": 15.5,\r\n        \"farming_experience\": 10,\r\n        \"certification\": \"Organik\"\r\n    }\r\n}"
+							"raw": "{\r\n    \"details\": {\r\n        \"address\": \"Jl. Raya Candi Kuning, Desa Baturiti, Tabanan, Bali\",\r\n        \"additional_info\": \"Anggota kelompok tani 'Subak Abian Jaya'. Fokus pada penanaman kopi arabika Kintamani.\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
 							"raw": "{{base_url}}/profile/details",
@@ -357,13 +362,13 @@
 					},
 					"response": [
 						{
-							"name": "Update Detail Profile",
+							"name": "Update Detail Profile Farmer",
 							"originalRequest": {
 								"method": "POST",
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"details\": {\r\n        \"address\": \"Jl. Raya Bedugul No. 123\",\r\n        \"farm_size\": 15.5,\r\n        \"farming_experience\": 10,\r\n        \"certification\": \"OSN\"\r\n    }\r\n}"
+									"raw": "{\r\n    \"details\": {\r\n        \"address\": \"Jl. Raya Candi Kuning, Desa Baturiti, Tabanan, Bali\",\r\n        \"additional_info\": \"Anggota kelompok tani 'Subak Abian Jaya'. Fokus pada penanaman kopi arabika Kintamani.\"\r\n    }\r\n}\r\n"
 								},
 								"url": {
 									"raw": "{{base_url}}/profile/details",
@@ -386,25 +391,378 @@
 								},
 								{
 									"key": "Date",
-									"value": "Wed, 06 Aug 2025 06:51:56 GMT"
+									"value": "Thu, 07 Aug 2025 05:23:39 GMT"
 								},
 								{
 									"key": "Content-Length",
-									"value": "969"
+									"value": "820"
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"data\": {\n        \"id\": \"c72dad24-5dac-4588-a787-88229195d59c\",\n        \"name\": \"Darma Wiguna\",\n        \"email\": \"Admin@gmail.com\",\n        \"phone_number\": \"0858447883\",\n        \"role\": \"farmer\",\n        \"profile_picture\": null,\n        \"is_active\": true,\n        \"email_verified\": false,\n        \"phone_verified\": false,\n        \"created_at\": \"2025-08-06T13:52:40.347+08:00\",\n        \"updated_at\": \"2025-08-06T13:52:40.349+08:00\",\n        \"farmer\": {\n            \"user_id\": \"c72dad24-5dac-4588-a787-88229195d59c\",\n            \"address\": \"Jl. Raya Bedugul No. 123\",\n            \"land_location_lat\": null,\n            \"land_location_lng\": null,\n            \"farm_size\": 15.5,\n            \"farming_experience\": 10,\n            \"certification\": \"Organik\",\n            \"additional_info\": null,\n            \"created_at\": \"2025-08-06T14:38:40.939+08:00\",\n            \"User\": {\n                \"id\": \"00000000-0000-0000-0000-000000000000\",\n                \"name\": \"\",\n                \"email\": \"\",\n                \"phone_number\": null,\n                \"role\": \"\",\n                \"profile_picture\": null,\n                \"is_active\": false,\n                \"email_verified\": false,\n                \"phone_verified\": false,\n                \"created_at\": \"0001-01-01T00:00:00Z\",\n                \"updated_at\": \"0001-01-01T00:00:00Z\"\n            },\n            \"FarmLocations\": null,\n            \"Projects\": null\n        }\n    },\n    \"message\": \"Role details updated successfully\",\n    \"status\": \"success\"\n}"
+							"body": "{\n    \"data\": {\n        \"id\": \"c72dad24-5dac-4588-a787-88229195d59c\",\n        \"name\": \"Darma Wiguna\",\n        \"email\": \"Admin@gmail.com\",\n        \"phone_number\": \"0858447883\",\n        \"role\": \"farmer\",\n        \"profile_picture\": \"http://localhost:8080/static/images/profiles/c72dad24-5dac-4588-a787-88229195d59c-6b704927-ecae-48a7-97a2-7f3510fce9bc.png\",\n        \"is_active\": true,\n        \"email_verified\": false,\n        \"phone_verified\": false,\n        \"created_at\": \"2025-08-06T13:52:40.347+08:00\",\n        \"updated_at\": \"2025-08-07T13:22:34.607+08:00\",\n        \"farmer\": {\n            \"user_id\": \"c72dad24-5dac-4588-a787-88229195d59c\",\n            \"address\": \"Jl. Raya Candi Kuning, Desa Baturiti, Tabanan, Bali\",\n            \"additional_info\": \"Anggota kelompok tani 'Subak Abian Jaya'. Fokus pada penanaman kopi arabika Kintamani.\",\n            \"created_at\": \"2025-08-06T14:38:40.939+08:00\",\n            \"FarmLocations\": null,\n            \"Projects\": null\n        }\n    },\n    \"message\": \"Role details updated successfully\",\n    \"status\": \"success\"\n}"
+						},
+						{
+							"name": "Update Detail Profile Worker",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "\t{\r\n    \"details\": {\r\n        \"skills\": [\"Memanen Kopi\", \"Pemupukan Organik\", \"Mengoperasikan Traktor Tangan\"],\r\n        \"hourly_rate\": 25000.00,\r\n        \"daily_rate\": 150000.00,\r\n        \"address\": \"Banjar Dinas Asah, Desa Gobleg, Buleleng, Bali\",\r\n        \"availability_schedule\": {\r\n            \"monday\": \"08:00-16:00\",\r\n            \"tuesday\": \"08:00-16:00\",\r\n            \"saturday\": \"08:00-12:00\"\r\n        },\r\n        \"current_location_lat\": -8.2415,\r\n        \"current_location_lng\": 115.0884\r\n    }\r\n} "
+								},
+								"url": {
+									"raw": "{{base_url}}/profile/details",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"profile",
+										"details"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 07 Aug 2025 05:25:28 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "978"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"id\": \"337eee82-c550-45dd-b51f-74a2ac7531dc\",\n        \"name\": \"Darma Gunawan\",\n        \"email\": \"Worker@gmail.com\",\n        \"phone_number\": \"085844780893\",\n        \"role\": \"worker\",\n        \"profile_picture\": null,\n        \"is_active\": true,\n        \"email_verified\": false,\n        \"phone_verified\": false,\n        \"created_at\": \"2025-08-07T13:24:44.099+08:00\",\n        \"updated_at\": \"2025-08-07T13:24:44.099+08:00\",\n        \"worker\": {\n            \"user_id\": \"337eee82-c550-45dd-b51f-74a2ac7531dc\",\n            \"skills\": \"[\\\"Memanen Kopi\\\", \\\"Pemupukan Organik\\\", \\\"Mengoperasikan Traktor Tangan\\\"]\",\n            \"hourly_rate\": 25000,\n            \"daily_rate\": 150000,\n            \"address\": \"Banjar Dinas Asah, Desa Gobleg, Buleleng, Bali\",\n            \"availability_schedule\": \"{\\\"monday\\\": \\\"08:00-16:00\\\", \\\"tuesday\\\": \\\"08:00-16:00\\\", \\\"saturday\\\": \\\"08:00-12:00\\\"}\",\n            \"current_location_lat\": -8.2415,\n            \"current_location_lng\": 115.0884,\n            \"rating\": 0,\n            \"total_jobs_completed\": 0,\n            \"created_at\": \"2025-08-07T13:25:28.142+08:00\",\n            \"ProjectApplications\": null,\n            \"ProjectAssignments\": null,\n            \"WorkerAvailability\": null\n        }\n    },\n    \"message\": \"Role details updated successfully\",\n    \"status\": \"success\"\n}"
+						},
+						{
+							"name": "Update Detail Profile Driver",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "\t{\r\n    \"details\": {\r\n        \"company_address\": \"Jl. Cargo Permai No. 8, Denpasar, Bali\",\r\n        \"pricing_scheme\": {\r\n            \"base_fee\": 50000,\r\n            \"per_km\": 2500,\r\n            \"extra_handling\": 15000\r\n        },\r\n        \"vehicle_types\": [\"Pick-up L300\", \"Truk Engkel Bak Terbuka\"]\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/profile/details",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"profile",
+										"details"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 07 Aug 2025 06:08:37 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "757"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"id\": \"47ef1435-794c-44c6-9e70-3394893ce443\",\n        \"name\": \"Darma hendri\",\n        \"email\": \"Driver@gmail.com\",\n        \"phone_number\": \"0858449780893\",\n        \"role\": \"driver\",\n        \"profile_picture\": null,\n        \"is_active\": true,\n        \"email_verified\": false,\n        \"phone_verified\": false,\n        \"created_at\": \"2025-08-07T14:08:24.637+08:00\",\n        \"updated_at\": \"2025-08-07T14:08:24.638+08:00\",\n        \"driver\": {\n            \"user_id\": \"47ef1435-794c-44c6-9e70-3394893ce443\",\n            \"company_address\": \"Jl. Cargo Permai No. 8, Denpasar, Bali\",\n            \"pricing_scheme\": \"{\\\"per_km\\\": 2500, \\\"base_fee\\\": 50000, \\\"extra_handling\\\": 15000}\",\n            \"vehicle_types\": \"[\\\"Pick-up L300\\\", \\\"Truk Engkel Bak Terbuka\\\"]\",\n            \"rating\": 0,\n            \"total_deliveries\": 0,\n            \"created_at\": \"2025-08-07T14:08:37.543+08:00\",\n            \"Deliveries\": null\n        }\n    },\n    \"message\": \"Role details updated successfully\",\n    \"status\": \"success\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Manage Lahan",
+			"item": [
+				{
+					"name": "get data by ID",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/farms/56a909d9-1e9a-46fd-996e-c21a75f61720",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"farms",
+								"56a909d9-1e9a-46fd-996e-c21a75f61720"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Lahan",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Kebun Kopi Organik Luwak Kintamani\",\r\n    \"latitude\": -8.2391,\r\n    \"longitude\": 114.9804,\r\n    \"area_size\": 50.5,\r\n    \"crop_type\": \"Kopi Robusta\",\r\n    \"irrigation_type\": \"Irigasi Tetes (Drip Irrigation)\",\r\n    \"description\": \"Lahan di lereng bukit dengan sistem terasering, cocok untuk tanaman kopi dan cengkeh.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/farms",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"farms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Data",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Kebun Kopi Organik Wanagiri\",\r\n    \"latitude\": -8.2391,\r\n    \"longitude\": 114.9804,\r\n    \"area_size\": 50.5,\r\n    \"crop_type\": \"Kopi Robusta\",\r\n    \"irrigation_type\": \"Irigasi Tetes (Drip Irrigation)\",\r\n    \"description\": \"Lahan di lereng bukit dengan sistem terasering, cocok untuk tanaman kopi dan cengkeh.\"\r\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/farms/56a909d9-1e9a-46fd-996e-c21a75f61720",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"farms",
+								"56a909d9-1e9a-46fd-996e-c21a75f61720"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "My farm",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/farms/my",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"farms",
+								"my"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "My Farm",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/farms/my",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"farms",
+										"my"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 08 Aug 2025 12:50:52 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "979"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": [\n        {\n            \"id\": \"b95420d1-a960-43d5-a49b-bea8937c23c8\",\n            \"farmer_id\": \"b812f85b-32e1-487d-8c22-1ada0cbf4b4a\",\n            \"name\": \"Kebun Kopi Organik Luwak Kintamani\",\n            \"latitude\": -8.2391,\n            \"longitude\": 114.9804,\n            \"area_size\": 50.5,\n            \"crop_type\": \"Kopi Robusta\",\n            \"irrigation_type\": \"Irigasi Tetes (Drip Irrigation)\",\n            \"description\": \"Lahan di lereng bukit dengan sistem terasering, cocok untuk tanaman kopi dan cengkeh.\",\n            \"is_active\": true,\n            \"created_at\": \"2025-08-08T20:47:36.08+08:00\",\n            \"Projects\": null\n        },\n        {\n            \"id\": \"cf15fb2e-382e-4ce2-9453-f3cf096394fc\",\n            \"farmer_id\": \"b812f85b-32e1-487d-8c22-1ada0cbf4b4a\",\n            \"name\": \"Kebun Kopi Organik Wanagiri\",\n            \"latitude\": -8.2391,\n            \"longitude\": 114.9804,\n            \"area_size\": 50.5,\n            \"crop_type\": \"Kopi Robusta\",\n            \"irrigation_type\": \"Irigasi Tetes (Drip Irrigation)\",\n            \"description\": \"Lahan di lereng bukit dengan sistem terasering, cocok untuk tanaman kopi dan cengkeh.\",\n            \"is_active\": true,\n            \"created_at\": \"2025-08-07T21:58:04.752+08:00\",\n            \"Projects\": null\n        }\n    ],\n    \"message\": \"My farms retrieved successfully\",\n    \"status\": \"success\"\n}"
 						}
 					]
 				},
 				{
-					"name": "New Request",
+					"name": "Update Farm",
 					"request": {
-						"method": "GET",
-						"header": []
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Kebun Kopi Organik Luwak Kintamani Edited\",\r\n    \"latitude\": -8.2391,\r\n    \"longitude\": 114.9804,\r\n    \"area_size\": 50.5,\r\n    \"crop_type\": \"Kopi Robusta\",\r\n    \"irrigation_type\": \"Irigasi Tetes (Drip Irrigation)\",\r\n    \"description\": \"Lahan di lereng bukit dengan sistem terasering, cocok untuk tanaman kopi dan cengkeh.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/farms/b95420d1-a960-43d5-a49b-bea8937c23c8",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"farms",
+								"b95420d1-a960-43d5-a49b-bea8937c23c8"
+							]
+						}
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Update Farm",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Kebun Kopi Organik Luwak Kintamani Edited\",\r\n    \"latitude\": -8.2391,\r\n    \"longitude\": 114.9804,\r\n    \"area_size\": 50.5,\r\n    \"crop_type\": \"Kopi Robusta\",\r\n    \"irrigation_type\": \"Irigasi Tetes (Drip Irrigation)\",\r\n    \"description\": \"Lahan di lereng bukit dengan sistem terasering, cocok untuk tanaman kopi dan cengkeh.\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/farms/b95420d1-a960-43d5-a49b-bea8937c23c8",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"farms",
+										"b95420d1-a960-43d5-a49b-bea8937c23c8"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 08 Aug 2025 13:45:58 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "528"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"id\": \"b95420d1-a960-43d5-a49b-bea8937c23c8\",\n        \"farmer_id\": \"b812f85b-32e1-487d-8c22-1ada0cbf4b4a\",\n        \"name\": \"Kebun Kopi Organik Luwak Kintamani Edited\",\n        \"latitude\": -8.2391,\n        \"longitude\": 114.9804,\n        \"area_size\": 50.5,\n        \"crop_type\": \"Kopi Robusta\",\n        \"irrigation_type\": \"Irigasi Tetes (Drip Irrigation)\",\n        \"description\": \"Lahan di lereng bukit dengan sistem terasering, cocok untuk tanaman kopi dan cengkeh.\",\n        \"is_active\": true,\n        \"created_at\": \"2025-08-08T20:47:36.08+08:00\",\n        \"Projects\": null\n    },\n    \"message\": \"Farm updated successfully\",\n    \"status\": \"success\"\n}"
+						}
+					]
 				}
 			]
 		},
