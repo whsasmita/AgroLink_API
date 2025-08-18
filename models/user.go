@@ -8,6 +8,7 @@ import (
 )
 
 // TODO checking untuk pemilihan tipa data untuk masalah financial
+// TODO perbarui untuk field dari lahan petani
 // User represents the main user table
 type User struct {
 	ID             uuid.UUID `gorm:"type:char(36);primary_key;default:(UUID())" json:"id"`
@@ -54,7 +55,7 @@ type Farmer struct {
 type Worker struct {
 	UserID               uuid.UUID `gorm:"type:char(36);primary_key" json:"user_id"`
 	Skills               string    `gorm:"type:json;not null" json:"skills"` // JSON array as string
-	HourlyRate           *float64  `gorm:"type:decimal(10,2)" json:"hourly_rate"`
+	HourlyRate           *float64  `gorm:"type:decimal(10,2)" json:"hourly_rate"` // monthly
 	DailyRate            *float64  `gorm:"type:decimal(10,2)" json:"daily_rate"`
 	Address              *string   `gorm:"type:text" json:"address"`
 	AvailabilitySchedule *string   `gorm:"type:json" json:"availability_schedule"`
@@ -65,7 +66,7 @@ type Worker struct {
 	CreatedAt            time.Time `json:"created_at"`
 
 	// Relationships
-	User                User                 `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"-"`
+	User                User                 `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"user"`
 	ProjectApplications []ProjectApplication `gorm:"foreignKey:WorkerID;constraint:OnDelete:CASCADE"`
 	ProjectAssignments  []ProjectAssignment  `gorm:"foreignKey:WorkerID;constraint:OnDelete:CASCADE"`
 	WorkerAvailability  []WorkerAvailability `gorm:"foreignKey:WorkerID;constraint:OnDelete:CASCADE"`
@@ -96,6 +97,7 @@ type FarmLocation struct {
 	Longitude      float64   `gorm:"type:decimal(11,8);not null" json:"longitude"`
 	AreaSize       float64   `gorm:"type:decimal(10,2);not null;comment:Luas dalam are" json:"area_size"`
 	CropType       *string   `gorm:"type:varchar(50)" json:"crop_type"`
+
 	IrrigationType *string   `gorm:"type:varchar(50)" json:"irrigation_type"`
 	Description    *string   `gorm:"type:text" json:"description"`
 	IsActive       bool      `gorm:"default:true" json:"is_active"`
@@ -125,6 +127,8 @@ type WorkerAvailability struct {
 	BookingType        *string   `gorm:"type:enum('project','maintenance','other')" json:"booking_type"`
 	Notes              *string   `gorm:"type:text" json:"notes"`
 	CreatedAt          time.Time `json:"created_at"`
+
+	// Data price dari wawancara user : 
 
 	// Relationships
 	Worker Worker `gorm:"foreignKey:WorkerID;constraint:OnDelete:CASCADE"`

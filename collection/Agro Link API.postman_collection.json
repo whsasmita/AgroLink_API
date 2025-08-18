@@ -18,7 +18,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\" : \"farmer@gmail.com\",\r\n    \"password\" : \"AdminPassword\",\r\n    \"role\" : \"farmer\",\r\n    \"name\" : \"Darma wiguna\",\r\n    \"phone_number\" : \"08549780893\"\r\n}",
+							"raw": "{\r\n    \"email\" : \"driver@gmail.com\",\r\n    \"password\" : \"AdminPassword\",\r\n    \"role\" : \"driver\",\r\n    \"name\" : \"Gunawan\",\r\n    \"phone_number\" : \"08549789093\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -221,7 +221,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\" : \"Bunga Update\",\r\n    \"phone_number\" : \"909090990900\",\r\n    \"profile_picture\" : \"url_profile_picture\"\r\n\r\n}",
+							"raw": "{\r\n    \"name\" : \"Bunga Update\",\r\n    \"phone_number\" : \"909090990900\",\r\n    \"profile_picture\" : \"url_profile_picture\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -342,7 +342,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"details\": {\r\n        \"address\": \"Jl. Raya Candi Kuning, Desa Baturiti, Tabanan, Bali\",\r\n        \"additional_info\": \"Anggota kelompok tani 'Subak Abian Jaya'. Fokus pada penanaman kopi arabika Kintamani.\"\r\n    }\r\n}",
+							"raw": "\t{\r\n    \"details\": {\r\n        \"company_address\": \"Jl. Cargo Permai No. 8, Denpasar, Bali\",\r\n        \"pricing_scheme\": {\r\n            \"base_fee\": 50000,\r\n            \"per_km\": 2500,\r\n            \"extra_handling\": 15000\r\n        },\r\n        \"vehicle_types\": [\"Pick-up L300\", \"Truk Engkel Bak Terbuka\"]\r\n    }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -761,6 +761,284 @@
 							],
 							"cookie": [],
 							"body": "{\n    \"data\": {\n        \"id\": \"b95420d1-a960-43d5-a49b-bea8937c23c8\",\n        \"farmer_id\": \"b812f85b-32e1-487d-8c22-1ada0cbf4b4a\",\n        \"name\": \"Kebun Kopi Organik Luwak Kintamani Edited\",\n        \"latitude\": -8.2391,\n        \"longitude\": 114.9804,\n        \"area_size\": 50.5,\n        \"crop_type\": \"Kopi Robusta\",\n        \"irrigation_type\": \"Irigasi Tetes (Drip Irrigation)\",\n        \"description\": \"Lahan di lereng bukit dengan sistem terasering, cocok untuk tanaman kopi dan cengkeh.\",\n        \"is_active\": true,\n        \"created_at\": \"2025-08-08T20:47:36.08+08:00\",\n        \"Projects\": null\n    },\n    \"message\": \"Farm updated successfully\",\n    \"status\": \"success\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Workers",
+			"item": [
+				{
+					"name": "getAllWorkers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/workers/?page=1&limit=5&search=&sort_by=name&order=asc",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"workers",
+								""
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								},
+								{
+									"key": "search",
+									"value": ""
+								},
+								{
+									"key": "sort_by",
+									"value": "name"
+								},
+								{
+									"key": "order",
+									"value": "asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetWorkerbyId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/workers/379c3e72-ccde-4a1d-b625-88403677b8f5",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"workers",
+								"379c3e72-ccde-4a1d-b625-88403677b8f5"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "379c3e72-ccde-4a1d-b625-88403677",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Drivers",
+			"item": [
+				{
+					"name": "getDrivers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/drivers?limit=5&sort_by=total_deliveries&order=desc",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"drivers"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "5"
+								},
+								{
+									"key": "sort_by",
+									"value": "total_deliveries"
+								},
+								{
+									"key": "order",
+									"value": "desc"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "getDriversResponse",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/drivers?limit=5&sort_by=total_deliveries&order=desc",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"drivers"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "5"
+										},
+										{
+											"key": "sort_by",
+											"value": "total_deliveries"
+										},
+										{
+											"key": "order",
+											"value": "desc"
+										},
+										{
+											"key": "page",
+											"value": "1",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 18 Aug 2025 09:27:33 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "488"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": [\n        {\n            \"user_id\": \"07498932-7288-4f43-842c-4514711ad166\",\n            \"name\": \"Gunawan\",\n            \"profile_picture\": null,\n            \"phone_number\": \"08549789093\",\n            \"company_address\": \"Jl. Cargo Permai No. 8, Denpasar, Bali\",\n            \"pricing_scheme\": \"{\\\"per_km\\\": 2500, \\\"base_fee\\\": 50000, \\\"extra_handling\\\": 15000}\",\n            \"vehicle_types\": \"[\\\"Pick-up L300\\\", \\\"Truk Engkel Bak Terbuka\\\"]\",\n            \"rating\": 0,\n            \"total_deliveries\": 0,\n            \"created_at\": \"2025-08-18T17:25:01.779+08:00\"\n        }\n    ],\n    \"pagination\": {\n        \"limit\": 5,\n        \"offset\": 0,\n        \"total_pages\": 1,\n        \"total_records\": 1\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "getDriverbyId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/drivers/07498932-7288-4f43-842c-4514711ad166",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"drivers",
+								"07498932-7288-4f43-842c-4514711ad166"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "New Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/drivers/07498932-7288-4f43-842c-4514711ad166",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"drivers",
+										"07498932-7288-4f43-842c-4514711ad166"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 18 Aug 2025 09:33:40 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "407"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"user_id\": \"07498932-7288-4f43-842c-4514711ad166\",\n    \"name\": \"Gunawan\",\n    \"profile_picture\": null,\n    \"phone_number\": \"08549789093\",\n    \"company_address\": \"Jl. Cargo Permai No. 8, Denpasar, Bali\",\n    \"pricing_scheme\": \"{\\\"per_km\\\": 2500, \\\"base_fee\\\": 50000, \\\"extra_handling\\\": 15000}\",\n    \"vehicle_types\": \"[\\\"Pick-up L300\\\", \\\"Truk Engkel Bak Terbuka\\\"]\",\n    \"rating\": 0,\n    \"total_deliveries\": 0,\n    \"created_at\": \"2025-08-18T17:25:01.779+08:00\"\n}"
+						},
+						{
+							"name": "getDriverbyIdResponse",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/drivers/07498932-7288-4f43-842c-4514711ad166",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"drivers",
+										"07498932-7288-4f43-842c-4514711ad166"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 18 Aug 2025 09:33:40 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "407"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"user_id\": \"07498932-7288-4f43-842c-4514711ad166\",\n    \"name\": \"Gunawan\",\n    \"profile_picture\": null,\n    \"phone_number\": \"08549789093\",\n    \"company_address\": \"Jl. Cargo Permai No. 8, Denpasar, Bali\",\n    \"pricing_scheme\": \"{\\\"per_km\\\": 2500, \\\"base_fee\\\": 50000, \\\"extra_handling\\\": 15000}\",\n    \"vehicle_types\": \"[\\\"Pick-up L300\\\", \\\"Truk Engkel Bak Terbuka\\\"]\",\n    \"rating\": 0,\n    \"total_deliveries\": 0,\n    \"created_at\": \"2025-08-18T17:25:01.779+08:00\"\n}"
 						}
 					]
 				}
