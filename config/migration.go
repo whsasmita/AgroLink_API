@@ -32,11 +32,11 @@ func AutoMigrate() {
 		&models.LocationTrack{},
 
 		// Contract and transaction models
-		&models.ContractTemplate{},
+		// &models.ContractTemplate{},
 		&models.Contract{},
 		&models.Transaction{},
-		&models.PaymentMethod{},
-		&models.PaymentLog{},
+		// &models.PaymentMethod{},
+		// &models.PaymentLog{},
 
 		// Schedule models
 		&models.Schedule{},
@@ -151,7 +151,7 @@ func SeedDefaultData() {
 	log.Println("🌱 Seeding default data...")
 
 	// Seed default contract templates
-	seedContractTemplates()
+	// seedContractTemplates()
 
 	// Seed system settings
 	seedSystemSettings()
@@ -160,105 +160,105 @@ func SeedDefaultData() {
 }
 
 // seedContractTemplates creates default contract templates
-func seedContractTemplates() {
-	templates := []models.ContractTemplate{
-		{
-			Name:     "Standard Work Contract",
-			Category: "work",
-			TemplateContent: `KONTRAK KERJA PERTANIAN
+// func seedContractTemplates() {
+// 	templates := []models.ContractTemplate{
+// 		{
+// 			Name:     "Standard Work Contract",
+// 			Category: "work",
+// 			TemplateContent: `KONTRAK KERJA PERTANIAN
 
-PIHAK PERTAMA (Petani):
-Nama: {{farmer_name}}
-Alamat: {{farmer_address}}
-Telepon: {{farmer_phone}}
+// PIHAK PERTAMA (Petani):
+// Nama: {{farmer_name}}
+// Alamat: {{farmer_address}}
+// Telepon: {{farmer_phone}}
 
-PIHAK KEDUA (Pekerja):
-Nama: {{worker_name}}
-Alamat: {{worker_address}}
-Telepon: {{worker_phone}}
+// PIHAK KEDUA (Pekerja):
+// Nama: {{worker_name}}
+// Alamat: {{worker_address}}
+// Telepon: {{worker_phone}}
 
-PASAL 1 - PEKERJAAN
-Jenis Pekerjaan: {{project_type}}
-Deskripsi: {{project_description}}
-Lokasi: {{farm_location}}
+// PASAL 1 - PEKERJAAN
+// Jenis Pekerjaan: {{project_type}}
+// Deskripsi: {{project_description}}
+// Lokasi: {{farm_location}}
 
-PASAL 2 - WAKTU
-Tanggal Mulai: {{start_date}}
-Tanggal Selesai: {{end_date}}
-Jam Kerja: {{working_hours}}
+// PASAL 2 - WAKTU
+// Tanggal Mulai: {{start_date}}
+// Tanggal Selesai: {{end_date}}
+// Jam Kerja: {{working_hours}}
 
-PASAL 3 - UPAH
-Upah: Rp {{agreed_rate}} per {{rate_type}}
-Metode Pembayaran: {{payment_method}}
+// PASAL 3 - UPAH
+// Upah: Rp {{agreed_rate}} per {{rate_type}}
+// Metode Pembayaran: {{payment_method}}
 
-PASAL 4 - KEWAJIBAN
-Pekerja wajib:
-- Bekerja sesuai jadwal yang disepakati
-- Menggunakan alat pelindung diri
-- Menjaga kualitas hasil kerja
+// PASAL 4 - KEWAJIBAN
+// Pekerja wajib:
+// - Bekerja sesuai jadwal yang disepakati
+// - Menggunakan alat pelindung diri
+// - Menjaga kualitas hasil kerja
 
-Petani wajib:
-- Menyediakan alat kerja yang diperlukan
-- Membayar upah sesuai kesepakatan
-- Menyediakan fasilitas istirahat
+// Petani wajib:
+// - Menyediakan alat kerja yang diperlukan
+// - Membayar upah sesuai kesepakatan
+// - Menyediakan fasilitas istirahat
 
-Kontrak ini berlaku sejak ditandatangani oleh kedua belah pihak.`,
-			IsDefault: true,
-			IsActive:  true,
-		},
-		{
-			Name:     "Standard Delivery Contract",
-			Category: "delivery",
-			TemplateContent: `KONTRAK PENGIRIMAN HASIL PERTANIAN
+// Kontrak ini berlaku sejak ditandatangani oleh kedua belah pihak.`,
+// 			IsDefault: true,
+// 			IsActive:  true,
+// 		},
+// 		{
+// 			Name:     "Standard Delivery Contract",
+// 			Category: "delivery",
+// 			TemplateContent: `KONTRAK PENGIRIMAN HASIL PERTANIAN
 
-PIHAK PERTAMA (Pengirim):
-Nama: {{sender_name}}
-Alamat: {{sender_address}}
-Telepon: {{sender_phone}}
+// PIHAK PERTAMA (Pengirim):
+// Nama: {{sender_name}}
+// Alamat: {{sender_address}}
+// Telepon: {{sender_phone}}
 
-PIHAK KEDUA (Ekspedisi):
-Nama Perusahaan: {{expedition_name}}
-Alamat: {{expedition_address}}
-Telepon: {{expedition_phone}}
+// PIHAK KEDUA (Ekspedisi):
+// Nama Perusahaan: {{expedition_name}}
+// Alamat: {{expedition_address}}
+// Telepon: {{expedition_phone}}
 
-PASAL 1 - BARANG
-Jenis Barang: {{product_type}}
-Berat: {{weight}} kg
-Volume: {{volume}}
-Kemasan: {{packaging_type}}
+// PASAL 1 - BARANG
+// Jenis Barang: {{product_type}}
+// Berat: {{weight}} kg
+// Volume: {{volume}}
+// Kemasan: {{packaging_type}}
 
-PASAL 2 - PENGIRIMAN
-Alamat Penjemputan: {{pickup_address}}
-Alamat Tujuan: {{delivery_address}}
-Tanggal Penjemputan: {{pickup_date}}
-Estimasi Tiba: {{estimated_delivery}}
+// PASAL 2 - PENGIRIMAN
+// Alamat Penjemputan: {{pickup_address}}
+// Alamat Tujuan: {{delivery_address}}
+// Tanggal Penjemputan: {{pickup_date}}
+// Estimasi Tiba: {{estimated_delivery}}
 
-PASAL 3 - BIAYA
-Biaya Pengiriman: Rp {{delivery_price}}
-Asuransi: {{insurance_info}}
+// PASAL 3 - BIAYA
+// Biaya Pengiriman: Rp {{delivery_price}}
+// Asuransi: {{insurance_info}}
 
-PASAL 4 - TANGGUNG JAWAB
-Ekspedisi bertanggung jawab atas:
-- Keamanan barang selama pengiriman
-- Ketepatan waktu pengiriman
-- Penanganan khusus sesuai instruksi
+// PASAL 4 - TANGGUNG JAWAB
+// Ekspedisi bertanggung jawab atas:
+// - Keamanan barang selama pengiriman
+// - Ketepatan waktu pengiriman
+// - Penanganan khusus sesuai instruksi
 
-Kontrak ini berlaku sejak ditandatangani oleh kedua belah pihak.`,
-			IsDefault: true,
-			IsActive:  true,
-		},
-	}
+// Kontrak ini berlaku sejak ditandatangani oleh kedua belah pihak.`,
+// 			IsDefault: true,
+// 			IsActive:  true,
+// 		},
+// 	}
 
-	for _, template := range templates {
-		var existingTemplate models.ContractTemplate
-		if err := DB.Where("name = ?", template.Name).First(&existingTemplate).Error; err != nil {
-			// Template doesn't exist, create it
-			if err := DB.Create(&template).Error; err != nil {
-				log.Printf("Failed to create contract template %s: %v", template.Name, err)
-			}
-		}
-	}
-}
+// 	for _, template := range templates {
+// 		var existingTemplate models.ContractTemplate
+// 		if err := DB.Where("name = ?", template.Name).First(&existingTemplate).Error; err != nil {
+// 			// Template doesn't exist, create it
+// 			if err := DB.Create(&template).Error; err != nil {
+// 				log.Printf("Failed to create contract template %s: %v", template.Name, err)
+// 			}
+// 		}
+// 	}
+// }
 
 // seedSystemSettings creates default system settings
 func seedSystemSettings() {

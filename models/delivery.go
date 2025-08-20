@@ -53,11 +53,11 @@ type Delivery struct {
 	// Relationships
 	Project         *Project        `gorm:"foreignKey:ProjectID"`
 	Farmer          Farmer          `gorm:"foreignKey:FarmerID;constraint:OnDelete:CASCADE"`
-	Expedition      Driver      `gorm:"foreignKey:ExpeditionID;constraint:OnDelete:CASCADE"`
-	LocationTracks  []LocationTrack `gorm:"foreignKey:DeliveryID;constraint:OnDelete:CASCADE"`
-	Contracts       []Contract      `gorm:"foreignKey:DeliveryID"`
-	Transactions    []Transaction   `gorm:"foreignKey:DeliveryID"`
-	Schedules       []Schedule      `gorm:"foreignKey:DeliveryID;constraint:OnDelete:CASCADE"`
+	// Expedition      Driver      `gorm:"foreignKey:ExpeditionID;constraint:OnDelete:CASCADE"`
+	// LocationTracks  []LocationTrack `gorm:"foreignKey:DeliveryID;constraint:OnDelete:CASCADE"`
+	// Contracts       []Contract      `gorm:"foreignKey:DeliveryID"`
+	// Transactions    []Transaction   `gorm:"foreignKey:DeliveryID"`
+	// Schedules       []Schedule      `gorm:"foreignKey:DeliveryID;constraint:OnDelete:CASCADE"`
 }
 
 // BeforeCreate hook for Delivery
