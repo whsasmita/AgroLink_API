@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"github.com/google/uuid"
 	"github.com/whsasmita/AgroLink_API/models"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -9,6 +10,7 @@ import (
 type FarmRepository interface {
 	FindByID(id string) (*models.FarmLocation, error)
 	FindAllByFarmerID(farmerID string) ([]models.FarmLocation, error)
+	FindByIDAndFarmerID(id string, farmerID uuid.UUID) (*models.FarmLocation, error)
 	CreateFarm(farm *models.FarmLocation) error
 	Update(farm *models.FarmLocation) error
 	Delete(farmID *models.FarmLocation) error
@@ -50,4 +52,10 @@ func (r *farmRepository) Update(farm *models.FarmLocation) error {
 
 func (r *farmRepository) Delete(farm *models.FarmLocation) error {
 	return r.db.Delete(&models.FarmLocation{}, "id = ?", farm.ID).Error
+}
+
+func (r *farmRepository) FindByIDAndFarmerID(id string, farmerID uuid.UUID) (*models.FarmLocation, error) {
+    var farm models.FarmLocation
+    err := r.db.Where("id = ? AND farmer_id = ?", id, farmerID).First(&farm).Error
+    return &farm, err
 }

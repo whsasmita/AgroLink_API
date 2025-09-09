@@ -19,4 +19,5 @@ type DriverResponse struct {
 	Rating          float64   `json:"rating"`
 	TotalDeliveries int       `json:"total_deliveries"`
 	CreatedAt       time.Time `json:"created_at"`
+
 }

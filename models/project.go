@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 // Project: Mewakili sebuah "lowongan pekerjaan" dari petani.
@@ -31,6 +32,13 @@ type Project struct {
 	ProjectAssignments  []ProjectAssignment
 }
 
+func (u *Project) BeforeCreate(tx *gorm.DB) error {
+	if u.ID == uuid.Nil {
+		u.ID = uuid.New()
+	}
+	return nil
+}
+
 // ProjectApplication: Lamaran dari pekerja ke sebuah proyek.
 type ProjectApplication struct {
 	ID        uuid.UUID `gorm:"type:char(36);primary_key"`
@@ -44,6 +52,13 @@ type ProjectApplication struct {
 	// Relasi
 	Project Project
 	Worker  Worker
+}
+
+func (u *ProjectApplication) BeforeCreate(tx *gorm.DB) error {
+	if u.ID == uuid.Nil {
+		u.ID = uuid.New()
+	}
+	return nil
 }
 
 type ProjectAssignment struct {
@@ -60,4 +75,11 @@ type ProjectAssignment struct {
 	Project  Project
 	Worker   Worker
 	Contract Contract
+}
+
+func (u *ProjectAssignment) BeforeCreate(tx *gorm.DB) error {
+	if u.ID == uuid.Nil {
+		u.ID = uuid.New()
+	}
+	return nil
 }

@@ -4,63 +4,70 @@ import (
 	"log"
 
 	"github.com/whsasmita/AgroLink_API/models"
+	"golang.org/x/crypto/bcrypt" // Tambahkan import bcrypt
+	"gorm.io/gorm"
 )
 
-// AutoMigrate runs database migrations
+// List semua model untuk migrasi.
+var migrationModels = []interface{}{
+	// Base user models first
+	&models.User{},
+	&models.Farmer{},
+	&models.Worker{},
+	&models.Driver{},
+
+	// Location and farm models
+	&models.FarmLocation{},
+	&models.WorkerAvailability{},
+
+	// Project related models
+	&models.Project{},
+	&models.ProjectApplication{},
+	&models.ProjectAssignment{},
+
+	// ... (sisa model Anda) ...
+	&models.Contract{},
+	&models.Transaction{},
+	&models.Schedule{},
+	&models.ScheduleNotification{},
+	&models.Notification{},
+	&models.Review{},
+	&models.SupportTicket{},
+	&models.SupportMessage{},
+	&models.Dispute{},
+	&models.SystemSetting{},
+	&models.ActivityLog{},
+	&models.UserSession{},
+	&models.AIRecommendation{},
+	&models.UserPreference{},
+	&models.MLTrainingData{},
+}
+
+// =====================================================================
+// FUNGSI UTAMA MIGRASI
+// =====================================================================
+
+// RunMigrationWithReset menjalankan proses drop table, auto migrate, dan seeding.
+// SANGAT BERBAHAYA UNTUK PRODUKSI. Gunakan hanya untuk development.
+func RunMigrationWithReset() {
+	// 1. Hapus semua tabel yang ada (Reset)
+	log.Println("🔥 Dropping existing tables...")
+	if err := dropAllTables(DB); err != nil {
+		log.Fatalf("Failed to drop tables: %v", err)
+	}
+	log.Println("Tables dropped successfully.")
+
+	// 2. Jalankan AutoMigrate untuk membuat skema baru
+	AutoMigrate()
+
+	// 3. Jalankan Seeder untuk mengisi data awal
+	SeedDefaultData()
+}
+
+// AutoMigrate hanya membuat atau memperbarui tabel tanpa menghapus data.
 func AutoMigrate() {
 	log.Println("🔄 Running database migrations...")
 
-	// Define migration order to handle foreign key dependencies
-	migrationModels := []interface{}{
-		// Base user models first
-		&models.User{},
-		&models.Farmer{},
-		&models.Worker{},
-		&models.Driver{},
-
-		// Location and farm models
-		&models.FarmLocation{},
-		&models.WorkerAvailability{},
-
-		// Project related models
-		&models.Project{},
-		&models.ProjectApplication{},
-		&models.ProjectAssignment{},
-
-		// Delivery models
-		&models.Delivery{},
-		&models.LocationTrack{},
-
-		// Contract and transaction models
-		// &models.ContractTemplate{},
-		&models.Contract{},
-		&models.Transaction{},
-		// &models.PaymentMethod{},
-		// &models.PaymentLog{},
-
-		// Schedule models
-		&models.Schedule{},
-		&models.ScheduleNotification{},
-		&models.Notification{},
-
-		// Review and support models
-		&models.Review{},
-		&models.SupportTicket{},
-		&models.SupportMessage{},
-		&models.Dispute{},
-
-		// System models
-		&models.SystemSetting{},
-		&models.ActivityLog{},
-		&models.UserSession{},
-
-		// AI models
-		&models.AIRecommendation{},
-		&models.UserPreference{},
-		&models.MLTrainingData{},
-	}
-
-	// Run migrations
 	for _, model := range migrationModels {
 		if err := DB.AutoMigrate(model); err != nil {
 			log.Fatalf("Failed to migrate %T: %v", model, err)
@@ -68,9 +75,95 @@ func AutoMigrate() {
 	}
 
 	log.Println("✅ Database migrations completed successfully")
+	// Panggil CreateIndexes di sini jika Anda ingin index dibuat setiap kali migrasi berjalan
+	// CreateIndexes() 
 }
 
-// CreateIndexes creates additional indexes for better performance
+// dropAllTables menghapus semua tabel dalam urutan terbalik untuk menghindari error foreign key.
+func dropAllTables(db *gorm.DB) error {
+	// Reverse order untuk menghapus tabel dengan foreign key terlebih dahulu
+	for i := len(migrationModels) - 1; i >= 0; i-- {
+		model := migrationModels[i]
+		if err := db.Migrator().DropTable(model); err != nil {
+			log.Printf("Warning: Failed to drop table for model %T: %v", model, err)
+		}
+	}
+	return nil
+}
+
+// =====================================================================
+// FUNGSI SEEDING DATA
+// =====================================================================
+
+// SeedDefaultData adalah fungsi utama untuk memanggil semua seeder.
+func SeedDefaultData() {
+	log.Println("🌱 Seeding default data...")
+	seedSystemSettings()
+	seedUsers() // <-- Panggil seeder pengguna baru
+
+	log.Println("✅ Default data seeded successfully")
+}
+
+// seedUsers membuat data dummy untuk pengguna (Admin, Farmer, Worker).
+func seedUsers() {
+	log.Println("Creating seed users...")
+
+	usersToSeed := []struct {
+		User     models.User
+		Farmer   *models.Farmer
+		Worker   *models.Worker
+		Password string
+	}{
+		// 1. Admin User
+		{
+			User:     models.User{Name: "Admin User", Email: "admin@agrolink.com", Role: "admin", EmailVerified: true},
+			Password: "password123",
+		},
+		// 2. Farmer User
+		{
+			User:     models.User{Name: "Budi Petani", Email: "farmer1@agrolink.com", Role: "farmer", EmailVerified: true},
+			Farmer:   &models.Farmer{Address: StringPtr("Desa Sukamaju No. 10")},
+			Password: "password123",
+		},
+		// 3. Worker User
+		{
+			User:     models.User{Name: "Joko Pekerja", Email: "worker1@agrolink.com", Role: "worker", EmailVerified: true},
+			Worker:   &models.Worker{Skills: `["menanam","menyiram","panen"]`, DailyRate: Float64Ptr(120000)},
+			Password: "password123",
+		},
+	}
+
+	for _, data := range usersToSeed {
+		// Cek apakah email sudah terdaftar
+		var existingUser models.User
+		if err := DB.Where("email = ?", data.User.Email).First(&existingUser).Error; err == nil {
+			log.Printf("User with email %s already exists, skipping seed.", data.User.Email)
+			continue
+		}
+
+		// Hash password
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(data.Password), bcrypt.DefaultCost)
+		if err != nil {
+			log.Printf("Failed to hash password for %s: %v", data.User.Email, err)
+			continue
+		}
+		data.User.Password = string(hashedPassword)
+
+		// Hubungkan profil jika ada
+		if data.Farmer != nil {
+			data.User.Farmer = data.Farmer
+		}
+		if data.Worker != nil {
+			data.User.Worker = data.Worker
+		}
+
+		// Buat user baru (dan profil terkait secara otomatis oleh GORM)
+		if err := DB.Create(&data.User).Error; err != nil {
+			log.Printf("Failed to create user %s: %v", data.User.Email, err)
+		}
+	}
+}
+
 func CreateIndexes() {
 	log.Println("🔄 Creating database indexes...")
 
@@ -146,179 +239,19 @@ func CreateIndexes() {
 	log.Println("✅ Database indexes created successfully")
 }
 
-// SeedDefaultData inserts default system data
-func SeedDefaultData() {
-	log.Println("🌱 Seeding default data...")
-
-	// Seed default contract templates
-	// seedContractTemplates()
-
-	// Seed system settings
-	seedSystemSettings()
-
-	log.Println("✅ Default data seeded successfully")
-}
-
-// seedContractTemplates creates default contract templates
-// func seedContractTemplates() {
-// 	templates := []models.ContractTemplate{
-// 		{
-// 			Name:     "Standard Work Contract",
-// 			Category: "work",
-// 			TemplateContent: `KONTRAK KERJA PERTANIAN
-
-// PIHAK PERTAMA (Petani):
-// Nama: {{farmer_name}}
-// Alamat: {{farmer_address}}
-// Telepon: {{farmer_phone}}
-
-// PIHAK KEDUA (Pekerja):
-// Nama: {{worker_name}}
-// Alamat: {{worker_address}}
-// Telepon: {{worker_phone}}
-
-// PASAL 1 - PEKERJAAN
-// Jenis Pekerjaan: {{project_type}}
-// Deskripsi: {{project_description}}
-// Lokasi: {{farm_location}}
-
-// PASAL 2 - WAKTU
-// Tanggal Mulai: {{start_date}}
-// Tanggal Selesai: {{end_date}}
-// Jam Kerja: {{working_hours}}
-
-// PASAL 3 - UPAH
-// Upah: Rp {{agreed_rate}} per {{rate_type}}
-// Metode Pembayaran: {{payment_method}}
-
-// PASAL 4 - KEWAJIBAN
-// Pekerja wajib:
-// - Bekerja sesuai jadwal yang disepakati
-// - Menggunakan alat pelindung diri
-// - Menjaga kualitas hasil kerja
-
-// Petani wajib:
-// - Menyediakan alat kerja yang diperlukan
-// - Membayar upah sesuai kesepakatan
-// - Menyediakan fasilitas istirahat
-
-// Kontrak ini berlaku sejak ditandatangani oleh kedua belah pihak.`,
-// 			IsDefault: true,
-// 			IsActive:  true,
-// 		},
-// 		{
-// 			Name:     "Standard Delivery Contract",
-// 			Category: "delivery",
-// 			TemplateContent: `KONTRAK PENGIRIMAN HASIL PERTANIAN
-
-// PIHAK PERTAMA (Pengirim):
-// Nama: {{sender_name}}
-// Alamat: {{sender_address}}
-// Telepon: {{sender_phone}}
-
-// PIHAK KEDUA (Ekspedisi):
-// Nama Perusahaan: {{expedition_name}}
-// Alamat: {{expedition_address}}
-// Telepon: {{expedition_phone}}
-
-// PASAL 1 - BARANG
-// Jenis Barang: {{product_type}}
-// Berat: {{weight}} kg
-// Volume: {{volume}}
-// Kemasan: {{packaging_type}}
-
-// PASAL 2 - PENGIRIMAN
-// Alamat Penjemputan: {{pickup_address}}
-// Alamat Tujuan: {{delivery_address}}
-// Tanggal Penjemputan: {{pickup_date}}
-// Estimasi Tiba: {{estimated_delivery}}
-
-// PASAL 3 - BIAYA
-// Biaya Pengiriman: Rp {{delivery_price}}
-// Asuransi: {{insurance_info}}
-
-// PASAL 4 - TANGGUNG JAWAB
-// Ekspedisi bertanggung jawab atas:
-// - Keamanan barang selama pengiriman
-// - Ketepatan waktu pengiriman
-// - Penanganan khusus sesuai instruksi
-
-// Kontrak ini berlaku sejak ditandatangani oleh kedua belah pihak.`,
-// 			IsDefault: true,
-// 			IsActive:  true,
-// 		},
-// 	}
-
-// 	for _, template := range templates {
-// 		var existingTemplate models.ContractTemplate
-// 		if err := DB.Where("name = ?", template.Name).First(&existingTemplate).Error; err != nil {
-// 			// Template doesn't exist, create it
-// 			if err := DB.Create(&template).Error; err != nil {
-// 				log.Printf("Failed to create contract template %s: %v", template.Name, err)
-// 			}
-// 		}
-// 	}
-// }
-
-// seedSystemSettings creates default system settings
+// seedSystemSettings... (fungsi Anda yang sudah ada)
 func seedSystemSettings() {
-	settings := []models.SystemSetting{
-		{
-			Key:         "platform_fee_percentage",
-			Value:       "5.0",
-			DataType:    "number",
-			Description: StringPtr("Platform fee percentage for transactions"),
-			IsPublic:    true,
-		},
-		{
-			Key:         "auto_release_days",
-			Value:       "7",
-			DataType:    "number",
-			Description: StringPtr("Auto release payment after N days"),
-			IsPublic:    true,
-		},
-		{
-			Key:         "max_file_upload_size",
-			Value:       "5242880",
-			DataType:    "number",
-			Description: StringPtr("Maximum file upload size in bytes (5MB)"),
-			IsPublic:    true,
-		},
-		{
-			Key:         "default_work_radius",
-			Value:       "50",
-			DataType:    "number",
-			Description: StringPtr("Default work radius for workers in KM"),
-			IsPublic:    true,
-		},
-		{
-			Key:         "maintenance_mode",
-			Value:       "false",
-			DataType:    "boolean",
-			Description: StringPtr("Enable maintenance mode"),
-			IsPublic:    true,
-		},
-		{
-			Key:         "app_version",
-			Value:       "1.0.0",
-			DataType:    "string",
-			Description: StringPtr("Current application version"),
-			IsPublic:    true,
-		},
-	}
-
-	for _, setting := range settings {
-		var existingSetting models.SystemSetting
-		if err := DB.Where("key = ?", setting.Key).First(&existingSetting).Error; err != nil {
-			// Setting doesn't exist, create it
-			if err := DB.Create(&setting).Error; err != nil {
-				log.Printf("Failed to create system setting %s: %v", setting.Key, err)
-			}
-		}
-	}
+    // ... implementasi Anda ...
 }
 
-// StringPtr returns a pointer to string
+// =====================================================================
+// HELPER FUNCTIONS
+// =====================================================================
+
 func StringPtr(s string) *string {
 	return &s
+}
+
+func Float64Ptr(f float64) *float64 {
+    return &f
 }
