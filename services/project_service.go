@@ -18,15 +18,25 @@ type ProjectService interface {
 	// Perbaikan: Mengembalikan model mentah dan total, sesuai kesepakatan
 	FindAll(pagination dto.PaginationRequest) (*[]models.Project, int64, error)
 	FindByID(id string) (*models.Project, error)
+	CheckAndFinalizeProject(projectID uuid.UUID) error // <-- Fungsi baru
+    UpdateStatus(projectID string, status string) error // <-- Fungsi baru
 }
 
 type projectService struct {
-	projectRepo repositories.ProjectRepository
-	farmRepo    repositories.FarmRepository
+	projectRepo  repositories.ProjectRepository
+	farmRepo     repositories.FarmRepository
+	assignRepo   repositories.AssignmentRepository
+	invoiceRepo  repositories.InvoiceRepository
 }
 
-func NewProjectService(repo repositories.ProjectRepository, farmRepo repositories.FarmRepository) ProjectService {
-	return &projectService{projectRepo: repo, farmRepo:    farmRepo,}
+// [PERUBAHAN] Perbarui konstruktor untuk menerima dependensi baru
+func NewProjectService(projectRepo repositories.ProjectRepository, farmRepo repositories.FarmRepository, assignRepo repositories.AssignmentRepository, invoiceRepo repositories.InvoiceRepository) ProjectService {
+	return &projectService{
+		projectRepo:  projectRepo,
+		farmRepo:     farmRepo,
+		assignRepo:   assignRepo,
+		invoiceRepo:  invoiceRepo,
+	}
 }
 
 func (s *projectService) CreateProject(request dto.CreateProjectRequest, farmerID uuid.UUID) (*models.Project, error) {
@@ -96,3 +106,60 @@ func (s *projectService) FindByID(id string) (*models.Project, error) {
 	}
 	return project, nil
 }
+
+func (s *projectService) CheckAndFinalizeProject(projectID uuid.UUID) error {
+	project, err := s.projectRepo.FindByID(projectID.String())
+	if err != nil {
+		return err
+	}
+
+	if project.Status != "open" {
+		return nil // Proyek sudah diproses atau tidak lagi terbuka
+	}
+
+	assignments, err := s.assignRepo.FindAllByProjectID(projectID.String())
+	if err != nil {
+		return err
+	}
+
+	if len(assignments) >= project.WorkersNeeded {
+		var baseAmount float64
+		durationDays := project.EndDate.Sub(project.StartDate).Hours()/24 + 1
+
+		if project.PaymentType == "per_day" && project.PaymentRate != nil {
+			baseAmount = *project.PaymentRate * durationDays * float64(project.WorkersNeeded)
+		} else if project.PaymentType == "lump_sum" && project.PaymentRate != nil {
+			baseAmount = *project.PaymentRate * float64(project.WorkersNeeded)
+		}
+
+		if baseAmount <= 0 {
+			return fmt.Errorf("calculated base amount is zero or negative for project %s", projectID)
+		}
+		
+		platformFee := baseAmount * 0.05
+		totalAmount := baseAmount + platformFee
+
+		invoice := &models.Invoice{
+			ProjectID:   project.ID,
+			FarmerID:    project.FarmerID,
+			Amount:      baseAmount,
+			PlatformFee: platformFee,
+			TotalAmount: totalAmount,
+			Status:      "pending",
+			DueDate:     time.Now().Add(48 * time.Hour),
+		}
+
+		if err := s.invoiceRepo.Create(invoice); err != nil {
+			return fmt.Errorf("failed to create invoice: %w", err)
+		}
+
+		return s.UpdateStatus(project.ID.String(), "waiting_payment")
+	}
+
+	return nil
+}
+
+func (s *projectService) UpdateStatus(projectID string, status string) error {
+    return s.projectRepo.UpdateStatus(projectID, status)
+}
+

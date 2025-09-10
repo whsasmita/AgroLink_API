@@ -34,7 +34,6 @@ func main() {
 	// Run migrations
 	// config.RunMigrationWithReset()
 	// config.CreateIndexes()
-	// config.SeedDefaultData()
 
 	// Graceful shutdown
 	defer config.CloseDatabase()
@@ -57,6 +56,8 @@ func main() {
 	// Initialize Gin router
 	r := gin.Default()
 
+	config.InitMidtrans()
+
 	// Menyajikan file statis dari folder 'public' di URL '/static'
 	// Contoh: file di public/images/logo.png bisa diakses di http://localhost:8080/static/images/logo.png
 	r.Static("/static", "./public")
@@ -77,10 +78,22 @@ func main() {
 			"message": "Agri Platform API is running",
 		})
 	})
-	// create instance
 	userRepo := repositories.NewUserRepository(db)
+	invoiceRepo := repositories.NewInvoiceRepository(db)
 	transactionRepo := repositories.NewTransactionRepository(db)
-	paymentService := services.NewPaymentService(transactionRepo, userRepo)
+	payoutRepo := repositories.NewPayoutRepository(db)
+	assignRepo := repositories.NewAssignmentRepository(db)
+	projectRepo := repositories.NewProjectRepository(db) // Perlu diinisialisasi di sini
+
+	// Inisialisasi PaymentService dengan SEMUA dependensi yang dibutuhkan
+	paymentService := services.NewPaymentService(
+		invoiceRepo,
+		transactionRepo,
+		payoutRepo,
+		assignRepo,
+		projectRepo,
+		userRepo,
+	)
 
 	webhookHandler := handlers.NewWebhookHandler(paymentService)
 	

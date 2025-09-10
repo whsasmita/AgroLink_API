@@ -19,7 +19,7 @@ type Project struct {
 	WorkersNeeded  int        `gorm:"default:1"`
 	StartDate      time.Time  `gorm:"type:date;not null"`
 	EndDate        time.Time  `gorm:"type:date;not null"`
-	PaymentRate    *float64   `gorm:"type:decimal(10,2)"` // Tarif pembayaran
+	PaymentRate    *float64   `gorm:"type:decimal(10,2)"`                         // Tarif pembayaran
 	PaymentType    string     `gorm:"type:enum('per_day','per_hour','lump_sum')"` // Jenis pembayaran
 	Status         string     `gorm:"type:enum('open','in_progress','completed','cancelled');default:open"`
 	CreatedAt      time.Time
@@ -66,15 +66,15 @@ type ProjectAssignment struct {
 	ProjectID  uuid.UUID `gorm:"type:char(36);not null"`
 	WorkerID   uuid.UUID `gorm:"type:char(36);not null"`
 	ContractID uuid.UUID `gorm:"type:char(36);not null"` // Kunci penghubung ke kontrak
-	AgreedRate float64   `gorm:"type:decimal(10,2)"` // Tarif final sesuai kontrak
+	AgreedRate float64   `gorm:"type:decimal(10,2)"`     // Tarif final sesuai kontrak
 	Status     string    `gorm:"type:enum('assigned','started','completed','terminated');default:assigned"`
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
 
 	// Relasi
-	Project  Project
-	Worker   Worker
-	Contract Contract
+	Project  Project  `json:"-"`
+	Worker   Worker   `json:"-"`
+	Contract Contract `json:"-"`
 }
 
 func (u *ProjectAssignment) BeforeCreate(tx *gorm.DB) error {

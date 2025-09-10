@@ -19,38 +19,41 @@ type ContractService interface {
 
 type contractService struct {
 	contractRepo repositories.ContractRepository
+    projectService ProjectService
 }
 
-func NewContractService(repo repositories.ContractRepository) ContractService {
-	return &contractService{contractRepo: repo}
+func NewContractService(repo repositories.ContractRepository, projectService ProjectService) ContractService {
+	return &contractService{
+		contractRepo:   repo,
+		projectService: projectService,
+	}
 }
 
 func (s *contractService) SignContract(contractID string, workerID uuid.UUID) (*models.Contract, error) {
-	// 1. Ambil kontrak dari database
 	contract, err := s.contractRepo.FindByID(contractID)
 	if err != nil {
-		return nil, errors.New("contract not found")
+		return nil, fmt.Errorf("contract not found")
 	}
 
-	// 2. Validasi Keamanan: Pastikan yang mengakses adalah pekerja yang benar.
 	if contract.WorkerID != workerID {
-		return nil, errors.New("forbidden: you are not authorized to sign this contract")
+		return nil, fmt.Errorf("forbidden: you are not authorized to sign this contract")
 	}
 
-	// 3. Validasi Status: Pastikan kontrak masih menunggu tanda tangan.
 	if contract.Status != "pending_signature" {
-		return nil, errors.New("contract is no longer pending signature")
+		return nil, fmt.Errorf("contract is no longer pending signature")
 	}
 
-	// 4. Update status kontrak
 	contract.SignedByWorker = true
-	contract.Status = "active" // Kontrak aktif setelah kedua belah pihak setuju
+	// Status kontrak belum menjadi 'active' sampai proyek dibayar
 	now := time.Now()
 	contract.SignedAt = &now
 
 	if err := s.contractRepo.Update(contract); err != nil {
 		return nil, fmt.Errorf("failed to update contract status: %w", err)
 	}
+
+	// [PERUBAHAN] Panggil fungsi untuk mengecek status proyek, jalankan sebagai goroutine
+	go s.projectService.CheckAndFinalizeProject(contract.ProjectID)
 
 	return contract, nil
 }

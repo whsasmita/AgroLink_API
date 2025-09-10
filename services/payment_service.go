@@ -9,45 +9,61 @@ import (
 	"github.com/midtrans/midtrans-go"
 	"github.com/midtrans/midtrans-go/snap"
 	"github.com/whsasmita/AgroLink_API/config"
+	"github.com/whsasmita/AgroLink_API/dto"
+	"github.com/whsasmita/AgroLink_API/models"
 	"github.com/whsasmita/AgroLink_API/repositories"
 )
 
-// DTO untuk response ke frontend
-type PaymentInitiationResponse struct {
-	SnapToken string `json:"snap_token"`
-}
-
 type PaymentService interface {
-	InitiatePayment(transactionID string, farmerID uuid.UUID) (*PaymentInitiationResponse, error)
+	InitiateInvoicePayment(invoiceID string, farmerID uuid.UUID) (*dto.PaymentInitiationResponse, error)
 	HandleWebhookNotification(notificationPayload map[string]interface{}) error
+	ReleaseProjectPayment(projectID string, farmerID uuid.UUID) error
 }
 
 type paymentService struct {
+	invoiceRepo     repositories.InvoiceRepository
 	transactionRepo repositories.TransactionRepository
+	payoutRepo      repositories.PayoutRepository
+	assignRepo      repositories.AssignmentRepository
+	projectRepo     repositories.ProjectRepository
 	userRepo        repositories.UserRepository
 }
 
-func NewPaymentService(txRepo repositories.TransactionRepository, userRepo repositories.UserRepository) PaymentService {
-	return &paymentService{transactionRepo: txRepo, userRepo: userRepo}
+func NewPaymentService(
+	invoiceRepo repositories.InvoiceRepository,
+	transactionRepo repositories.TransactionRepository,
+	payoutRepo repositories.PayoutRepository,
+	assignRepo repositories.AssignmentRepository,
+	projectRepo repositories.ProjectRepository,
+	userRepo repositories.UserRepository,
+) PaymentService {
+	return &paymentService{
+		invoiceRepo:     invoiceRepo,
+		transactionRepo: transactionRepo,
+		payoutRepo:      payoutRepo,
+		assignRepo:      assignRepo,
+		projectRepo:     projectRepo,
+		userRepo:        userRepo,
+	}
 }
 
-func (s *paymentService) InitiatePayment(transactionID string, farmerID uuid.UUID) (*PaymentInitiationResponse, error) {
-	tx, err := s.transactionRepo.FindByID(transactionID)
+func (s *paymentService) InitiateInvoicePayment(invoiceID string, farmerID uuid.UUID) (*dto.PaymentInitiationResponse, error) {
+	invoice, err := s.invoiceRepo.FindByID(invoiceID)
 	if err != nil {
-		return nil, fmt.Errorf("transaction not found: %w", err)
+		return nil, fmt.Errorf("invoice not found: %w", err)
+	}
+	if invoice.FarmerID != farmerID {
+		return nil, fmt.Errorf("user not authorized for this invoice")
+	}
+	if invoice.Status != "pending" {
+		return nil, fmt.Errorf("invoice has already been processed")
 	}
 
-	if tx.FromUserID != farmerID {
-		return nil, fmt.Errorf("user not authorized for this transaction")
-	}
-
-	// Ambil data user dan tangani error jika tidak ditemukan
 	farmerUser, err := s.userRepo.FindByID(farmerID.String())
 	if err != nil {
 		return nil, fmt.Errorf("farmer data not found for transaction: %w", err)
 	}
 
-	// Buat customer detail dengan aman, tangani jika nomor telepon nil
 	customerDetail := &midtrans.CustomerDetails{
 		FName: farmerUser.Name,
 		Email: farmerUser.Email,
@@ -56,35 +72,42 @@ func (s *paymentService) InitiatePayment(transactionID string, farmerID uuid.UUI
 		customerDetail.Phone = *farmerUser.PhoneNumber
 	}
 
-	// Buat request ke Midtrans Snap API
 	snapReq := &snap.Request{
 		TransactionDetails: midtrans.TransactionDetails{
-			OrderID:  tx.ID.String(),
-			GrossAmt: int64(tx.TotalAmount),
+			OrderID:  invoice.ID.String(),
+			GrossAmt: int64(invoice.TotalAmount),
 		},
 		CustomerDetail: customerDetail,
 	}
 
-	// Fix: Pastikan variabel err tidak ter-redeclare dan memiliki scope yang benar
-	snapResponse, snapErr := config.SnapClient.CreateTransaction(snapReq)
-	if snapErr != nil {
-		return nil, fmt.Errorf("failed to create midtrans snap token: %w", snapErr)
+	snapResponse, midtransErr := config.SnapClient.CreateTransaction(snapReq)
+	if midtransErr != nil {
+		return nil, fmt.Errorf("failed to create midtrans snap token: %s (StatusCode: %d)", midtransErr.Message, midtransErr.StatusCode)
 	}
 
-	return &PaymentInitiationResponse{SnapToken: snapResponse.Token}, nil
+	// [PERBAIKAN] Buat dan isi DTO response secara lengkap
+	response := &dto.PaymentInitiationResponse{
+		SnapToken:   snapResponse.Token,
+		OrderID:     invoice.ID.String(),        // Ambil dari invoice
+		Amount:      invoice.TotalAmount,        // Ambil dari invoice
+		RedirectURL: snapResponse.RedirectURL,   // Ambil dari response Midtrans
+	}
+
+	return response, nil
 }
 
+
 func (s *paymentService) HandleWebhookNotification(notificationPayload map[string]interface{}) error {
-	orderID, _ := notificationPayload["order_id"].(string)
+	invoiceID, _ := notificationPayload["order_id"].(string)
 	transactionStatus, _ := notificationPayload["transaction_status"].(string)
 	paymentType, _ := notificationPayload["payment_type"].(string)
 	statusCode, _ := notificationPayload["status_code"].(string)
 	grossAmount, _ := notificationPayload["gross_amount"].(string)
 	signatureKey, _ := notificationPayload["signature_key"].(string)
+	transactionIDMidtrans, _ := notificationPayload["transaction_id"].(string)
 
-	// 1. Validasi Signature Key (Keamanan Wajib)
 	serverKey := os.Getenv("MIDTRANS_SERVER_KEY")
-	hashSource := orderID + statusCode + grossAmount + serverKey
+	hashSource := invoiceID + statusCode + grossAmount + serverKey
 	hasher := sha512.New()
 	hasher.Write([]byte(hashSource))
 	calculatedHash := fmt.Sprintf("%x", hasher.Sum(nil))
@@ -93,23 +116,72 @@ func (s *paymentService) HandleWebhookNotification(notificationPayload map[strin
 		return fmt.Errorf("invalid midtrans signature")
 	}
 
-	// 2. Update status transaksi berdasarkan notifikasi
-	var newStatus string
-	switch transactionStatus {
-	case "settlement":
-		newStatus = "hold" // Pembayaran berhasil, dana ditahan (escrow)
-	case "cancel", "expire", "deny":
-		newStatus = "failed" // Pembayaran gagal
-	default:
-		// Status lain (pending, challenge) tidak memerlukan aksi di backend,
-		// jadi kita anggap notifikasi ini berhasil diproses.
-		return nil
+	if transactionStatus == "settlement" {
+		invoice, err := s.invoiceRepo.FindByID(invoiceID)
+		if err != nil {
+			return fmt.Errorf("invoice %s not found", invoiceID)
+		}
+		if invoice.Status == "paid" {
+			return nil // Sudah diproses, abaikan notifikasi duplikat
+		}
+
+		if err := s.invoiceRepo.UpdateStatus(invoiceID, "paid"); err != nil {
+			return err
+		}
+
+		newTx := &models.Transaction{
+			InvoiceID:               invoice.ID,
+			AmountPaid:              invoice.TotalAmount,
+			PaymentMethod:           &paymentType,
+			PaymentGatewayReferenceID: &transactionIDMidtrans,
+		}
+		if err := s.transactionRepo.Create(newTx); err != nil {
+			return err
+		}
+        
+        // Setelah lunas, proyek bisa dimulai
+        return s.projectRepo.UpdateStatus(invoice.ProjectID.String(), "in_progress")
+	}
+    // ... handle status lain seperti 'expire' jika perlu
+	return nil
+}
+
+func (s *paymentService) ReleaseProjectPayment(projectID string, farmerID uuid.UUID) error {
+	invoice, err := s.invoiceRepo.FindByProjectID(projectID)
+	if err != nil {
+		return fmt.Errorf("invoice not found for this project")
 	}
 
-	// 3. Simpan perubahan ke database
-	if err := s.transactionRepo.UpdateStatusByOrderID(orderID, newStatus, paymentType); err != nil {
-		return fmt.Errorf("failed to update transaction status for order %s: %w", orderID, err)
+	if invoice.FarmerID != farmerID {
+		return fmt.Errorf("user not authorized to release this payment")
 	}
-	
-	return nil
+	if invoice.Status != "paid" {
+		return fmt.Errorf("payment for this project is not completed yet")
+	}
+
+	transaction, err := s.transactionRepo.FindByInvoiceID(invoice.ID.String())
+	if err != nil {
+		return fmt.Errorf("paid transaction not found for this invoice")
+	}
+
+	assignments, err := s.assignRepo.FindAllByProjectID(projectID)
+	if err != nil {
+		return fmt.Errorf("could not retrieve worker assignments")
+	}
+
+	// Buat Payout untuk setiap pekerja
+	for _, assignment := range assignments {
+		payout := models.Payout{
+			TransactionID: transaction.ID,
+			WorkerID:      assignment.WorkerID,
+			Amount:        assignment.AgreedRate, // Gaji sesuai kesepakatan
+		}
+		if err := s.payoutRepo.Create(&payout); err != nil {
+			// Di produksi, ini harusnya masuk ke sistem antrian untuk dicoba lagi
+			fmt.Printf("CRITICAL: Failed to create payout for worker %s: %v\n", assignment.WorkerID, err)
+		}
+	}
+
+	// Update status project menjadi 'completed'
+	return s.projectRepo.UpdateStatus(projectID, "completed")
 }

@@ -10,7 +10,16 @@ import (
 var SnapClient snap.Client
 
 func InitMidtrans() {
-    serverKey := os.Getenv("MIDTRANS_SERVER_KEY")
-    env := midtrans.Sandbox // Ganti ke midtrans.Production jika sudah live
-    SnapClient.New(serverKey, env)
+	midtrans.ServerKey = os.Getenv("MIDTRANS_SERVER_KEY")
+	midtrans.ClientKey = os.Getenv("MIDTRANS_CLIENT_KEY")
+	
+	environment := os.Getenv("MIDTRANS_ENVIRONMENT")
+	if environment == "production" {
+		midtrans.Environment = midtrans.Production
+	} else {
+		midtrans.Environment = midtrans.Sandbox
+	}
+
+	SnapClient = snap.Client{}
+	SnapClient.New(midtrans.ServerKey, midtrans.Environment)
 }

@@ -13,6 +13,7 @@ type ProjectRepository interface {
 	HasWorkerApplied(projectID, workerID string) (bool, error)
 	// Perbaikan: Menggunakan 'workerID' agar konsisten
 	IsWorkerOnActiveProject(workerID string) (bool, error)
+	UpdateStatus(projectID string, status string) error
 }
 
 type projectRepository struct {
@@ -86,3 +87,13 @@ func (r *projectRepository) IsWorkerOnActiveProject(workerID string) (bool, erro
 	return count > 0, nil
 }
 
+func (r *projectRepository) UpdateStatus(projectID string, status string) error {
+	result := r.db.Model(&models.Project{}).Where("id = ?", projectID).Update("status", status)
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+	return nil
+}

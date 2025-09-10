@@ -28,14 +28,16 @@ func (r *applicationRepository) Create(application *models.ProjectApplication) e
 // [PERBAIKAN] Mengubah nama menjadi FindByID dan menambahkan Preload("Project").
 func (r *applicationRepository) FindByID(id string) (*models.ProjectApplication, error) {
 	var application models.ProjectApplication
-	// Preload ini sangat penting agar service bisa mengakses app.Project.FarmerID
-	err := r.db.Preload("Project").Where("id = ?", id).First(&application).Error
+	err := r.db.
+		Preload("Project.Farmer.User"). // <-- Ambil Proyek, lalu Petani dari Proyek, lalu User dari Petani.
+		Preload("Worker.User").         // <-- Ambil Pekerja, lalu User dari Pekerja.
+		Where("id = ?", id).
+		First(&application).Error
 	if err != nil {
 		return nil, err
 	}
 	return &application, nil
 }
-
 func (r *applicationRepository) UpdateStatus(tx *gorm.DB, applicationID uuid.UUID, status string) error {
 	return tx.Model(&models.ProjectApplication{}).Where("id = ?", applicationID).Update("status", status).Error
 }

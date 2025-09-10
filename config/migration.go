@@ -24,20 +24,30 @@ var migrationModels = []interface{}{
 	&models.Project{},
 	&models.ProjectApplication{},
 	&models.ProjectAssignment{},
-
-	// ... (sisa model Anda) ...
 	&models.Contract{},
+
+	// [BARU] Financial models
+	&models.Invoice{},
 	&models.Transaction{},
+	&models.Payout{},
+
+	// Schedule models
 	&models.Schedule{},
 	&models.ScheduleNotification{},
 	&models.Notification{},
+
+	// Review and support models
 	&models.Review{},
 	&models.SupportTicket{},
 	&models.SupportMessage{},
 	&models.Dispute{},
+
+	// System models
 	&models.SystemSetting{},
 	&models.ActivityLog{},
 	&models.UserSession{},
+
+	// AI models
 	&models.AIRecommendation{},
 	&models.UserPreference{},
 	&models.MLTrainingData{},
@@ -76,7 +86,7 @@ func AutoMigrate() {
 
 	log.Println("✅ Database migrations completed successfully")
 	// Panggil CreateIndexes di sini jika Anda ingin index dibuat setiap kali migrasi berjalan
-	// CreateIndexes() 
+	// CreateIndexes()
 }
 
 // dropAllTables menghapus semua tabel dalam urutan terbalik untuk menghindari error foreign key.
@@ -129,6 +139,11 @@ func seedUsers() {
 		{
 			User:     models.User{Name: "Joko Pekerja", Email: "worker1@agrolink.com", Role: "worker", EmailVerified: true},
 			Worker:   &models.Worker{Skills: `["menanam","menyiram","panen"]`, DailyRate: Float64Ptr(120000)},
+			Password: "password123",
+		},
+		{
+			User:     models.User{Name: "Siti Pekerja", Email: "worker2@agrolink.com", Role: "worker", EmailVerified: true},
+			Worker:   &models.Worker{Skills: `["panen","sortir"]`, DailyRate: Float64Ptr(125000)},
 			Password: "password123",
 		},
 	}
@@ -241,7 +256,7 @@ func CreateIndexes() {
 
 // seedSystemSettings... (fungsi Anda yang sudah ada)
 func seedSystemSettings() {
-    // ... implementasi Anda ...
+	// ... implementasi Anda ...
 }
 
 // =====================================================================
@@ -253,5 +268,5 @@ func StringPtr(s string) *string {
 }
 
 func Float64Ptr(f float64) *float64 {
-    return &f
+	return &f
 }

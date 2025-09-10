@@ -17,15 +17,32 @@ func NewPaymentHandler(service services.PaymentService) *PaymentHandler {
 	return &PaymentHandler{paymentService: service}
 }
 
-func (h *PaymentHandler) InitiatePayment(c *gin.Context) {
-	transactionID := c.Param("id")
+func (h *PaymentHandler) InitiateInvoicePayment(c *gin.Context) {
+	invoiceID := c.Param("id")
 	userInterface, _ := c.Get("user")
 	currentUser := userInterface.(*models.User)
 
-	response, err := h.paymentService.InitiatePayment(transactionID, currentUser.ID)
+	response, err := h.paymentService.InitiateInvoicePayment(invoiceID, currentUser.Farmer.UserID)
 	if err != nil {
 		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 	utils.SuccessResponse(c, http.StatusOK, "Payment token generated successfully", response)
+}
+
+func (h *PaymentHandler) ReleaseProjectPayment(c *gin.Context) {
+	projectID := c.Param("id")
+	userInterface, _ := c.Get("user")
+	currentUser := userInterface.(*models.User)
+
+	if err := h.paymentService.ReleaseProjectPayment(projectID, currentUser.Farmer.UserID); err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error(), nil)
+		return
+	}
+	utils.SuccessResponse(c, http.StatusOK, "Payment released and payouts initiated", nil)
+}
+
+// Handler untuk melihat riwayat Invoice (contoh)
+func (h *PaymentHandler) GetUserInvoices(c *gin.Context) {
+    // Implementasi untuk mengambil daftar invoice milik user...
 }

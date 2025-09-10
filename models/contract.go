@@ -15,12 +15,11 @@ type Contract struct {
 	WorkerID  uuid.UUID `gorm:"type:char(36);not null"`
 	Content   string    `gorm:"type:text;not null"`
 
-	// Status tanda tangan sederhana
 	SignedByFarmer bool `gorm:"default:false"`
 	SignedByWorker bool `gorm:"default:false"`
 	SignedAt       *time.Time
 
-	Status    string `gorm:"type:enum('draft','pending_signature','active','completed','terminated');default:draft"`
+	Status    string `gorm:"type:enum('pending_signature','active','completed','terminated');default:'pending_signature'"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 
@@ -29,15 +28,13 @@ type Contract struct {
 	Farmer             Farmer
 	Worker             Worker
 	ProjectAssignments []ProjectAssignment
-	Transactions       []Transaction
+    // [PERBAIKAN] Hapus relasi ke Transaction dari sini karena sudah ditangani oleh Invoice
+	// Transactions       []Transaction `gorm:"foreignKey:ContractID"` 
 }
 
-// BeforeCreate hook for Contract
 func (c *Contract) BeforeCreate(tx *gorm.DB) error {
 	if c.ID == uuid.Nil {
 		c.ID = uuid.New()
 	}
 	return nil
 }
-
-// ContractTemplate represents contract templates
