@@ -7,6 +7,7 @@ require github.com/gin-contrib/cors v1.7.6
 require (
 	github.com/go-pdf/fpdf v0.9.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
+	github.com/midtrans/midtrans-go v1.3.8 // indirect
 )
 
 require (

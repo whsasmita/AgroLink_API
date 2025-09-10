@@ -9,12 +9,12 @@ import (
 
 // Review represents user reviews and ratings
 type Review struct {
-	ID               uuid.UUID  `gorm:"type:char(36);primary_key;default:(UUID())" json:"id"`
-	ReviewerID       uuid.UUID  `gorm:"type:char(36);not null" json:"reviewer_id"`
-	ReviewedUserID   uuid.UUID  `gorm:"type:char(36);not null" json:"reviewed_user_id"`
-	ProjectID        *uuid.UUID `gorm:"type:char(36)" json:"project_id"`
-	DeliveryID       *uuid.UUID `gorm:"type:char(36)" json:"delivery_id"`
-	TransactionID    *uuid.UUID `gorm:"type:char(36)" json:"transaction_id"`
+	ID             uuid.UUID  `gorm:"type:char(36);primary_key;default:(UUID())" json:"id"`
+	ReviewerID     uuid.UUID  `gorm:"type:char(36);not null" json:"reviewer_id"`
+	ReviewedUserID uuid.UUID  `gorm:"type:char(36);not null" json:"reviewed_user_id"`
+	ProjectID      *uuid.UUID `gorm:"type:char(36)" json:"project_id"`
+	DeliveryID     *uuid.UUID `gorm:"type:char(36)" json:"delivery_id"`
+	TransactionID  *uuid.UUID `gorm:"type:char(36)" json:"transaction_id"`
 
 	Rating  int     `gorm:"not null;check:rating >= 1 AND rating <= 5" json:"rating"`
 	Comment *string `gorm:"type:text" json:"comment"`
@@ -22,10 +22,10 @@ type Review struct {
 	// Review Categories
 	ReviewType string `gorm:"type:enum('work_quality','delivery_service','communication','punctuality','overall');default:overall" json:"review_type"`
 
-	// Detailed Ratings  
-	QualityRating      *int `gorm:"check:quality_rating >= 1 AND quality_rating <= 5" json:"quality_rating"`
+	// Detailed Ratings
+	QualityRating       *int `gorm:"check:quality_rating >= 1 AND quality_rating <= 5" json:"quality_rating"`
 	CommunicationRating *int `gorm:"check:communication_rating >= 1 AND communication_rating <= 5" json:"communication_rating"`
-	PunctualityRating  *int `gorm:"check:punctuality_rating >= 1 AND punctuality_rating <= 5" json:"punctuality_rating"`
+	PunctualityRating   *int `gorm:"check:punctuality_rating >= 1 AND punctuality_rating <= 5" json:"punctuality_rating"`
 
 	// Media
 	ReviewImages *string `gorm:"type:json" json:"review_images"` // JSON array as string
@@ -56,14 +56,14 @@ func (r *Review) BeforeCreate(tx *gorm.DB) error {
 
 // SupportTicket represents customer support tickets
 type SupportTicket struct {
-	ID                   uuid.UUID  `gorm:"type:char(36);primary_key;default:(UUID())" json:"id"`
-	UserID               uuid.UUID  `gorm:"type:char(36);not null" json:"user_id"`
-	AssignedCS           *uuid.UUID `gorm:"type:char(36)" json:"assigned_cs"`
+	ID         uuid.UUID  `gorm:"type:char(36);primary_key;default:(UUID())" json:"id"`
+	UserID     uuid.UUID  `gorm:"type:char(36);not null" json:"user_id"`
+	AssignedCS *uuid.UUID `gorm:"type:char(36)" json:"assigned_cs"`
 
-	TicketNumber         string `gorm:"type:varchar(20);uniqueIndex;not null" json:"ticket_number"`
-	Category             string `gorm:"type:enum('technical','payment','delivery','account','dispute','other');not null" json:"category"`
-	Subject              string `gorm:"type:varchar(200);not null" json:"subject"`
-	Description          string `gorm:"type:text;not null" json:"description"`
+	TicketNumber string `gorm:"type:varchar(20);uniqueIndex;not null" json:"ticket_number"`
+	Category     string `gorm:"type:enum('technical','payment','delivery','account','dispute','other');not null" json:"category"`
+	Subject      string `gorm:"type:varchar(200);not null" json:"subject"`
+	Description  string `gorm:"type:text;not null" json:"description"`
 
 	Status   string `gorm:"type:enum('open','in_progress','waiting_customer','resolved','closed');default:open" json:"status"`
 	Priority string `gorm:"type:enum('low','medium','high','urgent');default:medium" json:"priority"`
@@ -82,12 +82,12 @@ type SupportTicket struct {
 	UpdatedAt time.Time `json:"updated_at"`
 
 	// Relationships
-	User                User                 `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE"`
-	AssignedCSUser      *User                `gorm:"foreignKey:AssignedCS"`
-	RelatedProject      *Project             `gorm:"foreignKey:RelatedProjectID"`
-	RelatedDelivery     *Delivery            `gorm:"foreignKey:RelatedDeliveryID"`
-	RelatedTransaction  *Transaction         `gorm:"foreignKey:RelatedTransactionID"`
-	SupportMessages     []SupportMessage     `gorm:"foreignKey:TicketID;constraint:OnDelete:CASCADE"`
+	User               User             `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE"`
+	AssignedCSUser     *User            `gorm:"foreignKey:AssignedCS"`
+	RelatedProject     *Project         `gorm:"foreignKey:RelatedProjectID"`
+	RelatedDelivery    *Delivery        `gorm:"foreignKey:RelatedDeliveryID"`
+	RelatedTransaction *Transaction     `gorm:"foreignKey:RelatedTransactionID"`
+	SupportMessages    []SupportMessage `gorm:"foreignKey:TicketID;constraint:OnDelete:CASCADE"`
 }
 
 // BeforeCreate hook for SupportTicket
@@ -147,10 +147,10 @@ type Dispute struct {
 	ClosedAt   *time.Time `json:"closed_at"`
 
 	// Relationships
-	Transaction   Transaction `gorm:"foreignKey:TransactionID;constraint:OnDelete:CASCADE"`
-	RaisedByUser  User        `gorm:"foreignKey:RaisedBy;constraint:OnDelete:CASCADE"`
-	AgainstUserModel User     `gorm:"foreignKey:AgainstUser;constraint:OnDelete:CASCADE"`
-	CSAssignedUser *User      `gorm:"foreignKey:CSAssigned"`
+	Transaction      Transaction `gorm:"foreignKey:TransactionID;constraint:OnDelete:CASCADE"`
+	RaisedByUser     User        `gorm:"foreignKey:RaisedBy;constraint:OnDelete:CASCADE"`
+	AgainstUserModel User        `gorm:"foreignKey:AgainstUser;constraint:OnDelete:CASCADE"`
+	CSAssignedUser   *User       `gorm:"foreignKey:CSAssigned"`
 }
 
 // BeforeCreate hook for Dispute

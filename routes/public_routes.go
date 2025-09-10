@@ -35,6 +35,16 @@ func PublicRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	driverService := services.NewDriverService(driverRepo)
 	driverHandler := handlers.NewDriverHandler(driverService)
 
+	// transactionRepo := repositories.NewTransactionRepository(db)
+    // userRepo sudah diinisialisasi di atas
+
+    // 2. Inisialisasi Service Pembayaran
+    // PaymentService membutuhkan TransactionRepository dan UserRepository
+    // paymentService := services.NewPaymentService(transactionRepo, userRepo)
+
+    // 3. Inisialisasi Handler Pembayaran (untuk rute terproteksi)
+    // webhookHandler := handlers.NewWebhookHandler(paymentService)
+
 	// =================================================================
 	// ROUTE DEFINITIONS (Daftarkan semua endpoint di sini)
 	// =================================================================
@@ -53,6 +63,9 @@ func PublicRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	driverGroup := router.Group("/drivers")
 	driverGroup.GET("/", driverHandler.GetDrivers)
 	driverGroup.GET("/:id", driverHandler.GetDriver) 
+
+	// paymentRoute := router.Group("/transactions")
+	// paymentRoute.POST("/webhooks/midtrans-notification", webhookHandler.HandleMidtransNotification)
 
 	// Tambahkan juga routes lain seperti: search, contracts, payments, reviews, notifications ke sini.
 }

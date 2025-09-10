@@ -43,6 +43,18 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	contractService := services.NewContractService(contractRepo)
 	contractHandler := handlers.NewContractHandler(contractService)
 
+
+	 // --- Inisialisasi Komponen Pembayaran ---
+    // 1. Inisialisasi Repository yang dibutuhkan
+    transactionRepo := repositories.NewTransactionRepository(db)
+    // userRepo sudah diinisialisasi di atas
+
+    // 2. Inisialisasi Service Pembayaran
+    // PaymentService membutuhkan TransactionRepository dan UserRepository
+    paymentService := services.NewPaymentService(transactionRepo, userRepo)
+
+    // 3. Inisialisasi Handler Pembayaran (untuk rute terproteksi)
+    paymentHandler := handlers.NewPaymentHandler(paymentService)
 	// (Nantinya, inisialisasi untuk Project, dll. juga di sini)
 	// projectRepo := repositories.NewProjectRepository(db)
 	// projectService := services.NewProjectService(projectRepo)
@@ -114,6 +126,14 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 
 		contracts.GET("/:id/download", contractHandler.DownloadContractPDF)
 	}
+
+	transactions := router.Group("/transactions")
+    transactions.Use(middleware.RoleMiddleware("farmer"))
+    {
+        transactions.POST("/:id/initiate-payment", paymentHandler.InitiatePayment)
+        // Tambahkan rute lain di sini, misal: transactions.POST("/:id/release", paymentHandler.ReleasePayment)
+    }
+	
 
 	// Tambahkan juga routes lain seperti: search, contracts, payments, reviews, notifications ke sini.
 }

@@ -12,9 +12,11 @@ import (
 	"github.com/joho/godotenv"
 
 	"github.com/whsasmita/AgroLink_API/config"
+	"github.com/whsasmita/AgroLink_API/handlers"
 	"github.com/whsasmita/AgroLink_API/middleware"
 	"github.com/whsasmita/AgroLink_API/repositories"
 	"github.com/whsasmita/AgroLink_API/routes"
+	"github.com/whsasmita/AgroLink_API/services"
 )
 
 func main() {
@@ -77,18 +79,33 @@ func main() {
 	})
 	// create instance
 	userRepo := repositories.NewUserRepository(db)
+	transactionRepo := repositories.NewTransactionRepository(db)
+	paymentService := services.NewPaymentService(transactionRepo, userRepo)
 
-	// API version grouping
-	v1 := r.Group("/api/v1")
+	webhookHandler := handlers.NewWebhookHandler(paymentService)
+	
+
+	// Buat grup API level atas
+	api := r.Group("/api")
 	{
-		// Public Routes
-		publicRoutes := v1.Group("/")
-		routes.PublicRoutes(publicRoutes, db)
+		// --- RUTE PUBLIK KHUSUS (WEBHOOK) ---
+		// Daftarkan webhook di sini, langsung di bawah /api
+		// Path akhir: POST /api/webhooks/midtrans-notification
+		api.POST("/webhooks/midtrans-notification", webhookHandler.HandleMidtransNotification)
 
-		protectedGroup := v1.Group("/")
-		protectedGroup.Use(middleware.AuthMiddleware(userRepo)) // <-- pasang middleware di sini
+		// --- RUTE APLIKASI ANDA (TETAP DI DALAM /v1) ---
+		v1 := api.Group("/v1")
 		{
-			routes.ProtectedRoutes(protectedGroup, db)
+			// Grup untuk rute publik (Login, Register)
+			publicRoutes := v1.Group("/")
+			routes.PublicRoutes(publicRoutes, db)
+
+			// Grup untuk rute yang dilindungi otentikasi
+			protectedGroup := v1.Group("/")
+			protectedGroup.Use(middleware.AuthMiddleware(userRepo))
+			{
+				routes.ProtectedRoutes(protectedGroup, db)
+			}
 		}
 	}
 
