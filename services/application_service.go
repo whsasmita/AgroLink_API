@@ -3,6 +3,9 @@ package services
 import (
 	"errors"
 	"fmt"
+	"log"
+	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/whsasmita/AgroLink_API/dto"
@@ -23,16 +26,18 @@ type applicationService struct {
 	projectRepo  repositories.ProjectRepository
 	contractRepo repositories.ContractRepository
 	assignRepo   repositories.AssignmentRepository
+	contractTemplateRepo repositories.ContractTemplateRepository
 	db           *gorm.DB
 }
 
 // [PERUBAHAN] Dependensi transactionRepo dihapus
-func NewApplicationService(appRepo repositories.ApplicationRepository, projectRepo repositories.ProjectRepository, contractRepo repositories.ContractRepository, assignRepo repositories.AssignmentRepository, db *gorm.DB) ApplicationService {
+func NewApplicationService(appRepo repositories.ApplicationRepository, projectRepo repositories.ProjectRepository, contractRepo repositories.ContractRepository, assignRepo repositories.AssignmentRepository, contractTemplateRepo repositories.ContractTemplateRepository, db *gorm.DB) ApplicationService {
 	return &applicationService{
 		appRepo:      appRepo,
 		projectRepo:  projectRepo,
 		contractRepo: contractRepo,
 		assignRepo:   assignRepo,
+		contractTemplateRepo: contractTemplateRepo,
 		db:           db,
 	}
 }
@@ -92,76 +97,138 @@ func (s *applicationService) AcceptApplication(applicationID string, farmerID st
 	}
 	defer func() {
 		if r := recover(); r != nil {
+			log.Printf("PANIC recovered in AcceptApplication: %v", r)
 			tx.Rollback()
 		}
 	}()
 
+	// Pastikan appRepo.FindByID sudah melakukan Preload berantai untuk semua data yang dibutuhkan.
 	app, err := s.appRepo.FindByID(applicationID)
 	if err != nil {
+		log.Printf("ERROR finding application by ID: %v", err)
 		tx.Rollback()
 		return nil, errors.New("application not found")
 	}
 
-	// Validasi
+	// === Validasi ===
 	if app.Project.FarmerID.String() != farmerID {
+		log.Printf("ERROR: farmer ID mismatch. Expected %s, got %s", app.Project.FarmerID.String(), farmerID)
 		tx.Rollback()
 		return nil, errors.New("forbidden: you are not the owner of this project")
 	}
 	if app.Status != "pending" {
+		log.Printf("ERROR: application status is '%s', not 'pending'", app.Status)
 		tx.Rollback()
 		return nil, errors.New("this application is not in pending state")
 	}
 	isWorkerBusy, err := s.projectRepo.IsWorkerOnActiveProject(app.WorkerID.String())
 	if err != nil {
+		log.Printf("ERROR checking if worker is on active project: %v", err)
 		tx.Rollback()
 		return nil, err
 	}
 	if isWorkerBusy {
+		log.Printf("ERROR: worker %s is busy", app.WorkerID.String())
 		tx.Rollback()
 		return nil, errors.New("worker is currently busy on another project")
 	}
 
-	// Buat Kontrak
-	contractContent := fmt.Sprintf("Kontrak kerja untuk proyek '%s'. Detail terlampir.", app.Project.Title)
+	// === Pembuatan Konten Kontrak Dinamis ===
+	defaultTemplate, err := s.contractTemplateRepo.GetDefault()
+	if err != nil {
+		log.Printf("ERROR getting default contract template: %v", err)
+		tx.Rollback()
+		return nil, fmt.Errorf("failed to get default contract template: %w", err)
+	}
+
+	safeString := func(s *string) string {
+		if s != nil {
+			return *s
+		}
+		return "[DATA TIDAK TERSEDIA]"
+	}
+	safeFloat := func(f *float64) float64 {
+		if f != nil {
+			return *f
+		}
+		return 0.0
+	}
+
+	replacements := map[string]string{
+		"{{nomor_kontrak}}":           uuid.New().String(),
+		"{{tanggal_pembuatan}}":       time.Now().Format("2 January 2006"),
+		"{{nama_petani}}":             app.Project.Farmer.User.Name,
+		"{{alamat_petani}}":           safeString(app.Project.Farmer.Address),
+		"{{telepon_petani}}":          safeString(app.Project.Farmer.User.PhoneNumber),
+		"{{email_petani}}":            app.Project.Farmer.User.Email,
+		"{{nama_pekerja}}":            app.Worker.User.Name,
+		"{{nik_pekerja}}":             safeString(app.Worker.NationalID),
+		"{{alamat_pekerja}}":          safeString(app.Worker.Address),
+		"{{telepon_pekerja}}":         safeString(app.Worker.User.PhoneNumber),
+		"{{email_pekerja}}":           app.Worker.User.Email,
+		"{{judul_proyek}}":            app.Project.Title,
+		"{{deskripsi_proyek}}":        app.Project.Description,
+		"{{lokasi_proyek}}":           app.Project.FarmLocation.Name,
+		"{{tanggal_mulai}}":         app.Project.StartDate.Format("2 January 2006"),
+		"{{tanggal_berakhir}}":      app.Project.EndDate.Format("2 January 2006"),
+		"{{jumlah_upah}}":             fmt.Sprintf("%.0f", safeFloat(app.Project.PaymentRate)),
+		"{{tipe_pembayaran}}":       app.Project.PaymentType,
+		"{{nama_bank_pekerja}}":     safeString(app.Worker.BankName),
+		"{{nomor_rekening_pekerja}}": safeString(app.Worker.BankAccountNumber),
+		"{{nama_pemilik_rekening}}":  safeString(app.Worker.BankAccountHolder),
+	}
+
+	newContent := defaultTemplate.Content
+	for placeholder, value := range replacements {
+		newContent = strings.ReplaceAll(newContent, placeholder, value)
+	}
+
+	// === Buat Entitas Baru ===
 	newContract := &models.Contract{
 		ProjectID:      app.ProjectID,
 		FarmerID:       app.Project.FarmerID,
 		WorkerID:       app.WorkerID,
-		Content:        contractContent,
+		Content:        newContent,
 		Status:         "pending_signature",
 		SignedByFarmer: true,
 	}
 	if err := s.contractRepo.Create(tx, newContract); err != nil {
+		log.Printf("ERROR creating contract: %v", err)
 		tx.Rollback()
 		return nil, err
 	}
 
-	// Buat Penugasan
-	var agreedRate float64
-	if app.Project.PaymentRate != nil {
-		agreedRate = *app.Project.PaymentRate
-	}
 	newAssignment := &models.ProjectAssignment{
 		ProjectID:  app.ProjectID,
 		WorkerID:   app.WorkerID,
 		ContractID: newContract.ID,
-		AgreedRate: agreedRate,
+		AgreedRate: safeFloat(app.Project.PaymentRate),
 		Status:     "assigned",
 	}
 	if err := s.assignRepo.Create(tx, newAssignment); err != nil {
+		log.Printf("ERROR creating assignment: %v", err)
 		tx.Rollback()
 		return nil, err
 	}
 
-	// Update Status Lamaran
 	if err := s.appRepo.UpdateStatus(tx, app.ID, "accepted"); err != nil {
+		log.Printf("ERROR updating application status: %v", err)
 		tx.Rollback()
 		return nil, err
 	}
 
 	if err := tx.Commit().Error; err != nil {
+		log.Printf("ERROR committing transaction: %v", err)
 		return nil, fmt.Errorf("transaction commit failed: %w", err)
 	}
 
 	return newContract, nil
 }
+
+
+
+
+
+
+
+

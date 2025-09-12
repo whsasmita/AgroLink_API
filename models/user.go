@@ -55,13 +55,18 @@ type Farmer struct {
 type Worker struct {
 	UserID               uuid.UUID `gorm:"type:char(36);primary_key" json:"user_id"`
 	Skills               string    `gorm:"type:json;not null" json:"skills"` // JSON array as string
-	HourlyRate           *float64  `gorm:"type:decimal(10,2)" json:"hourly_rate"` // monthly
+	HourlyRate           *float64  `gorm:"type:decimal(10,2)" json:"hourly_rate"`
+	NationalID           *string   `gorm:"type:varchar(20)" json:"national_id"` // NIK
+	BankName             *string   `gorm:"type:varchar(50)" json:"bank_name"`
+	BankAccountNumber    *string   `gorm:"type:varchar(50)" json:"bank_account_number"`
+	BankAccountHolder    *string   `gorm:"type:varchar(100)" json:"bank_account_holder"`
 	DailyRate            *float64  `gorm:"type:decimal(10,2)" json:"daily_rate"`
 	Address              *string   `gorm:"type:text" json:"address"`
 	AvailabilitySchedule *string   `gorm:"type:json" json:"availability_schedule"`
 	CurrentLocationLat   *float64  `gorm:"type:decimal(10,8)" json:"current_location_lat"`
 	CurrentLocationLng   *float64  `gorm:"type:decimal(11,8)" json:"current_location_lng"`
-	Rating               float64   `gorm:"default:0" json:"rating"`
+	Rating      float64 `gorm:"default:0" json:"rating"`
+    ReviewCount int     `gorm:"default:0" json:"review_count"`
 	TotalJobsCompleted   int       `gorm:"default:0" json:"total_jobs_completed"`
 	CreatedAt            time.Time `json:"created_at"`
 
@@ -74,8 +79,8 @@ type Worker struct {
 
 // Expedition represents expedition company profile details
 type Driver struct {
-	UserID          uuid.UUID `gorm:"type:char(36);primary_key" json:"user_id"`
-	Address         *string   `gorm:"type:text" json:"company_address"`
+	UserID  uuid.UUID `gorm:"type:char(36);primary_key" json:"user_id"`
+	Address *string   `gorm:"type:text" json:"company_address"`
 	// ServiceAreas    string    `gorm:"type:json;not null" json:"service_areas"` // JSON array as string
 	PricingScheme   string    `gorm:"type:json;not null" json:"pricing_scheme"`
 	VehicleTypes    string    `gorm:"type:json;not null" json:"vehicle_types"` // JSON array as string
@@ -90,13 +95,13 @@ type Driver struct {
 
 // FarmLocation represents individual farm locations
 type FarmLocation struct {
-	ID             uuid.UUID `gorm:"type:char(36);primary_key;default:(UUID())" json:"id"`
-	FarmerID       uuid.UUID `gorm:"type:char(36);not null" json:"farmer_id"`
-	Name           string    `gorm:"type:varchar(100);not null" json:"name"`
-	Latitude       float64   `gorm:"type:decimal(10,8);not null" json:"latitude"`
-	Longitude      float64   `gorm:"type:decimal(11,8);not null" json:"longitude"`
-	AreaSize       float64   `gorm:"type:decimal(10,2);not null;comment:Luas dalam are" json:"area_size"`
-	CropType       *string   `gorm:"type:varchar(50)" json:"crop_type"`
+	ID        uuid.UUID `gorm:"type:char(36);primary_key;default:(UUID())" json:"id"`
+	FarmerID  uuid.UUID `gorm:"type:char(36);not null" json:"farmer_id"`
+	Name      string    `gorm:"type:varchar(100);not null" json:"name"`
+	Latitude  float64   `gorm:"type:decimal(10,8);not null" json:"latitude"`
+	Longitude float64   `gorm:"type:decimal(11,8);not null" json:"longitude"`
+	AreaSize  float64   `gorm:"type:decimal(10,2);not null;comment:Luas dalam are" json:"area_size"`
+	CropType  *string   `gorm:"type:varchar(50)" json:"crop_type"`
 
 	IrrigationType *string   `gorm:"type:varchar(50)" json:"irrigation_type"`
 	Description    *string   `gorm:"type:text" json:"description"`
@@ -128,7 +133,7 @@ type WorkerAvailability struct {
 	Notes              *string   `gorm:"type:text" json:"notes"`
 	CreatedAt          time.Time `json:"created_at"`
 
-	// Data price dari wawancara user : 
+	// Data price dari wawancara user :
 
 	// Relationships
 	Worker Worker `gorm:"foreignKey:WorkerID;constraint:OnDelete:CASCADE"`

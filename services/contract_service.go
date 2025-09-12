@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"html/template"
 	"time"
 
-	"github.com/go-pdf/fpdf"
+	"github.com/SebastiaanKlippert/go-wkhtmltopdf"
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/whsasmita/AgroLink_API/models"
 	"github.com/whsasmita/AgroLink_API/repositories"
@@ -59,48 +61,41 @@ func (s *contractService) SignContract(contractID string, workerID uuid.UUID) (*
 }
 
 func (s *contractService) GenerateContractPDF(contractID string) (*bytes.Buffer, error) {
-    // 1. Ambil data kontrak lengkap (termasuk relasi project, worker, farmer)
-    // Anda mungkin perlu membuat fungsi baru di repository: FindByIDWithDetails(id)
-    contract, err := s.contractRepo.FindByIDWithDetails(contractID) // Asumsi fungsi ini ada
-    if err != nil {
-        return nil, errors.New("contract details not found")
-    }
+	// 1. Ambil data kontrak lengkap
+	contract, err := s.contractRepo.FindByIDWithDetails(contractID)
+	if err != nil {
+		return nil, errors.New("contract details not found")
+	}
 
-    // 2. Buat objek PDF
-    pdf := fpdf.New("P", "mm", "A4", "")
-    pdf.AddPage()
-    pdf.SetFont("Arial", "B", 16)
-    
-    // 3. Isi Konten PDF (Contoh Sederhana)
-    pdf.Cell(40, 10, "KONTRAK KERJA")
-    pdf.Ln(12) // Pindah baris
+	// 2. Siapkan data untuk template
+	data := gin.H{
+		"Contract":        contract,
+		"TanggalPembuatan": contract.CreatedAt.Format("2 January 2006"),
+	}
 
-    pdf.SetFont("Arial", "", 12)
-    pdf.Cell(40, 10, fmt.Sprintf("Proyek: %s", contract.Project.Title))
-    pdf.Ln(6)
-    pdf.Cell(40, 10, fmt.Sprintf("Petani: %s", contract.Farmer.User.Name))
-    pdf.Ln(6)
-    pdf.Cell(40, 10, fmt.Sprintf("Pekerja: %s", contract.Worker.User.Name))
-    pdf.Ln(10)
+	// 3. Parse template HTML
+	tmpl, err := template.ParseFiles("templates/contract_template.html")
+	if err != nil {
+		return nil, fmt.Errorf("could not parse html template: %w", err)
+	}
+	var htmlBuffer bytes.Buffer
+	if err := tmpl.Execute(&htmlBuffer, data); err != nil {
+		return nil, fmt.Errorf("could not execute html template: %w", err)
+	}
 
-    pdf.SetFont("Arial", "I", 10)
-    pdf.MultiCell(0, 5, contract.Content, "", "", false) // Isi kontrak utama
-    pdf.Ln(10)
+	// 4. Inisialisasi konverter PDF
+	pdfg, err := wkhtmltopdf.NewPDFGenerator()
+	if err != nil {
+		return nil, fmt.Errorf("could not create PDF generator: %w", err)
+	}
 
-    // 4. Tanda Tangan Sederhana
-    pdf.SetFont("Arial", "", 12)
-    if contract.SignedByFarmer {
-        pdf.Cell(40, 10, fmt.Sprintf("Disetujui oleh Petani: %s pada %s", contract.Farmer.User.Name, contract.UpdatedAt.Format("02 Jan 2006")))
-        pdf.Ln(6)
-    }
-    if contract.SignedByWorker {
-        pdf.Cell(40, 10, fmt.Sprintf("Disetujui oleh Pekerja: %s pada %s", contract.Worker.User.Name, contract.SignedAt.Format("02 Jan 2006")))
-        pdf.Ln(6)
-    }
+	// 5. Tambahkan halaman dari HTML yang sudah dieksekusi
+	pdfg.AddPage(wkhtmltopdf.NewPageReader(&htmlBuffer))
 
-    var buf bytes.Buffer
-    if err := pdf.Output(&buf); err != nil {
-        return nil, fmt.Errorf("failed to generate PDF buffer: %w", err)
-    }
-    return &buf, nil
+	// 6. Buat PDF-nya
+	if err := pdfg.Create(); err != nil {
+		return nil, fmt.Errorf("could not create PDF: %w", err)
+	}
+
+	return pdfg.Buffer(), nil
 }

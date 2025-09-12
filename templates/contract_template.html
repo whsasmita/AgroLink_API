@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Kontrak Kerja - {{.Project.Title}}</title>
+    <style>
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 11pt;
+            color: #333;
+            line-height: 1.5;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 1px solid #000;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .header h3 {
+            margin: 0;
+            padding: 0;
+            text-decoration: underline;
+            font-size: 14pt;
+        }
+        .header p {
+            margin: 0;
+            padding: 0;
+            font-size: 10pt;
+        }
+        .section-title {
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+        .party-info {
+            padding-left: 15px;
+        }
+        .pasal-title {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .pasal-content {
+            text-align: justify;
+        }
+        .signature-section {
+            margin-top: 60px;
+            width: 100%;
+        }
+        .signature-box {
+            width: 45%;
+            display: inline-block;
+            text-align: center;
+        }
+        .signature-box.right {
+            float: right;
+        }
+        .signature-box.left {
+            float: left;
+        }
+        .signature-name {
+            margin-top: 60px;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h3>PERJANJIAN KERJA WAKTU TERTENTU</h3>
+        <p>Nomor: {{.Contract.ID}}</p>
+    </div>
+
+    <p>Pada hari ini, {{.TanggalPembuatan}}, dibuat dan disepakati Perjanjian Kerja Waktu Tertentu ("Perjanjian") ini secara elektronik oleh dan antara:</p>
+
+    <div class="section-title">Pemberi Kerja:</div>
+    <div class="party-info">
+        <table>
+            <tr><td width="150px">Nama Perusahaan</td><td>: {{.Contract.Farmer.User.Name}}</td></tr>
+            <tr><td>Alamat</td><td>: {{.Contract.Farmer.Address}}</td></tr>
+            <tr><td>Email</td><td>: {{.Contract.Farmer.User.Email}}</td></tr>
+        </table>
+    </div>
+
+    <div class="section-title">Pekerja Kontrak:</div>
+    <div class="party-info">
+        <table>
+            <tr><td width="150px">Nama Lengkap</td><td>: {{.Contract.Worker.User.Name}}</td></tr>
+            <tr><td>NIK</td><td>: {{or .Contract.Worker.NationalID "[DATA BELUM DIISI]"}}</td></tr>
+            <tr><td>Alamat</td><td>: {{or .Contract.Worker.Address "[DATA BELUM DIISI]"}}</td></tr>
+            <tr><td>Email</td><td>: {{.Contract.Worker.User.Email}}</td></tr>
+        </table>
+    </div>
+
+    <div class="content">
+        <p>BAHWA PARA PIHAK SEPAKAT UNTUK MENGIKATKAN DIRI DALAM PERJANJIAN INI DENGAN KETENTUAN SEBAGAI BERIKUT:</p>
+        <pre style="white-space: pre-wrap; font-family: inherit;">{{.Contract.Content}}</pre>
+    </div>
+    
+    <div class="signature-section">
+        <div class="signature-box left">
+            <p>Pemberi Kerja,</p>
+            <p class="signature-name">{{.Contract.Farmer.User.Name}}</p>
+            <p>Pemilik Lahan</p>
+        </div>
+        <div class="signature-box right">
+            <p>Pekerja,</p>
+            <p class="signature-name">{{.Contract.Worker.User.Name}}</p>
+            <p>Pekerja</p>
+        </div>
+    </div>
+
+</body>
+</html>

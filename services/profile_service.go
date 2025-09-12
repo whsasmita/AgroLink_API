@@ -40,6 +40,10 @@ type workerInput struct {
 	AvailabilitySchedule json.RawMessage `json:"availability_schedule"` // Terima sebagai JSON object
 	CurrentLocationLat   *float64        `json:"current_location_lat"`
 	CurrentLocationLng   *float64        `json:"current_location_lng"`
+	NationalID           *string         `json:"national_id"` // NIK
+	BankName             *string         `json:"bank_name"`
+	BankAccountNumber    *string         `json:"bank_account_number"`
+	BankAccountHolder    *string         `json:"bank_account_holder"`
 }
 
 type driverInput struct {
@@ -47,7 +51,6 @@ type driverInput struct {
 	PricingScheme json.RawMessage `json:"pricing_scheme"` // Terima sebagai JSON object
 	VehicleTypes  []string        `json:"vehicle_types"`  // Terima sebagai array
 }
-
 
 func NewProfileService(userRepo repositories.UserRepository) ProfileService {
 	return &profileService{
@@ -100,7 +103,7 @@ func (s *profileService) UpdateRoleDetails(userID string, userRole string, input
 		if err := json.Unmarshal(input.Details, &details); err != nil {
 			return nil, fmt.Errorf("invalid farmer details format: %w", err)
 		}
-		
+
 		farmerModel := models.Farmer{
 			UserID:         parsedUserID,
 			Address:        details.Address,
@@ -129,6 +132,10 @@ func (s *profileService) UpdateRoleDetails(userID string, userRole string, input
 			AvailabilitySchedule: Ptr(string(scheduleJSON)), // Helper Ptr untuk *string
 			CurrentLocationLat:   details.CurrentLocationLat,
 			CurrentLocationLng:   details.CurrentLocationLng,
+			NationalID:           details.NationalID,
+			BankName : details.BankName,
+			BankAccountNumber : details.BankAccountNumber,
+			BankAccountHolder : details.BankAccountHolder,
 		}
 		if err := s.UserRepo.CreateOrUpdateWorker(&workerModel); err != nil {
 			return nil, err
@@ -158,15 +165,14 @@ func (s *profileService) UpdateRoleDetails(userID string, userRole string, input
 		return nil, errors.New("role does not support details update")
 	}
 
-
 	// Setelah berhasil, kembalikan profil pengguna yang sudah ter-update
 	return s.UserRepo.FindByID(userID)
 }
 
 // Helper kecil untuk membuat pointer dari string, berguna untuk field opsional.
 func Ptr(s string) *string {
-    if s == "" || s == "null" { // Handle jika schedule kosong
-        return nil
-    }
-    return &s
+	if s == "" || s == "null" { // Handle jika schedule kosong
+		return nil
+	}
+	return &s
 }

@@ -29,8 +29,9 @@ func (r *applicationRepository) Create(application *models.ProjectApplication) e
 func (r *applicationRepository) FindByID(id string) (*models.ProjectApplication, error) {
 	var application models.ProjectApplication
 	err := r.db.
-		Preload("Project.Farmer.User"). // <-- Ambil Proyek, lalu Petani dari Proyek, lalu User dari Petani.
-		Preload("Worker.User").         // <-- Ambil Pekerja, lalu User dari Pekerja.
+		Preload("Project.Farmer.User").
+		Preload("Project.FarmLocation"). // <-- [TAMBAHKAN INI]
+		Preload("Worker.User").
 		Where("id = ?", id).
 		First(&application).Error
 	if err != nil {

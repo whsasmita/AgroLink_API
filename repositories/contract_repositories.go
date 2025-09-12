@@ -46,13 +46,12 @@ func (r *contractRepository) Update(contract *models.Contract) error {
 
 func (r *contractRepository) FindByIDWithDetails(id string) (*models.Contract, error) {
 	var contract models.Contract
-
 	err := r.db.
-		Preload("Project").        // Ambil data proyek terkait
-		Preload("Farmer.User").    // Ambil data petani, lalu ambil data user dari petani tersebut
-		Preload("Worker.User").    // Ambil data pekerja, lalu ambil data user dari pekerja tersebut
+		Preload("Project").
+        Preload("Project.FarmLocation"). // <-- [TAMBAHKAN INI]
+		Preload("Farmer.User").
+		Preload("Worker.User").
 		Where("id = ?", id).
 		First(&contract).Error
-
 	return &contract, err
 }

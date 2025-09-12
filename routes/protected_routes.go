@@ -19,6 +19,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	// 1. Inisialisasi semua Repositories
 	userRepo := repositories.NewUserRepository(db)
 	farmRepo := repositories.NewFarmRepository(db)
+	workerRepo := repositories.NewWorkerRepository(db)
 	projectRepo := repositories.NewProjectRepository(db)
 	appRepo := repositories.NewApplicationRepository(db)
 	contractRepo := repositories.NewContractRepository(db)
@@ -26,6 +27,12 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	invoiceRepo := repositories.NewInvoiceRepository(db)
 	transactionRepo := repositories.NewTransactionRepository(db)
 	payoutRepo := repositories.NewPayoutRepository(db)
+	contractTemplateRepo := repositories.NewContractTemplateRepository(db)
+
+	reviewRepo := repositories.NewReviewRepository(db)
+	// workerRepo dan projectRepo sudah ada
+	
+	
 
 	// 2. Inisialisasi Services
 	authService := services.NewAuthService(userRepo)
@@ -33,8 +40,9 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	farmService := services.NewFarmService(farmRepo)
 	projectService := services.NewProjectService(projectRepo, farmRepo, assignRepo, invoiceRepo)
 	contractService := services.NewContractService(contractRepo, projectService)
-	appService := services.NewApplicationService(appRepo, projectRepo, contractRepo, assignRepo, db)
+	appService := services.NewApplicationService(appRepo, projectRepo, contractRepo, assignRepo, contractTemplateRepo, db)
 	paymentService := services.NewPaymentService(invoiceRepo, transactionRepo, payoutRepo, assignRepo, projectRepo, userRepo)
+	reviewService := services.NewReviewService(reviewRepo, workerRepo, projectRepo, db)
 
 	// 3. Inisialisasi Handlers
 	authHandler := handlers.NewAuthHandler(authService)
@@ -44,6 +52,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	appHandler := handlers.NewApplicationHandler(appService)
 	contractHandler := handlers.NewContractHandler(contractService)
 	paymentHandler := handlers.NewPaymentHandler(paymentService)
+	reviewHandler := handlers.NewReviewHandler(reviewService)
 
 	// =================================================================
 	// [DIREVISI] ROUTE DEFINITIONS
@@ -53,6 +62,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	// Profile Routes
 	router.GET("/profile", authHandler.GetProfile)
 	router.PUT("/profile", profileHandler.UpdateProfile)
+	router.POST("/profile/details", profileHandler.UpdateRoleDetails)
 	// ... (rute profil lainnya)
 
 	// Farm Routes (Hanya untuk Petani)
@@ -76,6 +86,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 		projects.POST("/:id/apply", middleware.RoleMiddleware("worker"), appHandler.ApplyToProject)
 		// Rute baru untuk melepaskan dana (payout)
 		projects.POST("/:id/release-payment", middleware.RoleMiddleware("farmer"), paymentHandler.ReleaseProjectPayment)
+		projects.POST("/:projectId/workers/:workerId/review", middleware.RoleMiddleware("farmer"), reviewHandler.CreateReview)
 	}
 
 	// Application Routes

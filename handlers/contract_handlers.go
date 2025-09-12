@@ -42,17 +42,21 @@ func (h *ContractHandler) SignContract(c *gin.Context) {
 }
 
 func (h *ContractHandler) DownloadContractPDF(c *gin.Context) {
-    contractID := c.Param("id")
-    
-    // (Tambahkan validasi: pastikan user yang request adalah farmer atau worker dari kontrak ini)
+	contractID := c.Param("id")
+	// userInterface, _ := c.Get("user")
+	// currentUser := userInterface.(*models.User)
 
-    pdfBuffer, err := h.contractService.GenerateContractPDF(contractID)
-    if err != nil {
-        utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to generate PDF", err)
-        return
-    }
+	// TODO: Tambahkan validasi di service untuk memastikan currentUser
+	// adalah Petani atau Pekerja yang ada di dalam kontrak ini.
+	
+	pdfBuffer, err := h.contractService.GenerateContractPDF(contractID)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to generate PDF", err)
+		return
+	}
 
-    fileName := fmt.Sprintf("kontrak_%s.pdf", contractID)
-    c.Header("Content-Disposition", "attachment; filename="+fileName)
-    c.Data(http.StatusOK, "application/pdf", pdfBuffer.Bytes())
+	fileName := fmt.Sprintf("kontrak_%s.pdf", contractID)
+	c.Header("Content-Disposition", "attachment; filename="+fileName)
+	c.Data(http.StatusOK, "application/pdf", pdfBuffer.Bytes())
 }
+

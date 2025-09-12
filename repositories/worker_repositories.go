@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/whsasmita/AgroLink_API/models"
 	"gorm.io/gorm"
 )
@@ -11,6 +12,7 @@ import (
 type WorkerRepository interface {
 	GetWorkers(search, sortBy, order string, limit, offset int, minDailyRate, maxDailyRate, minHourlyRate, maxHourlyRate float64) ([]models.Worker, int64, error)
 	GetWorkerByID(id string) (models.Worker, error)
+	UpdateRating(workerID uuid.UUID, newRating float64, reviewCount int) error
 }
 
 type workerRepository struct {
@@ -54,10 +56,10 @@ func (r *workerRepository) GetWorkers(search, sortBy, order string, limit, offse
 
 	// ... (kode sorting dan find tetap sama)
 	allowedSortBy := map[string]bool{
-		"created_at": true,
-		"rating":     true,
+		"created_at":  true,
+		"rating":      true,
 		"hourly_rate": true,
-		"daily_rate": true,
+		"daily_rate":  true,
 	}
 	if !allowedSortBy[sortBy] {
 		sortBy = "created_at"
@@ -78,17 +80,23 @@ func (r *workerRepository) GetWorkers(search, sortBy, order string, limit, offse
 	return workers, total, nil
 }
 
-
 func (r *workerRepository) GetWorkerByID(id string) (models.Worker, error) {
-    var worker models.Worker
-    
-    // Cari worker berdasarkan user ID dan preload data user
-    if err := r.db.Preload("User").First(&worker, "user_id = ?", id).Error; err != nil {
-        if errors.Is(err, gorm.ErrRecordNotFound) {
-            return worker, fmt.Errorf("worker with ID %s not found", id)
-        }
-        return worker, fmt.Errorf("failed to get worker: %w", err)
-    }
+	var worker models.Worker
 
-    return worker, nil
+	// Cari worker berdasarkan user ID dan preload data user
+	if err := r.db.Preload("User").First(&worker, "user_id = ?", id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return worker, fmt.Errorf("worker with ID %s not found", id)
+		}
+		return worker, fmt.Errorf("failed to get worker: %w", err)
+	}
+
+	return worker, nil
+}
+
+func (r *workerRepository) UpdateRating(workerID uuid.UUID, newRating float64, reviewCount int) error {
+	return r.db.Model(&models.Worker{}).Where("user_id = ?", workerID).Updates(map[string]interface{}{
+		"rating":       newRating,
+		"review_count": reviewCount,
+	}).Error
 }
