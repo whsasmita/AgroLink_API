@@ -2,6 +2,7 @@ package config
 
 import (
 	"log"
+	"time"
 
 	"github.com/whsasmita/AgroLink_API/models"
 	"golang.org/x/crypto/bcrypt" // Tambahkan import bcrypt
@@ -44,14 +45,14 @@ var migrationModels = []interface{}{
 	// &models.Dispute{},
 
 	// System models
-	&models.SystemSetting{},
-	&models.ActivityLog{},
-	&models.UserSession{},
+	// &models.SystemSetting{},
+	// &models.ActivityLog{},
+	// &models.UserSession{},
 
-	// AI models
-	&models.AIRecommendation{},
-	&models.UserPreference{},
-	&models.MLTrainingData{},
+	// // AI models
+	// &models.AIRecommendation{},
+	// &models.UserPreference{},
+	// &models.MLTrainingData{},
 }
 
 // =====================================================================
@@ -112,7 +113,7 @@ func SeedDefaultData() {
 	seedSystemSettings()
 	seedUsers() // <-- Panggil seeder pengguna baru
 	seedContractTemplates()
-
+	seedCompletedProjectScenario()
 	log.Println("✅ Default data seeded successfully")
 }
 
@@ -139,12 +140,26 @@ func seedUsers() {
 		},
 		// 3. Worker User
 		{
-			User:     models.User{Name: "Joko Pekerja", Email: "worker1@agrolink.com", Role: "worker", EmailVerified: true, PhoneNumber: StringPtr("081082880830")},
-			Worker:   &models.Worker{Skills: `["menanam","menyiram","panen"]`, DailyRate: Float64Ptr(120000)},
+			User: models.User{
+				Name:          "Joko Pekerja",
+				Email:         "worker1@agrolink.com",
+				Role:          "worker",
+				EmailVerified: true,
+				PhoneNumber:   StringPtr("081234567890"),
+			},
+			Worker: &models.Worker{
+				Skills:            `["menanam","menyiram","panen"]`,
+				DailyRate:         Float64Ptr(120000),
+				Address:           StringPtr("Jalan Tani No. 15, Desa Makmur"), // [LENGKAP]
+				NationalID:        StringPtr("3501234567890001"),               // [LENGKAP]
+				BankName:          StringPtr("BCA"),                            // [LENGKAP]
+				BankAccountNumber: StringPtr("1234567890"),                     // [LENGKAP]
+				BankAccountHolder: StringPtr("JOKO PEKERJA"),                   // [LENGKAP]
+			},
 			Password: "password123",
 		},
 		{
-			User:     models.User{Name: "Siti Pekerja", Email: "worker2@agrolink.com", Role: "worker", EmailVerified: true,PhoneNumber: StringPtr("089010820830")},
+			User:     models.User{Name: "Siti Pekerja", Email: "worker2@agrolink.com", Role: "worker", EmailVerified: true, PhoneNumber: StringPtr("089010820830")},
 			Worker:   &models.Worker{Skills: `["panen","sortir"]`, DailyRate: Float64Ptr(125000)},
 			Password: "password123",
 		},
@@ -258,7 +273,7 @@ func CreateIndexes() {
 
 func seedContractTemplates() {
 	log.Println("Creating default contract template...")
-	
+
 	// Gunakan backtick (`) untuk string multi-baris
 	templateContent := `NOMOR: {{nomor_kontrak}}
 Pada hari ini, {{tanggal_pembuatan}}, dibuat dan disepakati Perjanjian Kerja Waktu Tertentu ("Perjanjian") ini secara elektronik oleh dan antara:
@@ -290,6 +305,8 @@ Perusahaan akan membayar upah kepada Pekerja sebesar Rp {{jumlah_upah}} per {{ti
 - Nomor Rekening: {{nomor_rekening_pekerja}}
 - Atas Nama: {{nama_pemilik_rekening}}
 
+
+
 (Pasal 5 s/d 10 berisi teks statis...)`
 
 	template := models.ContractTemplate{
@@ -307,6 +324,87 @@ Perusahaan akan membayar upah kepada Pekerja sebesar Rp {{jumlah_upah}} per {{ti
 	}
 }
 
+func seedCompletedProjectScenario() {
+	log.Println("Creating a completed project scenario...")
+
+	// Gunakan transaksi agar semua data dibuat atau tidak sama sekali
+	err := DB.Transaction(func(tx *gorm.DB) error {
+		// 1. Ambil data Petani dan Pekerja yang sudah ada dari seeder sebelumnya
+		var farmerUser, workerUser models.User
+		if err := tx.Preload("Farmer").Where("email = ?", "farmer1@agrolink.com").First(&farmerUser).Error; err != nil {
+			return err
+		}
+		if err := tx.Preload("Worker").Where("email = ?", "worker1@agrolink.com").First(&workerUser).Error; err != nil {
+			return err
+		}
+
+		// 2. Buat Lokasi Lahan
+		farmLocation := models.FarmLocation{
+			FarmerID:  farmerUser.Farmer.UserID,
+			Name:      "Lahan Proyek Selesai",
+			Latitude:  -8.200,
+			Longitude: 115.200,
+			AreaSize:  25.0,
+		}
+		if err := tx.Create(&farmLocation).Error; err != nil {
+			return err
+		}
+
+		// 3. Buat Proyek dengan status "completed"
+		project := models.Project{
+			FarmerID:       farmerUser.Farmer.UserID,
+			FarmLocationID: &farmLocation.ID,
+			Title:          "Proyek Penanaman Tomat Ceri (Selesai)",
+			Description:    "Proyek ini sudah selesai dan siap untuk di-review.",
+			ProjectType:    "planting",
+			RequiredSkills: "[]",
+			WorkersNeeded:  1,
+			StartDate:      time.Now().AddDate(0, 0, -10), // 10 hari yang lalu
+			EndDate:        time.Now().AddDate(0, 0, -1),  // Kemarin
+			PaymentRate:    Float64Ptr(120000),
+			PaymentType:    "per_day",
+			Status:         "completed", // <-- Langsung set status selesai
+		}
+		if err := tx.Create(&project).Error; err != nil {
+			return err
+		}
+
+		// 4. Buat Kontrak
+		contract := models.Contract{
+			ProjectID:      project.ID,
+			FarmerID:       farmerUser.Farmer.UserID,
+			WorkerID:       workerUser.Worker.UserID,
+			Content:        "Kontrak untuk proyek yang telah diselesaikan.",
+			SignedByFarmer: true,
+			SignedByWorker: true,
+			Status:         "completed",
+		}
+		if err := tx.Create(&contract).Error; err != nil {
+			return err
+		}
+
+		// 5. Buat Penugasan (Assignment)
+		assignment := models.ProjectAssignment{
+			ProjectID:  project.ID,
+			WorkerID:   workerUser.Worker.UserID,
+			ContractID: contract.ID,
+			AgreedRate: *project.PaymentRate,
+			Status:     "completed",
+		}
+		if err := tx.Create(&assignment).Error; err != nil {
+			return err
+		}
+
+		// 6. Buat Invoice, Transaction, dan Payout (jika diperlukan untuk konsistensi)
+		// Untuk tujuan testing review, langkah 1-5 di atas sudah cukup.
+
+		return nil // Commit transaksi
+	})
+
+	if err != nil {
+		log.Fatalf("Failed to seed completed project scenario: %v", err)
+	}
+}
 
 // seedSystemSettings... (fungsi Anda yang sudah ada)
 func seedSystemSettings() {

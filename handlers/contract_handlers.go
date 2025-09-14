@@ -21,7 +21,6 @@ func NewContractHandler(service services.ContractService) *ContractHandler {
 func (h *ContractHandler) SignContract(c *gin.Context) {
 	contractID := c.Param("id")
 
-	// Ambil data user dari konteks JWT
 	userInterface, _ := c.Get("user")
 	currentUser := userInterface.(*models.User)
 
@@ -31,15 +30,16 @@ func (h *ContractHandler) SignContract(c *gin.Context) {
 	}
 	workerID := currentUser.Worker.UserID
 
-	contract, err := h.contractService.SignContract(contractID, workerID)
+    // 'response' sekarang sudah bertipe *dto.SignContractResponse
+	response, err := h.contractService.SignContract(contractID, workerID)
 	if err != nil {
-        // ... (penanganan error spesifik) ...
 		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 
-	utils.SuccessResponse(c, http.StatusOK, "Contract signed successfully", contract)
+	utils.SuccessResponse(c, http.StatusOK, "Contract signed successfully", response)
 }
+
 
 func (h *ContractHandler) DownloadContractPDF(c *gin.Context) {
 	contractID := c.Param("id")

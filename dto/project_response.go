@@ -69,3 +69,11 @@ type CreateProjectResponse struct {
 	PaymentType    string    `json:"payment_type"`
 	Status         string    `json:"status"`
 }
+
+type MyProjectResponse struct {
+	ProjectID    uuid.UUID  `json:"project_id"`
+	ProjectTitle string     `json:"project_title"`
+	ProjectStatus string    `json:"project_status"`
+	// Menggunakan pointer dan omitempty agar field ini tidak muncul jika invoice belum ada.
+	InvoiceID    *uuid.UUID `json:"invoice_id,omitempty"` 
+}

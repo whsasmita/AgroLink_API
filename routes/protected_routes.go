@@ -28,11 +28,9 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	transactionRepo := repositories.NewTransactionRepository(db)
 	payoutRepo := repositories.NewPayoutRepository(db)
 	contractTemplateRepo := repositories.NewContractTemplateRepository(db)
-
+	notifRepo := repositories.NewNotificationRepository(db)
 	reviewRepo := repositories.NewReviewRepository(db)
 	// workerRepo dan projectRepo sudah ada
-	
-	
 
 	// 2. Inisialisasi Services
 	authService := services.NewAuthService(userRepo)
@@ -40,9 +38,13 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	farmService := services.NewFarmService(farmRepo)
 	projectService := services.NewProjectService(projectRepo, farmRepo, assignRepo, invoiceRepo)
 	contractService := services.NewContractService(contractRepo, projectService)
-	appService := services.NewApplicationService(appRepo, projectRepo, contractRepo, assignRepo, contractTemplateRepo, db)
+	emailService := services.NewEmailService()
+	notificationService := services.NewNotificationService(notifRepo, emailService, userRepo)
+	appService := services.NewApplicationService(appRepo, projectRepo, contractRepo, assignRepo, contractTemplateRepo, notificationService, db)
 	paymentService := services.NewPaymentService(invoiceRepo, transactionRepo, payoutRepo, assignRepo, projectRepo, userRepo)
 	reviewService := services.NewReviewService(reviewRepo, workerRepo, projectRepo, db)
+
+	notifHandler := handlers.NewNotificationHandler(notifRepo)
 
 	// 3. Inisialisasi Handlers
 	authHandler := handlers.NewAuthHandler(authService)
@@ -86,7 +88,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 		projects.POST("/:id/apply", middleware.RoleMiddleware("worker"), appHandler.ApplyToProject)
 		// Rute baru untuk melepaskan dana (payout)
 		projects.POST("/:id/release-payment", middleware.RoleMiddleware("farmer"), paymentHandler.ReleaseProjectPayment)
-		projects.POST("/:projectId/workers/:workerId/review", middleware.RoleMiddleware("farmer"), reviewHandler.CreateReview)
+		projects.POST("/:id/workers/:workerId/review", middleware.RoleMiddleware("farmer"), reviewHandler.CreateReview)
 	}
 
 	// Application Routes
@@ -107,7 +109,13 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	{
 		// Endpoint untuk petani memulai pembayaran via Midtrans
 		invoices.POST("/:id/initiate-payment", middleware.RoleMiddleware("farmer"), paymentHandler.InitiateInvoicePayment)
+		invoices.POST(":id/release", middleware.RoleMiddleware("farmer"), paymentHandler.ReleaseProjectPayment)
 		// Endpoint untuk melihat riwayat invoice
 		// invoices.GET("/", paymentHandler.GetUserInvoices)
+	}
+
+	notifications := router.Group("/notifications")
+	{
+		notifications.GET("/", notifHandler.GetMyNotifications)
 	}
 }

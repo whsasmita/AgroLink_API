@@ -16,6 +16,13 @@ type ApplicationResponse struct {
 	Status          string    `json:"status"`
 }
 
+type AcceptApplicationResponse struct {
+	ContractID   uuid.UUID `json:"contract_id"`
+	ProjectTitle string    `json:"project_title"`
+	WorkerName   string    `json:"worker_name"`
+	Message      string    `json:"message"`
+}
+
 // DTO untuk body request saat pekerja melamar.
 type ApplyProjectInput struct {
 	Message string `json:"message"`
@@ -31,10 +38,3 @@ type ApplicationSubmissionResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-type AcceptApplicationResponse struct {
-	ContractID    uuid.UUID `json:"contract_id"`
-	TransactionID uuid.UUID `json:"transaction_id"`
-	ProjectTitle  string    `json:"project_title"`
-	WorkerName    string    `json:"worker_name"`
-	Message       string    `json:"message"`
-}

@@ -20,7 +20,7 @@ func NewReviewHandler(service services.ReviewService) *ReviewHandler {
 }
 
 func (h *ReviewHandler) CreateReview(c *gin.Context) {
-	projectID, _ := uuid.Parse(c.Param("projectId"))
+	projectID, _ := uuid.Parse(c.Param("id"))
 	workerID, _ := uuid.Parse(c.Param("workerId"))
 
 	var inputDTO dto.CreateReviewInput

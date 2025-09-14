@@ -1,0 +1,273 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+    "name": "AgroLink End-to-End Test",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "SETUP",
+      "item": [
+        {
+          "name": "Login as Farmer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set(\"TOKEN_PETANI\", jsonData.data.token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"farmer1@agrolink.com\",\n    \"password\": \"password123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/public/auth/login",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "public", "auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login as Worker",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set(\"TOKEN_PEKERJA\", jsonData.data.token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"worker1@agrolink.com\",\n    \"password\": \"password123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/public/auth/login",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "public", "auth", "login"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "PROJECT & APPLICATION FLOW",
+      "item": [
+        {
+          "name": "Farmer Creates Farm Location",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set(\"FARM_LOCATION_ID\", jsonData.data.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{TOKEN_PETANI}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Lahan Postman Otomatis\",\n    \"latitude\": -8.65, \n    \"longitude\": 115.21, \n    \"area_size\": 150.0,\n    \"crop_type\": \"Kopi\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/v1/farms",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "farms"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Farmer Creates Project",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set(\"PROJECT_ID\", jsonData.data.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{TOKEN_PETANI}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"farm_location_id\": \"{{FARM_LOCATION_ID}}\",\n    \"title\": \"Proyek Panen Kopi Otomatis\",\n    \"description\": \"Dibutuhkan 1 pekerja untuk panen kopi.\",\n    \"project_type\": \"harvesting\",\n    \"required_skills\": [\"memetik kopi\"],\n    \"workers_needed\": 1,\n    \"start_date\": \"2025-11-20\",\n    \"end_date\": \"2025-11-25\",\n    \"payment_rate\": 200000.00,\n    \"payment_type\": \"per_day\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/v1/projects",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "projects"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Worker Applies to Project",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set(\"APPLICATION_ID\", jsonData.data.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{TOKEN_PEKERJA}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"message\": \"Saya tertarik dengan proyek panen kopi ini.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/v1/projects/{{PROJECT_ID}}/apply",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "projects", "{{PROJECT_ID}}", "apply"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Farmer Accepts Application",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set(\"CONTRACT_ID\", jsonData.data.contract_id);",
+                  "pm.environment.set(\"INVOICE_ID\", jsonData.data.invoice_id); // Asumsi response-nya nanti ada invoice_id"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{TOKEN_PETANI}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/applications/{{APPLICATION_ID}}/accept",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "applications", "{{APPLICATION_ID}}", "accept"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
