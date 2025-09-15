@@ -55,12 +55,12 @@ func (s *contractService) SignContract(contractID string, workerID uuid.UUID) (*
 	go s.projectService.CheckAndFinalizeProject(contract.ProjectID)
 
 	response := &dto.SignContractResponse{
-		ContractID:   contract.ID,
-		ProjectTitle: contract.Project.Title,
-		Status:       contract.Status,
+		ContractID:     contract.ID,
+		ProjectTitle:   contract.Project.Title,
+		Status:         contract.Status,
 		SignedByWorker: contract.SignedByWorker,
-		SignedAt:     *contract.SignedAt,
-		Message:      "Kontrak telah berhasil ditandatangani dan sekarang aktif.",
+		SignedAt:       *contract.SignedAt,
+		Message:        "Kontrak telah berhasil ditandatangani dan sekarang aktif.",
 	}
 	return response, nil
 }
@@ -71,10 +71,25 @@ func (s *contractService) GenerateContractPDF(contractID string) (*bytes.Buffer,
 		return nil, errors.New("contract details not found")
 	}
 
+	durationDays := contract.Project.EndDate.Sub(contract.Project.StartDate).Hours()/24 + 1
+
+	// paymentRate := contract.Project.PaymentRate
+
+	// log(paymentRate)
+	var upahPerHari string
+	if contract.Project.PaymentRate != nil {
+		// Jika data ada, format dengan benar
+		upahPerHari = fmt.Sprintf("Rp %.0f", *contract.Project.PaymentRate)
+	} else {
+		// Jika data tidak ada, berikan nilai default
+		upahPerHari = "[JUMLAH BELUM DITETAPKAN]"
+	}
+
 	data := gin.H{
 		"Contract":         contract,
-		// "FormattedContent": template.HTML(contract.Content),
-		"TanggalPembuatan":   contract.CreatedAt.Format("dddd, 2 January 2006"),
+		"TanggalPembuatan": contract.CreatedAt.Format("2 January 2006"), // Format tanggal sederhana
+		"DurasiHari":       fmt.Sprintf("%.0f", durationDays),           // <-- Tambahkan ini
+		"UpahPerHari":      upahPerHari,
 	}
 
 	tmpl, err := template.ParseFiles("templates/contract_template.html")

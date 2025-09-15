@@ -18,7 +18,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\" : \"driver@gmail.com\",\r\n    \"password\" : \"AdminPassword\",\r\n    \"role\" : \"driver\",\r\n    \"name\" : \"Gunawan\",\r\n    \"phone_number\" : \"08549789093\"\r\n}",
+							"raw": "{\r\n    \"email\" : \"worker4@gmail.com\",\r\n    \"password\" : \"AdminPassword\",\r\n    \"role\" : \"worker\",\r\n    \"name\" : \"worrie\",\r\n    \"phone_number\" : \"085497809093\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -91,7 +91,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\" : \"farmer@gmail.com\",\r\n    \"password\" : \"AdminPassword\"\r\n}",
+							"raw": "{\r\n    \"email\" : \"worker1@agrolink.com\",\r\n    \"password\" : \"password123\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -184,7 +184,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{jwt_token}}",
+									"value": "{{token_worker2}}",
 									"type": "string"
 								}
 							]
@@ -333,7 +333,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{jwt_token}}",
+									"value": "{{token_worker}}",
 									"type": "string"
 								}
 							]
@@ -342,7 +342,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "\t{\r\n    \"details\": {\r\n        \"company_address\": \"Jl. Cargo Permai No. 8, Denpasar, Bali\",\r\n        \"pricing_scheme\": {\r\n            \"base_fee\": 50000,\r\n            \"per_km\": 2500,\r\n            \"extra_handling\": 15000\r\n        },\r\n        \"vehicle_types\": [\"Pick-up L300\", \"Truk Engkel Bak Terbuka\"]\r\n    }\r\n}",
+							"raw": "\t{\r\n    \"details\": {\r\n        \"skills\": [\"Memanen Kopi\", \"Pemupukan Organik\", \"Mengoperasikan Traktor Tangan\"],\r\n        \"hourly_rate\": 25000.00,\r\n        \"daily_rate\": 150000.00,\r\n        \"address\": \"Banjar Dinas Asah, Desa Gobleg, Buleleng, Bali\",\r\n        \"availability_schedule\": {\r\n            \"monday\": \"08:00-16:00\",\r\n            \"tuesday\": \"08:00-16:00\",\r\n            \"saturday\": \"08:00-12:00\"\r\n        },\r\n        \"current_location_lat\": -8.2415,\r\n        \"current_location_lng\": 115.0884,\r\n        \"national_id\" : \"2234566779\",\r\n        \"bank_name\" : \"BNI\",\r\n        \"bank_account_number\" : \"23456788\",\r\n        \"bank_account_holder\" : \"pak Yanto\"\r\n    }\r\n} ",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -543,7 +543,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{jwt_token}}",
+									"value": "{{token_farmer}}",
 									"type": "string"
 								}
 							]
@@ -552,7 +552,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Kebun Kopi Organik Luwak Kintamani\",\r\n    \"latitude\": -8.2391,\r\n    \"longitude\": 114.9804,\r\n    \"area_size\": 50.5,\r\n    \"crop_type\": \"Kopi Robusta\",\r\n    \"irrigation_type\": \"Irigasi Tetes (Drip Irrigation)\",\r\n    \"description\": \"Lahan di lereng bukit dengan sistem terasering, cocok untuk tanaman kopi dan cengkeh.\"\r\n}",
+							"raw": "{\r\n    \"name\": \"Kebun Kopi Organik Luwak Bedugul\",\r\n    \"latitude\": -8.2391,\r\n    \"longitude\": 114.9804,\r\n    \"area_size\": 50.5,\r\n    \"crop_type\": \"Kopi Robusta\",\r\n    \"irrigation_type\": \"Irigasi Tetes (Drip Irrigation)\",\r\n    \"description\": \"Lahan di lereng bukit dengan sistem terasering, cocok untuk tanaman kopi dan cengkeh.\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -614,7 +614,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{jwt_token}}",
+									"value": "{{token_farmer}}",
 									"type": "string"
 								}
 							]
@@ -955,49 +955,6 @@
 					},
 					"response": [
 						{
-							"name": "New Request",
-							"originalRequest": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{base_url}}/drivers/07498932-7288-4f43-842c-4514711ad166",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"drivers",
-										"07498932-7288-4f43-842c-4514711ad166"
-									],
-									"query": [
-										{
-											"key": "page",
-											"value": "1",
-											"disabled": true
-										}
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json; charset=utf-8"
-								},
-								{
-									"key": "Date",
-									"value": "Mon, 18 Aug 2025 09:33:40 GMT"
-								},
-								{
-									"key": "Content-Length",
-									"value": "407"
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"user_id\": \"07498932-7288-4f43-842c-4514711ad166\",\n    \"name\": \"Gunawan\",\n    \"profile_picture\": null,\n    \"phone_number\": \"08549789093\",\n    \"company_address\": \"Jl. Cargo Permai No. 8, Denpasar, Bali\",\n    \"pricing_scheme\": \"{\\\"per_km\\\": 2500, \\\"base_fee\\\": 50000, \\\"extra_handling\\\": 15000}\",\n    \"vehicle_types\": \"[\\\"Pick-up L300\\\", \\\"Truk Engkel Bak Terbuka\\\"]\",\n    \"rating\": 0,\n    \"total_deliveries\": 0,\n    \"created_at\": \"2025-08-18T17:25:01.779+08:00\"\n}"
-						},
-						{
 							"name": "getDriverbyIdResponse",
 							"originalRequest": {
 								"method": "GET",
@@ -1045,177 +1002,395 @@
 			]
 		},
 		{
-			"name": "Post data",
-			"event": [
+			"name": "Project",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Successful POST request\", function () {",
-							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
-							"});",
-							""
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\t\"name\" : \"Bunga putri\",\n    \"email\": \"ayani@gmail.com\",\n    \"password\": \"AdminPassword\",\n    \"role\": \"farmer\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+					"name": "Create Project",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_farmer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"Proyek Uji Coba 2\",\r\n    \"description\": \"Deskripsi untuk pengujian end-to-end.\",\r\n    \"location\" : \"jalan sukamaju, Singaraja\",\r\n    \"workers_needed\": 1,\r\n    \"start_date\": \"2025-10-01\",\r\n    \"end_date\": \"2025-10-10\",\r\n    \"payment_rate\": 100000.00,\r\n    \"payment_type\": \"per_day\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/projects",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"projects"
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "https://f1c8c4f33b80.ngrok-free.app/api/v1/auth/register",
-					"protocol": "https",
-					"host": [
-						"f1c8c4f33b80",
-						"ngrok-free",
-						"app"
-					],
-					"path": [
-						"api",
-						"v1",
-						"auth",
-						"register"
-					]
-				},
-				"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
-			},
-			"response": []
-		},
-		{
-			"name": "Update data",
-			"event": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Successful PUT request\", function () {",
-							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 204]);",
-							"});",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\t\"name\": \"Add your name in the body\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+					"name": "Get Project by Id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_worker}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"Proyek Panen Jagung Musim Kering\",\r\n    \"description\": \"Dibutuhkan 5 orang untuk membantu proses panen jagung di lahan seluas 2 hektar. Pengalaman tidak diutamakan.\",\r\n    \"project_type\": \"harvesting\",\r\n    \"required_skills\": [\"memetik\", \"mengangkut\"],\r\n    \"workers_needed\": 5,\r\n    \"start_date\": \"2025-09-10\",\r\n    \"end_date\": \"2025-09-20\",\r\n    \"payment_rate\": 150000.00,\r\n    \"payment_type\": \"per_day\"\r\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/projects/2c85eb71-85f2-4efa-8455-d4c73b7f39eb",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"projects",
+								"2c85eb71-85f2-4efa-8455-d4c73b7f39eb"
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{base_url}}/info?id=1",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"info"
-					],
-					"query": [
-						{
-							"key": "id",
-							"value": "1"
-						}
-					]
-				},
-				"description": "This is a PUT request and it is used to overwrite an existing piece of data. For instance, after you create an entity with a POST request, you may want to modify that later. You can do that using a PUT request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful PUT request typically returns a `200 OK`, `201 Created`, or `204 No Content` response code."
-			},
-			"response": []
-		},
-		{
-			"name": "Delete data",
-			"event": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Successful DELETE request\", function () {",
-							"    pm.expect(pm.response.code).to.be.oneOf([200, 202, 204]);",
-							"});",
-							""
+					"name": "Get All Project",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_farmer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"Proyek Panen Jagung Musim Kering\",\r\n    \"description\": \"Dibutuhkan 5 orang untuk membantu proses panen jagung di lahan seluas 2 hektar. Pengalaman tidak diutamakan.\",\r\n    \"project_type\": \"harvesting\",\r\n    \"required_skills\": [\"memetik\", \"mengangkut\"],\r\n    \"workers_needed\": 5,\r\n    \"start_date\": \"2025-09-10\",\r\n    \"end_date\": \"2025-09-20\",\r\n    \"payment_rate\": 150000.00,\r\n    \"payment_type\": \"per_day\"\r\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/projects/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"projects",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Application",
+			"item": [
+				{
+					"name": "Apply Project",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_worker}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"message\": \"Saya siap untuk menguji proyek ini.\"\r\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/projects/{{project_id}}/apply",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"projects",
+								"{{project_id}}",
+								"apply"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Accept Application",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_farmer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/applications/{{application_id}}/accept",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"applications",
+								"{{application_id}}",
+								"accept"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Application",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_farmer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"Proyek Panen Jagung Musim Kering\",\r\n    \"description\": \"Dibutuhkan 5 orang untuk membantu proses panen jagung di lahan seluas 2 hektar. Pengalaman tidak diutamakan.\",\r\n    \"project_type\": \"harvesting\",\r\n    \"required_skills\": [\"memetik\", \"mengangkut\"],\r\n    \"workers_needed\": 5,\r\n    \"start_date\": \"2025-09-10\",\r\n    \"end_date\": \"2025-09-20\",\r\n    \"payment_rate\": 150000.00,\r\n    \"payment_type\": \"per_day\"\r\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/projects/30dba8cf-80d1-4867-aedb-ccc969dec4a6applications",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"projects",
+								"30dba8cf-80d1-4867-aedb-ccc969dec4a6applications"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Contracts",
+			"item": [
+				{
+					"name": "SignedContract",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_worker}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"message\": \"Saya sangat tertarik dengan proyek ini dan siap bekerja sesuai jadwal.\"\r\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/contracts/{{contract_id}}/sign",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"contracts",
+								"{{contract_id}}",
+								"sign"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Download Contract",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true,
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_worker}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/pdf",
+								"type": "text"
+							}
 						],
-						"type": "text/javascript"
-					}
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"message\": \"Saya sangat tertarik dengan proyek ini dan siap bekerja sesuai jadwal.\"\r\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/contracts/{{contract_id}}/download",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"contracts",
+								"{{contract_id}}",
+								"download"
+							]
+						}
+					},
+					"response": []
 				}
-			],
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{base_url}}/info?id=1",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"info"
-					],
-					"query": [
-						{
-							"key": "id",
-							"value": "1"
-						}
-					]
-				},
-				"description": "This is a DELETE request, and it is used to delete data that was previously created via a POST request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful DELETE request typically returns a `200 OK`, `202 Accepted`, or `204 No Content` response code."
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Get Data using Query",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{base_url}}/books?title=Bumi Manusia",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"books"
-					],
-					"query": [
-						{
-							"key": "title",
-							"value": "Bumi Manusia"
+			"name": "Payments",
+			"item": [
+				{
+					"name": "Initiate-payment",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_farmer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"message\": \"Saya sangat tertarik dengan proyek ini dan siap bekerja sesuai jadwal.\"\r\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/invoices/{{invoice_id}}/initiate-payment",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"invoices",
+								"{{invoice_id}}",
+								"initiate-payment"
+							]
 						}
-					]
+					},
+					"response": []
+				},
+				{
+					"name": "Release Fee",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "New Request",
-			"request": {
-				"method": "GET",
-				"header": []
-			},
-			"response": []
+			"name": "Review",
+			"item": [
+				{
+					"name": "Create Review",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_farmer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"rating\": 4,\r\n    \"comment\": \"Pekerjaan bagus, namun bisa lebih cepat.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/projects/{{project_id}}/workers/200cea81-c9ba-43ad-abb0-720e3ed8e401/review",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"projects",
+								"{{project_id}}",
+								"workers",
+								"200cea81-c9ba-43ad-abb0-720e3ed8e401",
+								"review"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
@@ -1249,6 +1424,14 @@
 		},
 		{
 			"key": "jwt_token",
+			"value": ""
+		},
+		{
+			"key": "token_farmer",
+			"value": ""
+		},
+		{
+			"key": "token_worker",
 			"value": "",
 			"type": "string"
 		}

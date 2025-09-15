@@ -1,115 +1,217 @@
 <!DOCTYPE html>
 <html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Kontrak Kerja - {{.Project.Title}}</title>
+  <head>
+    <meta charset="UTF--g" />
+    <title>Kontrak Kerja - {{.Contract.Project.Title}}</title>
     <style>
-        body {
-            font-family: 'Helvetica', 'Arial', sans-serif;
-            font-size: 11pt;
-            color: #333;
-            line-height: 1.5;
-        }
-        .header {
-            text-align: center;
-            border-bottom: 1px solid #000;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-        .header h3 {
-            margin: 0;
-            padding: 0;
-            text-decoration: underline;
-            font-size: 14pt;
-        }
-        .header p {
-            margin: 0;
-            padding: 0;
-            font-size: 10pt;
-        }
-        .section-title {
-            font-weight: bold;
-            margin-top: 15px;
-            margin-bottom: 5px;
-        }
-        .party-info {
-            padding-left: 15px;
-        }
-        .pasal-title {
-            text-align: center;
-            font-weight: bold;
-            margin-top: 20px;
-        }
-        .pasal-content {
-            text-align: justify;
-        }
-        .signature-section {
-            margin-top: 60px;
-            width: 100%;
-        }
-        .signature-box {
-            width: 45%;
-            display: inline-block;
-            text-align: center;
-        }
-        .signature-box.right {
-            float: right;
-        }
-        .signature-box.left {
-            float: left;
-        }
-        .signature-name {
-            margin-top: 60px;
-            text-decoration: underline;
-            font-weight: bold;
-        }
+      @page {
+        size: A4;
+        margin: 2cm;
+      }
+      body {
+        font-family: "Times New Roman", Times, serif;
+        font-size: 12pt;
+        color: #000;
+      }
+      .header {
+        text-align: center;
+        font-weight: bold;
+      }
+      .header .title {
+        text-decoration: underline;
+        font-size: 14pt;
+      }
+      .header .subtitle {
+        font-size: 12pt;
+        font-weight: normal;
+      }
+      hr {
+        border: none;
+        border-top: 1px solid #000;
+        margin-top: 1em;
+        margin-bottom: 1.5em;
+      }
+      p {
+        text-align: justify;
+        line-height: 1.5;
+        margin: 0 0 1em 0;
+      }
+      .party-table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-bottom: 1em;
+      }
+      .party-table td {
+        vertical-align: top;
+        padding: 2px 0;
+      }
+      .pasal-block {
+        page-break-inside: avoid;
+      }
+      .pasal-title {
+        text-align: center;
+        font-weight: bold;
+        margin-top: 1.5em;
+        margin-bottom: 1em;
+      }
+      .signature-section {
+        margin-top: 50px;
+        overflow: auto; /* Clearfix */
+      }
+      .signature-box {
+        float: left;
+        width: 45%;
+        text-align: center;
+      }
+      .signature-box.right {
+        float: right;
+      }
+      .signature-name {
+        margin-top: 80px;
+        text-decoration: underline;
+        font-weight: bold;
+      }
+      .new-page {
+        page-break-before: always;
+      }
     </style>
-</head>
-<body>
-
+  </head>
+  <body>
     <div class="header">
-        <h3>PERJANJIAN KERJA WAKTU TERTENTU</h3>
-        <p>Nomor: {{.Contract.ID}}</p>
+      <div class="title">PERJANJIAN KERJA WAKTU TERTENTU (PKWT)</div>
+      <div class="subtitle">Nomor: {{.Contract.ID}}</div>
+    </div>
+    <hr />
+
+    <p>
+      Pada hari ini, {{.TanggalPembuatan}}, dibuat dan disepakati Perjanjian Kerja Waktu Tertentu ("Perjanjian") ini secara elektronik oleh dan
+      antara:
+    </p>
+
+    <table class="party-table">
+      <tr>
+        <td width="20px" valign="top">I.</td>
+        <td colspan="2">Pihak Pertama, selanjutnya disebut PIHAK PERTAMA:</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td width="150px">Nama</td>
+        <td>: <strong>{{.Contract.Farmer.User.Name}}</strong></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>Jabatan</td>
+        <td>: Pemilik Lahan</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>Alamat</td>
+        <td>: {{or .Contract.Farmer.Address "[DATA BELUM DIISI]"}}</td>
+      </tr>
+      <tr>
+        <td width="20px" valign="top">II.</td>
+        <td colspan="2">Pihak Kedua, selanjutnya disebut PIHAK KEDUA:</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td width="150px">Nama Lengkap</td>
+        <td>: <strong>{{.Contract.Worker.User.Name}}</strong></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>Alamat</td>
+        <td>: {{or .Contract.Worker.Address "[DATA BELUM DIISI]"}}</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>NIK</td>
+        <td>: {{or .Contract.Worker.NationalID "[DATA BELUM DIISI]"}}</td>
+      </tr>
+    </table>
+
+    <p>
+      Kedua belah pihak dengan ini sepakat untuk mengikatkan diri dalam suatu Perjanjian Kerja untuk Waktu Tertentu dengan ketentuan sebagai berikut:
+    </p>
+
+    <div class="pasal-block">
+      <div class="pasal-title">Pasal 1<br />KETENTUAN UMUM</div>
+      <p>
+        PIHAK PERTAMA menerima dan mempekerjakan PIHAK KEDUA sebagai Pekerja Proyek Lepas untuk melaksanakan pekerjaan sesuai dengan perjanjian ini.
+      </p>
     </div>
 
-    <p>Pada hari ini, {{.TanggalPembuatan}}, dibuat dan disepakati Perjanjian Kerja Waktu Tertentu ("Perjanjian") ini secara elektronik oleh dan antara:</p>
-
-    <div class="section-title">Pemberi Kerja:</div>
-    <div class="party-info">
-        <table>
-            <tr><td width="150px">Nama Perusahaan</td><td>: {{.Contract.Farmer.User.Name}}</td></tr>
-            <tr><td>Alamat</td><td>: {{.Contract.Farmer.Address}}</td></tr>
-            <tr><td>Email</td><td>: {{.Contract.Farmer.User.Email}}</td></tr>
-        </table>
+    <div class="pasal-block">
+      <div class="pasal-title">Pasal 2<br />PENUNJUKAN, TUGAS, DAN PENEMPATAN</div>
+      <p>
+        1. PIHAK KEDUA akan melaksanakan tugas sebagai {{.Contract.Project.Title}}.<br />2. Uraian pekerjaan adalah sebagai berikut:
+        {{.Contract.Project.Description}}.<br />3. Lokasi pelaksanaan pekerjaan adalah di {{.Contract.Project.Location}}.
+      </p>
     </div>
 
-    <div class="section-title">Pekerja Kontrak:</div>
-    <div class="party-info">
-        <table>
-            <tr><td width="150px">Nama Lengkap</td><td>: {{.Contract.Worker.User.Name}}</td></tr>
-            <tr><td>NIK</td><td>: {{or .Contract.Worker.NationalID "[DATA BELUM DIISI]"}}</td></tr>
-            <tr><td>Alamat</td><td>: {{or .Contract.Worker.Address "[DATA BELUM DIISI]"}}</td></tr>
-            <tr><td>Email</td><td>: {{.Contract.Worker.User.Email}}</td></tr>
-        </table>
+    <div class="pasal-block">
+      <div class="pasal-title">Pasal 3<br />JANGKA WAKTU</div>
+      <p>
+        Perjanjian ini berlaku selama {{.DurasiHari}} hari kerja, terhitung sejak tanggal {{.Contract.Project.StartDate.Format "2 January 2006"}}
+        sampai dengan tanggal {{.Contract.Project.EndDate.Format "2 January 2006"}}.
+      </p>
     </div>
 
-    <div class="content">
-        <p>BAHWA PARA PIHAK SEPAKAT UNTUK MENGIKATKAN DIRI DALAM PERJANJIAN INI DENGAN KETENTUAN SEBAGAI BERIKUT:</p>
-        <pre style="white-space: pre-wrap; font-family: inherit;">{{.Contract.Content}}</pre>
+    <div class="pasal-block">
+      <div class="pasal-title">Pasal 4<br />UPAH DAN IMBALAN</div>
+      <p>
+        PIHAK PERTAMA akan memberikan upah kepada PIHAK KEDUA sebesar {{.UpahPerHari}} per hari. Total pembayaran akan ditahan dalam sistem escrow
+        AgroLink dan dilepaskan setelah pekerjaan selesai.
+      </p>
     </div>
-    
+
+    <div class="pasal-block">
+      <div class="pasal-title">Pasal 5<br />HAK DAN KEWAJIBAN</div>
+      <p>
+        Hak dan Kewajiban Para Pihak mengacu pada standar umum ketenagakerjaan, di mana PIHAK PERTAMA berkewajiban memberikan upah yang sesuai dan
+        PIHAK KEDUA berkewajiban melaksanakan pekerjaan dengan sebaik-baiknya.
+      </p>
+    </div>
+
+    <div class="pasal-block">
+      <div class="pasal-title">Pasal 6<br />PENGAKHIRAN PERJANJIAN</div>
+      <p>
+        Perjanjian ini berakhir demi hukum pada tanggal berakhirnya jangka waktu sebagaimana disebutkan dalam Pasal 3. Perjanjian dapat diakhiri
+        sebelum jangka waktunya berakhir apabila terjadi pelanggaran berat oleh salah satu pihak.
+      </p>
+    </div>
+
+    <div class="pasal-block">
+      <div class="pasal-title">Pasal 7<br />KERAHASIAAN</div>
+      <p>PIHAK KEDUA wajib menjaga kerahasiaan seluruh informasi milik PIHAK PERTAMA, baik selama maupun setelah berakhirnya Perjanjian ini.</p>
+    </div>
+
+    <div class="pasal-block">
+      <div class="pasal-title">Pasal 8<br />PENYELESAIAN PERSELISIHAN</div>
+      <p>Apabila timbul perselisihan, Para Pihak sepakat untuk menyelesaikannya secara musyawarah untuk mufakat.</p>
+    </div>
+
+    <div class="pasal-block">
+      <div class="pasal-title">Pasal 9<br />HUKUM YANG BERLAKU</div>
+      <p>Perjanjian ini diatur dan ditafsirkan berdasarkan hukum yang berlaku di Republik Indonesia.</p>
+    </div>
+
+    <div class="pasal-block">
+      <div class="pasal-title">Pasal 10<br />KETENTUAN LAIN-LAIN</div>
+      <p>
+        Perjanjian ini dibuat dan disepakati secara elektronik dan Para Pihak mengakui bahwa tanda tangan atau konfirmasi elektronik yang terekam pada
+        sistem adalah sah dan mengikat.
+      </p>
+    </div>
+
     <div class="signature-section">
-        <div class="signature-box left">
-            <p>Pemberi Kerja,</p>
-            <p class="signature-name">{{.Contract.Farmer.User.Name}}</p>
-            <p>Pemilik Lahan</p>
-        </div>
-        <div class="signature-box right">
-            <p>Pekerja,</p>
-            <p class="signature-name">{{.Contract.Worker.User.Name}}</p>
-            <p>Pekerja</p>
-        </div>
+      <div class="signature-box left">
+        <p>PIHAK PERTAMA,</p>
+        <p class="signature-name">{{.Contract.Farmer.User.Name}}</p>
+      </div>
+      <div class="signature-box right">
+        <p>PIHAK KEDUA,</p>
+        <p class="signature-name">{{.Contract.Worker.User.Name}}</p>
+      </div>
     </div>
-
-</body>
+  </body>
 </html>
