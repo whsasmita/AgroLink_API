@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"github.com/google/uuid"
 	"github.com/whsasmita/AgroLink_API/dto"
 	"github.com/whsasmita/AgroLink_API/models"
 	"gorm.io/gorm"
@@ -11,6 +12,7 @@ type ProjectRepository interface {
 	FindAll(pagination dto.PaginationRequest) (*[]models.Project, int64, error)
 	FindByID(id string) (*models.Project, error)
 	HasWorkerApplied(projectID, workerID string) (bool, error)
+	 FindAllByFarmerID(farmerID uuid.UUID) ([]models.Project, error)
 	// Perbaikan: Menggunakan 'workerID' agar konsisten
 	IsWorkerOnActiveProject(workerID string) (bool, error)
 	UpdateStatus(projectID string, status string) error
@@ -26,6 +28,13 @@ func NewProjectRepository(db *gorm.DB) ProjectRepository {
 
 func (r *projectRepository) CreateProject(project *models.Project) error {
 	return r.db.Create(project).Error
+}
+
+func (r *projectRepository) FindAllByFarmerID(farmerID uuid.UUID) ([]models.Project, error) {
+    var projects []models.Project
+    // [PENTING] Tambahkan Preload("Invoice") untuk mengambil data invoice terkait
+    err := r.db.Preload("Invoice").Where("farmer_id = ?", farmerID).Order("created_at DESC").Find(&projects).Error
+    return projects, err
 }
 
 func (r *projectRepository) FindAll(pagination dto.PaginationRequest) (*[]models.Project, int64, error) {
@@ -54,7 +63,6 @@ func (r *projectRepository) FindByID(id string) (*models.Project, error) {
 	var project models.Project
 	err := r.db.
 		Preload("Farmer.User").
-        Preload("FarmLocation"). // TAMBAHKAN INI
 		Where("id = ?", id).
 		First(&project).Error
 	return &project, err

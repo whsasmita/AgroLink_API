@@ -48,7 +48,6 @@ func (r *contractRepository) FindByIDWithDetails(id string) (*models.Contract, e
 	var contract models.Contract
 	err := r.db.
 		Preload("Project").
-        Preload("Project.FarmLocation"). // <-- [TAMBAHKAN INI]
 		Preload("Farmer.User").
 		Preload("Worker.User").
 		Where("id = ?", id).

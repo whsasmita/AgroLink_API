@@ -13,7 +13,7 @@ type Contract struct {
 	ProjectID uuid.UUID `gorm:"type:char(36);not null"`
 	FarmerID  uuid.UUID `gorm:"type:char(36);not null"`
 	WorkerID  uuid.UUID `gorm:"type:char(36);not null"`
-	Content   string    `gorm:"type:text;not null"`
+	// Content   string    `gorm:"type:text;not null"`
 
 	SignedByFarmer bool `gorm:"default:false"`
 	SignedByWorker bool `gorm:"default:false"`

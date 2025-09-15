@@ -27,7 +27,6 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	invoiceRepo := repositories.NewInvoiceRepository(db)
 	transactionRepo := repositories.NewTransactionRepository(db)
 	payoutRepo := repositories.NewPayoutRepository(db)
-	contractTemplateRepo := repositories.NewContractTemplateRepository(db)
 	notifRepo := repositories.NewNotificationRepository(db)
 	reviewRepo := repositories.NewReviewRepository(db)
 	// workerRepo dan projectRepo sudah ada
@@ -36,11 +35,11 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	authService := services.NewAuthService(userRepo)
 	profileService := services.NewProfileService(userRepo)
 	farmService := services.NewFarmService(farmRepo)
-	projectService := services.NewProjectService(projectRepo, farmRepo, assignRepo, invoiceRepo)
+	projectService := services.NewProjectService(projectRepo, assignRepo, invoiceRepo)
 	contractService := services.NewContractService(contractRepo, projectService)
 	emailService := services.NewEmailService()
 	notificationService := services.NewNotificationService(notifRepo, emailService, userRepo)
-	appService := services.NewApplicationService(appRepo, projectRepo, contractRepo, assignRepo, contractTemplateRepo, notificationService, db)
+	appService := services.NewApplicationService(appRepo, projectRepo, contractRepo, assignRepo, notificationService, db)
 	paymentService := services.NewPaymentService(invoiceRepo, transactionRepo, payoutRepo, assignRepo, projectRepo, userRepo)
 	reviewService := services.NewReviewService(reviewRepo, workerRepo, projectRepo, db)
 
@@ -83,6 +82,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	{
 		projects.POST("/", middleware.RoleMiddleware("farmer"), projectHandler.CreateProject)
 		projects.GET("/", projectHandler.FindAllProjects)
+		projects.GET("/my", middleware.RoleMiddleware("farmer"), projectHandler.GetMyProjects)
 		projects.GET("/:id", projectHandler.GetProjectByID)
 		projects.GET("/:id/applications", middleware.RoleMiddleware("farmer"), appHandler.FindApplicationsByProjectID)
 		projects.POST("/:id/apply", middleware.RoleMiddleware("worker"), appHandler.ApplyToProject)

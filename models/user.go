@@ -47,7 +47,6 @@ type Farmer struct {
 
 	// Relationships
 	User          User           `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"-"`
-	FarmLocations []FarmLocation `gorm:"foreignKey:FarmerID;constraint:OnDelete:CASCADE"`
 	Projects      []Project      `gorm:"foreignKey:FarmerID;constraint:OnDelete:CASCADE"`
 }
 
@@ -110,7 +109,6 @@ type FarmLocation struct {
 
 	// Relationships
 	Farmer   Farmer    `gorm:"foreignKey:FarmerID;constraint:OnDelete:CASCADE" json:"-"`
-	Projects []Project `gorm:"foreignKey:FarmLocationID"`
 }
 
 // BeforeCreate hook for FarmLocation

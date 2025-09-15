@@ -1,7 +1,6 @@
 package services
 
 import (
-	"encoding/json"
 	"fmt"
 	"time"
 
@@ -18,36 +17,28 @@ type ProjectService interface {
 	// Perbaikan: Mengembalikan model mentah dan total, sesuai kesepakatan
 	FindAll(pagination dto.PaginationRequest) (*[]models.Project, int64, error)
 	FindByID(id string) (*models.Project, error)
-	CheckAndFinalizeProject(projectID uuid.UUID) error // <-- Fungsi baru
-    UpdateStatus(projectID string, status string) error // <-- Fungsi baru
+	FindMyProjects(farmerID uuid.UUID) ([]dto.MyProjectResponse, error)
+	CheckAndFinalizeProject(projectID uuid.UUID) error  // <-- Fungsi baru
+	UpdateStatus(projectID string, status string) error // <-- Fungsi baru
 }
 
 type projectService struct {
-	projectRepo  repositories.ProjectRepository
-	farmRepo     repositories.FarmRepository
-	assignRepo   repositories.AssignmentRepository
-	invoiceRepo  repositories.InvoiceRepository
+	projectRepo repositories.ProjectRepository
+	assignRepo  repositories.AssignmentRepository
+	invoiceRepo repositories.InvoiceRepository
 }
 
 // [PERUBAHAN] Perbarui konstruktor untuk menerima dependensi baru
-func NewProjectService(projectRepo repositories.ProjectRepository, farmRepo repositories.FarmRepository, assignRepo repositories.AssignmentRepository, invoiceRepo repositories.InvoiceRepository) ProjectService {
+func NewProjectService(projectRepo repositories.ProjectRepository, assignRepo repositories.AssignmentRepository, invoiceRepo repositories.InvoiceRepository) ProjectService {
 	return &projectService{
-		projectRepo:  projectRepo,
-		farmRepo:     farmRepo,
-		assignRepo:   assignRepo,
-		invoiceRepo:  invoiceRepo,
+		projectRepo: projectRepo,
+		assignRepo:  assignRepo,
+		invoiceRepo: invoiceRepo,
 	}
 }
 
 func (s *projectService) CreateProject(request dto.CreateProjectRequest, farmerID uuid.UUID) (*models.Project, error) {
-	_, err := s.farmRepo.FindByIDAndFarmerID(request.FarmLocationID, farmerID)
-	if err != nil {
-		// Jika GORM tidak menemukan record, berarti farm location tidak valid atau bukan milik farmer ini.
-		return nil, fmt.Errorf("invalid farm_location_id: not found or you do not have permission")
-	}
 
-	farmLocationUUID, _ := uuid.Parse(request.FarmLocationID)
-    
 	startDate, err := time.Parse("2006-01-02", request.StartDate)
 	if err != nil {
 		return nil, fmt.Errorf("invalid start_date format: %w", err)
@@ -57,34 +48,26 @@ func (s *projectService) CreateProject(request dto.CreateProjectRequest, farmerI
 		return nil, fmt.Errorf("invalid end_date format: %w", err)
 	}
 
-	skillsJSON, err := json.Marshal(request.RequiredSkills)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal skills: %w", err)
-	}
-
 	project := &models.Project{
-		FarmerID:       farmerID,
-		FarmLocationID: &farmLocationUUID,
-		Title:          request.Title,
-		Description:    request.Description,
-		ProjectType:    request.ProjectType,
-		RequiredSkills: string(skillsJSON),
-		WorkersNeeded:  request.WorkersNeeded,
-		StartDate:      startDate,
-		EndDate:        endDate,
-		PaymentRate:    &request.PaymentRate,
-		PaymentType:    request.PaymentType,
-		Status:         "open",
+		FarmerID:      farmerID,
+		Title:         request.Title,
+		Location:      request.Location,
+		Description:   request.Description,
+		WorkersNeeded: request.WorkersNeeded,
+		StartDate:     startDate,
+		EndDate:       endDate,
+		PaymentType:   request.PaymentType,
+		PaymentRate:   &request.PaymentRate,
+		Status:        "open",
 	}
 
 	if err := s.projectRepo.CreateProject(project); err != nil {
 		return nil, fmt.Errorf("failed to create project: %w", err)
 	}
 	createdProject, err := s.projectRepo.FindByID(project.ID.String())
-    if err != nil {
-        return nil, fmt.Errorf("failed to fetch created project: %w", err)
-    }
-
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch created project: %w", err)
+	}
 	return createdProject, nil
 
 }
@@ -122,6 +105,7 @@ func (s *projectService) CheckAndFinalizeProject(projectID uuid.UUID) error {
 		return err
 	}
 
+	// TODO perbarui lagi konsep invoicenya
 	if len(assignments) >= project.WorkersNeeded {
 		var baseAmount float64
 		durationDays := project.EndDate.Sub(project.StartDate).Hours()/24 + 1
@@ -135,7 +119,7 @@ func (s *projectService) CheckAndFinalizeProject(projectID uuid.UUID) error {
 		if baseAmount <= 0 {
 			return fmt.Errorf("calculated base amount is zero or negative for project %s", projectID)
 		}
-		
+
 		platformFee := baseAmount * 0.05
 		totalAmount := baseAmount + platformFee
 
@@ -160,6 +144,28 @@ func (s *projectService) CheckAndFinalizeProject(projectID uuid.UUID) error {
 }
 
 func (s *projectService) UpdateStatus(projectID string, status string) error {
-    return s.projectRepo.UpdateStatus(projectID, status)
+	return s.projectRepo.UpdateStatus(projectID, status)
 }
 
+func (s *projectService) FindMyProjects(farmerID uuid.UUID) ([]dto.MyProjectResponse, error) {
+	projects, err := s.projectRepo.FindAllByFarmerID(farmerID)
+	if err != nil {
+		return nil, err
+	}
+
+	var responseDTOs []dto.MyProjectResponse
+	for _, p := range projects {
+		dto := dto.MyProjectResponse{
+			ProjectID:     p.ID,
+			ProjectTitle:  p.Title,
+			ProjectStatus: p.Status,
+		}
+		// Jika proyek ini sudah punya invoice, tambahkan ID-nya ke DTO
+		if p.Invoice.ID != uuid.Nil {
+			dto.InvoiceID = &p.Invoice.ID
+		}
+		responseDTOs = append(responseDTOs, dto)
+	}
+
+	return responseDTOs, nil
+}

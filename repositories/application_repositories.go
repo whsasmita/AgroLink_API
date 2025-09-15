@@ -30,7 +30,6 @@ func (r *applicationRepository) FindByID(id string) (*models.ProjectApplication,
 	var application models.ProjectApplication
 	err := r.db.
 		Preload("Project.Farmer.User").
-		Preload("Project.FarmLocation"). // <-- [TAMBAHKAN INI]
 		Preload("Worker.User").
 		Where("id = ?", id).
 		First(&application).Error

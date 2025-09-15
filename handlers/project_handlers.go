@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"math"
 	"net/http"
 
@@ -39,7 +38,7 @@ func (h *ProjectHandler) CreateProject(c *gin.Context) {
 		utils.ErrorResponse(c, http.StatusForbidden, "Forbidden: Only farmers can create projects", nil)
 		return
 	}
-	
+
 	// 3. [PENYESUAIAN] Ambil ID Farmer dari primary key di model Farmer yang berelasi.
 	farmerID := currentUser.Farmer.UserID
 
@@ -56,33 +55,23 @@ func (h *ProjectHandler) CreateProject(c *gin.Context) {
 		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to create project", err)
 		return
 	}
-
-	var skills []string
-	if project.RequiredSkills != "" {
-		_ = json.Unmarshal([]byte(project.RequiredSkills), &skills)
+	response := dto.CreateProjectResponse{
+		ID:            project.ID,
+		FarmerID:      project.FarmerID,
+		FarmerName:    project.Farmer.User.Name,
+		Title:         project.Title,
+		Location:      project.Location,
+		Description:   project.Description,
+		WorkersNeeded: project.WorkersNeeded,
+		StartDate:     project.StartDate,
+		EndDate:       project.EndDate,
+		PaymentRate:   project.PaymentRate,
+		PaymentType:   project.PaymentType,
+		Status:        project.Status,
 	}
-
-    response := dto.CreateProjectResponse{
-        ID:             project.ID,
-        FarmerID:       project.FarmerID,
-        FarmerName:     project.Farmer.User.Name,
-        FarmLocationID: project.FarmLocationID,
-        Title:          project.Title,
-        Description:    project.Description,
-        ProjectType:    project.ProjectType,
-        RequiredSkills: skills,
-        WorkersNeeded:  project.WorkersNeeded,
-        StartDate:      project.StartDate,
-        EndDate:        project.EndDate,
-        PaymentRate:    project.PaymentRate,
-        PaymentType:    project.PaymentType,
-        Status:         project.Status,
-    }
 
 	utils.SuccessResponse(c, http.StatusCreated, "Project created successfully", response)
 }
-
-
 
 func (h *ProjectHandler) FindAllProjects(c *gin.Context) {
 	var paginationRequest dto.PaginationRequest
@@ -102,7 +91,6 @@ func (h *ProjectHandler) FindAllProjects(c *gin.Context) {
 		projectDTOs = append(projectDTOs, dto.ProjectBriefResponse{
 			ID:          p.ID,
 			Title:       p.Title,
-			ProjectType: p.ProjectType,
 			PaymentRate: p.PaymentRate,
 			PaymentType: p.PaymentType,
 			StartDate:   p.StartDate,
@@ -130,23 +118,16 @@ func (h *ProjectHandler) GetProjectByID(c *gin.Context) {
 		return
 	}
 
-	var skills []string
-	if err := json.Unmarshal([]byte(project.RequiredSkills), &skills); err != nil {
-		skills = []string{}
-	}
-
 	response := dto.ProjectDetailResponse{
-		ID:             project.ID,
-		Title:          project.Title,
-		Description:    project.Description,
-		ProjectType:    project.ProjectType,
-		RequiredSkills: skills,
-		WorkersNeeded:  project.WorkersNeeded,
-		StartDate:      project.StartDate,
-		EndDate:        project.EndDate,
-		PaymentRate:    project.PaymentRate,
-		PaymentType:    project.PaymentType,
-		Status:         project.Status,
+		ID:            project.ID,
+		Title:         project.Title,
+		Description:   project.Description,
+		WorkersNeeded: project.WorkersNeeded,
+		StartDate:     project.StartDate,
+		EndDate:       project.EndDate,
+		PaymentRate:   project.PaymentRate,
+		PaymentType:   project.PaymentType,
+		Status:        project.Status,
 		Farmer: dto.FarmerInfoResponse{
 			ID:   project.Farmer.UserID,
 			Name: project.Farmer.User.Name,
@@ -154,4 +135,20 @@ func (h *ProjectHandler) GetProjectByID(c *gin.Context) {
 	}
 
 	utils.SuccessResponse(c, http.StatusOK, "Project retrieved successfully", response)
+}
+
+func (h *ProjectHandler) GetMyProjects(c *gin.Context) {
+	currentUser := c.MustGet("user").(*models.User)
+	if currentUser.Farmer == nil {
+		utils.ErrorResponse(c, http.StatusForbidden, "Forbidden: Only farmers can access this resource", nil)
+		return
+	}
+	farmerID := currentUser.Farmer.UserID
+
+	projects, err := h.projectService.FindMyProjects(farmerID)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to retrieve projects", err)
+		return
+	}
+	utils.SuccessResponse(c, http.StatusOK, "My projects retrieved successfully", projects)
 }

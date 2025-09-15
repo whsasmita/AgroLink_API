@@ -26,7 +26,6 @@ var migrationModels = []interface{}{
 	&models.ProjectApplication{},
 	&models.ProjectAssignment{},
 	&models.Contract{},
-	&models.ContractTemplate{},
 
 	// [BARU] Financial models
 	&models.Invoice{},
@@ -112,8 +111,8 @@ func SeedDefaultData() {
 	log.Println("🌱 Seeding default data...")
 	seedSystemSettings()
 	seedUsers() // <-- Panggil seeder pengguna baru
-	seedContractTemplates()
-	seedCompletedProjectScenario()
+	// seedContractTemplates()
+	// seedCompletedProjectScenario()
 	log.Println("✅ Default data seeded successfully")
 }
 
@@ -129,12 +128,12 @@ func seedUsers() {
 	}{
 		// 1. Admin User
 		{
-			User:     models.User{Name: "Admin User", Email: "admin@agrolink.com", Role: "admin", EmailVerified: true, PhoneNumber: StringPtr("0810820830")},
+			User:     models.User{Name: "Admin User", Email: "admin@agrolink.com", Role: "admin", EmailVerified: true},
 			Password: "password123",
 		},
 		// 2. Farmer User
 		{
-			User:     models.User{Name: "Budi Petani", Email: "farmer1@agrolink.com", Role: "farmer", EmailVerified: true, PhoneNumber: StringPtr("081082083099")},
+			User:     models.User{Name: "Budi Petani", Email: "farmer1@agrolink.com", Role: "farmer", EmailVerified: true},
 			Farmer:   &models.Farmer{Address: StringPtr("Desa Sukamaju No. 10")},
 			Password: "password123",
 		},
@@ -145,7 +144,6 @@ func seedUsers() {
 				Email:         "worker1@agrolink.com",
 				Role:          "worker",
 				EmailVerified: true,
-				PhoneNumber:   StringPtr("081234567890"),
 			},
 			Worker: &models.Worker{
 				Skills:            `["menanam","menyiram","panen"]`,
@@ -159,7 +157,7 @@ func seedUsers() {
 			Password: "password123",
 		},
 		{
-			User:     models.User{Name: "Siti Pekerja", Email: "worker2@agrolink.com", Role: "worker", EmailVerified: true, PhoneNumber: StringPtr("089010820830")},
+			User:     models.User{Name: "Siti Pekerja", Email: "worker2@agrolink.com", Role: "worker", EmailVerified: true},
 			Worker:   &models.Worker{Skills: `["panen","sortir"]`, DailyRate: Float64Ptr(125000)},
 			Password: "password123",
 		},
@@ -271,58 +269,7 @@ func CreateIndexes() {
 	log.Println("✅ Database indexes created successfully")
 }
 
-func seedContractTemplates() {
-	log.Println("Creating default contract template...")
 
-	// Gunakan backtick (`) untuk string multi-baris
-	templateContent := `NOMOR: {{nomor_kontrak}}
-Pada hari ini, {{tanggal_pembuatan}}, dibuat dan disepakati Perjanjian Kerja Waktu Tertentu ("Perjanjian") ini secara elektronik oleh dan antara:
-
-Pemberi Kerja:
-1. Nama Perusahaan: {{nama_petani}}
-2. Alamat: {{alamat_petani}}
-3. Nomor Telepon: {{telepon_petani}}
-4. Alamat Email: {{email_petani}}
-
-Pekerja Kontrak:
-1. Nama Lengkap: {{nama_pekerja}}
-2. Nomor Induk Kependudukan (NIK): {{nik_pekerja}}
-3. Alamat: {{alamat_pekerja}}
-4. Nomor Telepon: {{telepon_pekerja}}
-5. Alamat Email: {{email_pekerja}}
-
-PASAL 2: POSISI DAN URAIAN PEKERJAAN
-1. Pekerja diterima dan dipekerjakan sebagai {{judul_proyek}}.
-2. Lingkup pekerjaan meliputi: {{deskripsi_proyek}}.
-3. Pekerja akan melaksanakan pekerjaan di {{lokasi_proyek}}.
-
-PASAL 3: JANGKA WAKTU PERJANJIAN
-Perjanjian ini berlaku terhitung sejak tanggal {{tanggal_mulai}} sampai dengan tanggal {{tanggal_berakhir}}.
-
-PASAL 4: UPAH DAN CARA PEMBAYARAN
-Perusahaan akan membayar upah kepada Pekerja sebesar Rp {{jumlah_upah}} per {{tipe_pembayaran}}. Total pembayaran akan disimpan dalam sistem escrow AgroLink dan dilepaskan setelah pekerjaan selesai ke rekening bank Pekerja dengan rincian:
-- Nama Bank: {{nama_bank_pekerja}}
-- Nomor Rekening: {{nomor_rekening_pekerja}}
-- Atas Nama: {{nama_pemilik_rekening}}
-
-
-
-(Pasal 5 s/d 10 berisi teks statis...)`
-
-	template := models.ContractTemplate{
-		Name:      "PKWT Pekerja Harian Lepas V1",
-		Content:   templateContent,
-		IsDefault: true,
-	}
-
-	// Cek jika template sudah ada
-	var existingTemplate models.ContractTemplate
-	if err := DB.Where("name = ?", template.Name).First(&existingTemplate).Error; err != nil {
-		if err := DB.Create(&template).Error; err != nil {
-			log.Printf("Failed to seed contract template: %v", err)
-		}
-	}
-}
 
 func seedCompletedProjectScenario() {
 	log.Println("Creating a completed project scenario...")
@@ -352,18 +299,14 @@ func seedCompletedProjectScenario() {
 
 		// 3. Buat Proyek dengan status "completed"
 		project := models.Project{
-			FarmerID:       farmerUser.Farmer.UserID,
-			FarmLocationID: &farmLocation.ID,
-			Title:          "Proyek Penanaman Tomat Ceri (Selesai)",
-			Description:    "Proyek ini sudah selesai dan siap untuk di-review.",
-			ProjectType:    "planting",
-			RequiredSkills: "[]",
-			WorkersNeeded:  1,
-			StartDate:      time.Now().AddDate(0, 0, -10), // 10 hari yang lalu
-			EndDate:        time.Now().AddDate(0, 0, -1),  // Kemarin
-			PaymentRate:    Float64Ptr(120000),
-			PaymentType:    "per_day",
-			Status:         "completed", // <-- Langsung set status selesai
+			FarmerID:      farmerUser.Farmer.UserID,
+			Title:         "Proyek Penanaman Tomat Ceri (Selesai)",
+			Description:   "Proyek ini sudah selesai dan siap untuk di-review.",
+			WorkersNeeded: 1,
+			StartDate:     time.Now().AddDate(0, 0, -10), // 10 hari yang lalu
+			EndDate:       time.Now().AddDate(0, 0, -1),  // Kemarin
+			PaymentRate:   Float64Ptr(120000),
+			Status:        "completed", // <-- Langsung set status selesai
 		}
 		if err := tx.Create(&project).Error; err != nil {
 			return err
@@ -374,7 +317,6 @@ func seedCompletedProjectScenario() {
 			ProjectID:      project.ID,
 			FarmerID:       farmerUser.Farmer.UserID,
 			WorkerID:       workerUser.Worker.UserID,
-			Content:        "Kontrak untuk proyek yang telah diselesaikan.",
 			SignedByFarmer: true,
 			SignedByWorker: true,
 			Status:         "completed",

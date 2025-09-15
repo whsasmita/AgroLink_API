@@ -9,25 +9,22 @@ import (
 
 // Project: Mewakili sebuah "lowongan pekerjaan" dari petani.
 type Project struct {
-	ID             uuid.UUID  `gorm:"type:char(36);primary_key"`
-	FarmerID       uuid.UUID  `gorm:"type:char(36);not null"`
-	FarmLocationID *uuid.UUID `gorm:"type:char(36)"`
-	Title          string     `gorm:"type:varchar(100);not null"`
-	Description    string     `gorm:"type:text;not null"`
-	ProjectType    string     `gorm:"type:enum('planting','maintenance','harvesting','irrigation','pest_control');not null"`
-	RequiredSkills string     `gorm:"type:json"` // JSON array of strings
-	WorkersNeeded  int        `gorm:"default:1"`
-	StartDate      time.Time  `gorm:"type:date;not null"`
-	EndDate        time.Time  `gorm:"type:date;not null"`
-	PaymentRate    *float64   `gorm:"type:decimal(10,2)"`                         // Tarif pembayaran
-	PaymentType    string     `gorm:"type:enum('per_day','per_hour','lump_sum')"` // Jenis pembayaran
-	Status         string     `gorm:"type:enum('open','in_progress','completed','cancelled');default:open"`
-	CreatedAt      time.Time
-	UpdatedAt      time.Time
-
+	ID            uuid.UUID `gorm:"type:char(36);primary_key"`
+	FarmerID      uuid.UUID `gorm:"type:char(36);not null"`
+	Title         string    `gorm:"type:varchar(100);not null"`
+	Description   string    `gorm:"type:text;not null"`
+	Location      string    `gorm:"type:varchar(100);not null"`
+	WorkersNeeded int       `gorm:"default:1"`
+	StartDate     time.Time `gorm:"type:date;not null"`
+	EndDate       time.Time `gorm:"type:date;not null"`
+	PaymentRate   *float64  `gorm:"type:decimal(10,2)"`   // Tarif pembayaran
+	PaymentType   string    `gorm:"type:enum('per_day')"` // Jenis pembayaran
+	Status        string    `gorm:"type:enum('open','in_progress','completed','cancelled');default:open"`
+	Invoice       Invoice   `gorm:"foreignKey:ProjectID"`
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
 	// Relasi
 	Farmer              Farmer
-	FarmLocation        *FarmLocation
 	ProjectApplications []ProjectApplication
 	ProjectAssignments  []ProjectAssignment
 }

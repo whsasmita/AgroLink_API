@@ -10,12 +10,12 @@ import (
 	"github.com/SebastiaanKlippert/go-wkhtmltopdf"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/whsasmita/AgroLink_API/models"
+	"github.com/whsasmita/AgroLink_API/dto"
 	"github.com/whsasmita/AgroLink_API/repositories"
 )
 
 type ContractService interface {
-	SignContract(contractID string, workerID uuid.UUID) (*models.Contract, error)
+	SignContract(contractID string, workerID uuid.UUID) (*dto.SignContractResponse, error)
 	GenerateContractPDF(contractID string) (*bytes.Buffer, error)
 }
 
@@ -31,7 +31,7 @@ func NewContractService(repo repositories.ContractRepository, projectService Pro
 	}
 }
 
-func (s *contractService) SignContract(contractID string, workerID uuid.UUID) (*models.Contract, error) {
+func (s *contractService) SignContract(contractID string, workerID uuid.UUID) (*dto.SignContractResponse, error) {
 	contract, err := s.contractRepo.FindByID(contractID)
 	if err != nil {
 		return nil, fmt.Errorf("contract not found")
@@ -53,7 +53,16 @@ func (s *contractService) SignContract(contractID string, workerID uuid.UUID) (*
 	}
 
 	go s.projectService.CheckAndFinalizeProject(contract.ProjectID)
-	return contract, nil
+
+	response := &dto.SignContractResponse{
+		ContractID:   contract.ID,
+		ProjectTitle: contract.Project.Title,
+		Status:       contract.Status,
+		SignedByWorker: contract.SignedByWorker,
+		SignedAt:     *contract.SignedAt,
+		Message:      "Kontrak telah berhasil ditandatangani dan sekarang aktif.",
+	}
+	return response, nil
 }
 
 func (s *contractService) GenerateContractPDF(contractID string) (*bytes.Buffer, error) {
@@ -64,7 +73,7 @@ func (s *contractService) GenerateContractPDF(contractID string) (*bytes.Buffer,
 
 	data := gin.H{
 		"Contract":         contract,
-		"FormattedContent": template.HTML(contract.Content),
+		// "FormattedContent": template.HTML(contract.Content),
 		"TanggalPembuatan":   contract.CreatedAt.Format("dddd, 2 January 2006"),
 	}
 
