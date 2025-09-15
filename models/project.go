@@ -19,7 +19,7 @@ type Project struct {
 	EndDate       time.Time `gorm:"type:date;not null"`
 	PaymentRate   *float64  `gorm:"type:decimal(10,2)"`   // Tarif pembayaran
 	PaymentType   string    `gorm:"type:enum('per_day')"` // Jenis pembayaran
-	Status        string    `gorm:"type:enum('open','in_progress','completed','cancelled');default:open"`
+	Status        string    `gorm:"type:enum('open','direct_offer','waiting_payment','in_progress','completed','cancelled');default:open"`
 	Invoice       Invoice   `gorm:"foreignKey:ProjectID"`
 	CreatedAt     time.Time
 	UpdatedAt     time.Time

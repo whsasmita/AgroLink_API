@@ -42,6 +42,8 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	appService := services.NewApplicationService(appRepo, projectRepo, contractRepo, assignRepo, notificationService, db)
 	paymentService := services.NewPaymentService(invoiceRepo, transactionRepo, payoutRepo, assignRepo, projectRepo, userRepo)
 	reviewService := services.NewReviewService(reviewRepo, workerRepo, projectRepo, db)
+	offerService := services.NewOfferService(projectRepo, contractRepo, assignRepo,userRepo, db)
+	
 
 	notifHandler := handlers.NewNotificationHandler(notifRepo)
 
@@ -54,6 +56,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	contractHandler := handlers.NewContractHandler(contractService)
 	paymentHandler := handlers.NewPaymentHandler(paymentService)
 	reviewHandler := handlers.NewReviewHandler(reviewService)
+	offerHandler := handlers.NewOfferHandler(offerService)
 
 	// =================================================================
 	// [DIREVISI] ROUTE DEFINITIONS
@@ -118,4 +121,12 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	{
 		notifications.GET("/", notifHandler.GetMyNotifications)
 	}
+
+	workers := router.Group("/workers")
+{
+    // ... (misalnya rute untuk GET /workers)
+    
+    // Rute untuk petani menawarkan proyek langsung ke pekerja
+    workers.POST("/:workerId/direct-offer", middleware.RoleMiddleware("farmer"), offerHandler.CreateDirectOffer)
+}
 }

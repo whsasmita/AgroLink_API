@@ -61,7 +61,7 @@ func (s *projectService) CreateProject(request dto.CreateProjectRequest, farmerI
 		Status:        "open",
 	}
 
-	if err := s.projectRepo.CreateProject(project); err != nil {
+	if err := s.projectRepo.CreateProject(nil,project); err != nil {
 		return nil, fmt.Errorf("failed to create project: %w", err)
 	}
 	createdProject, err := s.projectRepo.FindByID(project.ID.String())

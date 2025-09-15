@@ -8,7 +8,7 @@ import (
 )
 
 type ProjectRepository interface {
-	CreateProject(project *models.Project) error
+	CreateProject(tx *gorm.DB, project *models.Project) error
 	FindAll(pagination dto.PaginationRequest) (*[]models.Project, int64, error)
 	FindByID(id string) (*models.Project, error)
 	HasWorkerApplied(projectID, workerID string) (bool, error)
@@ -26,8 +26,14 @@ func NewProjectRepository(db *gorm.DB) ProjectRepository {
 	return &projectRepository{db: db}
 }
 
-func (r *projectRepository) CreateProject(project *models.Project) error {
-	return r.db.Create(project).Error
+func (r *projectRepository) CreateProject(tx *gorm.DB, project *models.Project) error {
+	// Gunakan koneksi DB utama secara default
+	db := r.db
+	// Jika ada objek transaksi (tx) yang diberikan, gunakan itu.
+	if tx != nil {
+		db = tx
+	}
+	return db.Create(project).Error
 }
 
 func (r *projectRepository) FindAllByFarmerID(farmerID uuid.UUID) ([]models.Project, error) {
