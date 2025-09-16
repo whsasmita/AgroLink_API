@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  # --- Layanan API Anda ---
+  agrolink-api:
+    image: darmawiguna/agrolink-api:latest
+    container_name: agrolink-api-prod
+    restart: always
+    ports:
+      - "8090:8080" # Port yang sudah kita ubah sebelumnya
+    env_file:
+      - .env
+    # [TAMBAHAN] Memberitahu service ini untuk menunggu database siap terlebih dahulu
+    depends_on:
+      - mysql-db
+
+  # --- Layanan Database MySQL ---
+  mysql-db:
+    image: mysql:8.0
+    container_name: agrolink-mysql-db
+    restart: always
+    environment:
+      # Variabel ini akan digunakan oleh image MySQL untuk setup awal
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD} # Ambil dari file .env
+      MYSQL_DATABASE: ${DB_NAME}             # Ambil dari file .env
+      MYSQL_USER: ${DB_USER}                 # Ambil dari file .env
+      MYSQL_PASSWORD: ${DB_PASSWORD}         # Ambil dari file .env
+    ports:
+      # (Opsional) Membuka port database ke VPS untuk diakses dari luar kontainer (misal: via DBeaver)
+      - "3306:3306"
+    volumes:
+      # Menyimpan data MySQL secara permanen di volume Docker
+      - db-data:/var/lib/mysql
+
+# --- Volume untuk persistensi data ---
+# Mendefinisikan volume yang akan digunakan oleh layanan di atas
+volumes:
+  db-data:

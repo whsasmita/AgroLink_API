@@ -1,0 +1,71 @@
+# Nama workflow
+name: Deploy AgroLink API to VPS
+
+# Pemicu: Jalankan workflow ini setiap kali ada 'push' ke branch 'main'.
+on:
+  push:
+    branches: [ "main" ]
+
+# Daftar pekerjaan (jobs) yang akan dilakukan.
+jobs:
+  # Job 1: Membangun dan mengunggah image.
+  build-and-push:
+    name: Build and Push Docker Image
+    # Dijalankan di server virtual Ubuntu milik GitHub.
+    runs-on: ubuntu-latest
+    steps:
+      # Mengambil source code dari repositori Anda.
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Login ke Docker Hub menggunakan username dan token yang disimpan di GitHub Secrets.
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Membangun image dari Dockerfile dan mengunggahnya ke Docker Hub.
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: darmwiguna/agrolink-api:latest
+
+  # Job 2: Mendeploy ke VPS.
+  deploy:
+    name: Deploy to VPS
+    # Job ini baru akan berjalan setelah 'build-and-push' berhasil.
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      # Masuk ke VPS menggunakan SSH. Kredensial diambil dari GitHub Secrets.
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_SSH_HOST }}
+          username: ${{ secrets.VPS_SSH_USERNAME }}
+          key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          # Daftar perintah yang akan dijalankan di VPS secara berurutan.
+          script: |
+            # 1. Pindah ke direktori aplikasi.
+            cd /home/ubuntu/agrolink
+            
+            # 2. Ambil versi terbaru dari file konfigurasi (docker-compose.yml) dari Git.
+            echo "Pulling latest changes from Git..."
+            git pull origin main
+            
+            # 3. Unduh image Docker terbaru dari Docker Hub yang baru saja di-push.
+            echo "Pulling latest image from Docker Hub..."
+            docker-compose pull
+            
+            # 4. Matikan kontainer lama dan jalankan yang baru dengan image dan konfigurasi terbaru.
+            echo "Restarting services..."
+            docker-compose up -d --remove-orphans
+            
+            # 5. (Opsional) Bersihkan image-image lama yang tidak terpakai untuk menghemat ruang disk.
+            echo "Cleaning up old images..."
+            docker image prune -f
+            
+            echo "Deployment complete!"
