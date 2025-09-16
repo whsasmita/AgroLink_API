@@ -47,6 +47,7 @@ jobs:
           host: ${{ secrets.VPS_SSH_HOST }}
           username: ${{ secrets.VPS_SSH_USERNAME }}
           key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          port: 2607
           # Daftar perintah yang akan dijalankan di VPS secara berurutan.
           script: |
             # 1. Pindah ke direktori aplikasi.
