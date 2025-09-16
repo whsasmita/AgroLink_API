@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   # --- Layanan API Anda ---
@@ -22,12 +22,12 @@ services:
     environment:
       # Variabel ini akan digunakan oleh image MySQL untuk setup awal
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD} # Ambil dari file .env
-      MYSQL_DATABASE: ${DB_NAME}             # Ambil dari file .env
-      MYSQL_USER: ${DB_USER}                 # Ambil dari file .env
-      MYSQL_PASSWORD: ${DB_PASSWORD}         # Ambil dari file .env
+      MYSQL_DATABASE: ${DB_NAME} # Ambil dari file .env
+      MYSQL_USER: ${DB_USER} # Ambil dari file .env
+      MYSQL_PASSWORD: ${DB_PASSWORD} # Ambil dari file .env
     ports:
       # (Opsional) Membuka port database ke VPS untuk diakses dari luar kontainer (misal: via DBeaver)
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       # Menyimpan data MySQL secara permanen di volume Docker
       - db-data:/var/lib/mysql
