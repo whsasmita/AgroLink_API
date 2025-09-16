@@ -31,7 +31,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: darmwiguna/agrolink-api:latest
+          tags: darmawiguna/agrolink-api:latest
 
   # Job 2: Mendeploy ke VPS.
   deploy:
