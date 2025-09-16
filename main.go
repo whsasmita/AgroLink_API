@@ -37,7 +37,7 @@ func main() {
 	// Graceful shutdown
 	defer config.CloseDatabase()
 
-	// Handle graceful shutdown
+
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	go func() {
