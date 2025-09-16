@@ -24,8 +24,6 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found, using system environment variables")
 	}
-
-	// Load configuration
 	cfg := config.LoadConfig()
 
 	// Connect to database
