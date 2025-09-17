@@ -29,6 +29,10 @@ services:
     ports:
       # (Opsional) Membuka port database ke VPS untuk diakses dari luar kontainer (misal: via DBeaver)
       - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}"]
+      timeout: 20s
+      retries: 10
     volumes:
       # Menyimpan data MySQL secara permanen di volume Docker
       - db-data:/var/lib/mysql
