@@ -7,7 +7,7 @@ services:
     container_name: agrolink-api-prod
     restart: always
     ports:
-      - "8090:8080" # Port yang sudah kita ubah sebelumnya
+      - "127.0.0.1:8090:8080"
     env_file:
       - .env
     # [TAMBAHAN] Memberitahu service ini untuk menunggu database siap terlebih dahulu
