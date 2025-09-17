@@ -12,7 +12,8 @@ services:
       - .env
     # [TAMBAHAN] Memberitahu service ini untuk menunggu database siap terlebih dahulu
     depends_on:
-      - mysql-db
+      mysql-db:
+        condition: service_healthy
 
   # --- Layanan Database MySQL ---
   mysql-db:
