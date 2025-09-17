@@ -61,11 +61,15 @@ jobs:
             echo "Pulling latest image from Docker Hub..."
             docker-compose pull
             
-            # 4. Matikan kontainer lama dan jalankan yang baru dengan image dan konfigurasi terbaru.
-            echo "Restarting services..."
-            docker-compose up -d --remove-orphans
+            # [PERBAIKAN] Hentikan & hapus environment lama untuk memastikan "clean state".
+            echo "Bringing down old environment..."
+            docker-compose down
             
-            # 5. (Opsional) Bersihkan image-image lama yang tidak terpakai untuk menghemat ruang disk.
+            # Buat & jalankan environment baru dari awal.
+            echo "Bringing up new environment..."
+            docker-compose up -d
+            
+            # Bersihkan image-image lama yang tidak lagi digunakan.
             echo "Cleaning up old images..."
             docker image prune -f
             
