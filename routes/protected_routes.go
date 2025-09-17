@@ -67,6 +67,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	router.GET("/profile", authHandler.GetProfile)
 	router.PUT("/profile", profileHandler.UpdateProfile)
 	router.POST("/profile/details", profileHandler.UpdateRoleDetails)
+	router.POST("/profile/upload-photo", profileHandler.UploadProfilePhoto)
 	// ... (rute profil lainnya)
 
 	// Farm Routes (Hanya untuk Petani)
