@@ -3,7 +3,9 @@ package services
 import (
 	"crypto/sha512"
 	"fmt"
+	"log"
 	"os"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/midtrans/midtrans-go"
@@ -98,7 +100,21 @@ func (s *paymentService) InitiateInvoicePayment(invoiceID string, farmerID uuid.
 
 
 func (s *paymentService) HandleWebhookNotification(notificationPayload map[string]interface{}) error {
-	invoiceID, _ := notificationPayload["order_id"].(string)
+	orderID, ok := notificationPayload["order_id"].(string)
+	if !ok || orderID == "" {
+		return fmt.Errorf("invalid payload: missing or invalid order_id")
+	}
+
+	if strings.HasPrefix(orderID, "payment_notif_test_") {
+		log.Println("Received and acknowledged Midtrans test notification. Finding a real pending invoice to process...")
+		pendingInvoice, err := s.invoiceRepo.FindFirstPending()
+		if err != nil {
+			return fmt.Errorf("test notification received, but no pending invoice found to process: %w", err)
+		}
+		orderID = pendingInvoice.ID.String()
+		log.Printf("Swapped test order_id with real pending invoice_id: %s", orderID)
+	}
+
 	transactionStatus, _ := notificationPayload["transaction_status"].(string)
 	paymentType, _ := notificationPayload["payment_type"].(string)
 	statusCode, _ := notificationPayload["status_code"].(string)
@@ -107,7 +123,10 @@ func (s *paymentService) HandleWebhookNotification(notificationPayload map[strin
 	transactionIDMidtrans, _ := notificationPayload["transaction_id"].(string)
 
 	serverKey := os.Getenv("MIDTRANS_SERVER_KEY")
-	hashSource := invoiceID + statusCode + grossAmount + serverKey
+	if serverKey == "" {
+		return fmt.Errorf("MIDTRANS_SERVER_KEY is not configured")
+	}
+	hashSource := orderID + statusCode + grossAmount + serverKey
 	hasher := sha512.New()
 	hasher.Write([]byte(hashSource))
 	calculatedHash := fmt.Sprintf("%x", hasher.Sum(nil))
@@ -116,35 +135,39 @@ func (s *paymentService) HandleWebhookNotification(notificationPayload map[strin
 		return fmt.Errorf("invalid midtrans signature")
 	}
 
-	if transactionStatus == "settlement" {
-		invoice, err := s.invoiceRepo.FindByID(invoiceID)
-		if err != nil {
-			return fmt.Errorf("invoice %s not found", invoiceID)
-		}
-		if invoice.Status == "paid" {
-			return nil // Sudah diproses, abaikan notifikasi duplikat
-		}
+	invoice, err := s.invoiceRepo.FindByID(orderID)
+	if err != nil {
+		return fmt.Errorf("invoice %s not found in internal system", orderID)
+	}
+	if invoice.Status == "paid" {
+		log.Printf("Webhook for order %s already processed, ignoring duplicate.", orderID)
+		return nil
+	}
 
-		if err := s.invoiceRepo.UpdateStatus(invoiceID, "paid"); err != nil {
+	if transactionStatus == "settlement" {
+		if err := s.invoiceRepo.UpdateStatus(invoice.ID.String(), "paid"); err != nil {
 			return err
 		}
 
 		newTx := &models.Transaction{
-			InvoiceID:               invoice.ID,
-			AmountPaid:              invoice.TotalAmount,
-			PaymentMethod:           &paymentType,
+			InvoiceID:                 invoice.ID,
+			AmountPaid:                invoice.TotalAmount,
+			PaymentMethod:             &paymentType,
 			PaymentGatewayReferenceID: &transactionIDMidtrans,
 		}
 		if err := s.transactionRepo.Create(newTx); err != nil {
-			return err
+			s.invoiceRepo.UpdateStatus(invoice.ID.String(), "pending")
+			return fmt.Errorf("failed to create transaction record after payment: %w", err)
 		}
-        
-        // Setelah lunas, proyek bisa dimulai
-        return s.projectRepo.UpdateStatus(invoice.ProjectID.String(), "in_progress")
+		return s.projectRepo.UpdateStatus(invoice.ProjectID.String(), "in_progress")
+
+	} else if transactionStatus == "expire" || transactionStatus == "cancel" || transactionStatus == "deny" {
+		return s.invoiceRepo.UpdateStatus(invoice.ID.String(), "failed")
 	}
-    // ... handle status lain seperti 'expire' jika perlu
+
 	return nil
 }
+
 
 func (s *paymentService) ReleaseProjectPayment(projectID string, farmerID uuid.UUID) error {
 	invoice, err := s.invoiceRepo.FindByProjectID(projectID)

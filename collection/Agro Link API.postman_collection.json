@@ -18,7 +18,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\" : \"worker4@gmail.com\",\r\n    \"password\" : \"AdminPassword\",\r\n    \"role\" : \"worker\",\r\n    \"name\" : \"worrie\",\r\n    \"phone_number\" : \"085497809093\"\r\n}",
+							"raw": "{\r\n    \"email\" : \"farmer2@gmail.com\",\r\n    \"password\" : \"AdminPassword\",\r\n    \"role\" : \"farmer\",\r\n    \"name\" : \"worrie\",\r\n    \"phone_number\" : \"085497809093\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -91,7 +91,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\" : \"worker1@agrolink.com\",\r\n    \"password\" : \"password123\"\r\n}",
+							"raw": "{\r\n    \"email\" : \"farmer1@agrolink.com\",\r\n    \"password\" : \"password123\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1109,6 +1109,41 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Get My Project",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_farmer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"Proyek Panen Jagung Musim Kering\",\r\n    \"description\": \"Dibutuhkan 5 orang untuk membantu proses panen jagung di lahan seluas 2 hektar. Pengalaman tidak diutamakan.\",\r\n    \"project_type\": \"harvesting\",\r\n    \"required_skills\": [\"memetik\", \"mengangkut\"],\r\n    \"workers_needed\": 5,\r\n    \"start_date\": \"2025-09-10\",\r\n    \"end_date\": \"2025-09-20\",\r\n    \"payment_rate\": 150000.00,\r\n    \"payment_type\": \"per_day\"\r\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/projects/my",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"projects",
+								"my"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -1211,6 +1246,44 @@
 							"path": [
 								"projects",
 								"30dba8cf-80d1-4867-aedb-ccc969dec4a6applications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Direct-Offer",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_farmer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"Tawaran Langsung: Perawatan Kebun\",\r\n    \"description\": \"Tugas perawatan rutin kebun selama 3 hari.\",\r\n    \"location\": \"Kebun Petani Budi\",\r\n    \"start_date\": \"2025-12-20\",\r\n    \"end_date\": \"2025-12-22\",\r\n    \"payment_rate\": 175000.00\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/workers/{{worker_id}}/direct-offer",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"workers",
+								"{{worker_id}}",
+								"direct-offer"
 							]
 						}
 					},
@@ -1340,8 +1413,33 @@
 				{
 					"name": "Release Fee",
 					"request": {
-						"method": "GET",
-						"header": []
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_farmer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"message\": \"Saya siap untuk menguji proyek ini.\"\r\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/projects/{{project_id}}/release-payment",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"projects",
+								"{{project_id}}",
+								"release-payment"
+							]
+						}
 					},
 					"response": []
 				}
@@ -1391,6 +1489,28 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "health",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://173.249.25.147:8090/health",
+					"protocol": "http",
+					"host": [
+						"173",
+						"249",
+						"25",
+						"147"
+					],
+					"port": "8090",
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
@@ -1434,6 +1554,11 @@
 			"key": "token_worker",
 			"value": "",
 			"type": "string"
+		},
+		{
+			"key": "worker_id",
+			"value": "",
+			"type": "default"
 		}
 	]
 }

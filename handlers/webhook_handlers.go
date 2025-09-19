@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"bytes" // <-- Import baru
+	"io"
 	"log"
 	"net/http"
 
@@ -17,10 +19,25 @@ func NewWebhookHandler(service services.PaymentService) *WebhookHandler {
 }
 
 func (h *WebhookHandler) HandleMidtransNotification(c *gin.Context) {
+	// [DEBUGGING] Langkah 1: Baca dan log body mentah dari request
+	bodyBytes, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		log.Printf("ERROR reading webhook body: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot read request body"})
+		return
+	}
+	log.Printf("--- Raw Midtrans Webhook Body ---")
+	log.Println(string(bodyBytes))
+	log.Printf("---------------------------------")
+
+	// [PENTING] Kembalikan body ke request context agar bisa dibaca lagi oleh ShouldBindJSON
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+
+
 	var notificationPayload map[string]interface{}
 	
 	if err := c.ShouldBindJSON(&notificationPayload); err != nil {
-		log.Printf("Invalid webhook payload: %v", err)
+		log.Printf("Invalid webhook payload (JSON binding failed): %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid notification format"})
 		return
 	}

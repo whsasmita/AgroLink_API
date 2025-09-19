@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/whsasmita/AgroLink_API/config"
 	"github.com/whsasmita/AgroLink_API/models"
 	"github.com/whsasmita/AgroLink_API/services"
 	"github.com/whsasmita/AgroLink_API/utils"
@@ -115,7 +116,9 @@ func (h *profileHandler) UploadProfilePhoto(c *gin.Context) {
 	// 5. Buat URL publik yang akan disimpan ke database
 	// Pastikan URL ini sesuai dengan konfigurasi static server Anda.
 	// Di pengembangan, kita bisa hardcode. Di produksi, ini harus dari config/env.
-	fileURL := fmt.Sprintf("http://localhost:8080/static/images/profiles/%s", newFileName)
+	// appURL := utils.GetEnv("APP_URL", "http://localhost:8080")
+	appUrl := config.AppConfig_.App.APP_URL
+	fileURL := fmt.Sprintf("%s/static/images/profiles/%s", appUrl, newFileName)
 
 	// 6. Panggil service untuk memperbarui URL gambar di database
 	updatedUser, err := h.service.UpdateProfile(
