@@ -31,7 +31,7 @@ func main() {
 
 	// Run migrations
 	// config.RunMigrationWithReset()
-	config.AutoMigrate()
+	// config.AutoMigrate()
 	// config.CreateIndexes()
 
 	// Graceful shutdown

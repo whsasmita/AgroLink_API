@@ -15,8 +15,9 @@ type Config struct {
 }
 
 type AppConfig struct {
-	Env  string
-	Port string
+	Env     string
+	Port    string
+	APP_URL any
 }
 
 type DatabaseConfig struct {
@@ -55,8 +56,9 @@ var AppConfig_ *Config
 func LoadConfig() *Config {
 	AppConfig_ = &Config{
 		App: AppConfig{
-			Env:  getEnvWithDefault("APP_ENV", "development"),
-			Port: getEnvWithDefault("PORT", "8080"),
+			Env:     getEnvWithDefault("APP_ENV", "development"),
+			Port:    getEnvWithDefault("PORT", "8080"),
+			APP_URL: getEnvWithDefault("APP_URL", ""),
 		},
 		Database: DatabaseConfig{
 			Host:     getEnvWithDefault("DB_HOST", "localhost"),
