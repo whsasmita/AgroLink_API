@@ -94,6 +94,7 @@ func (h *ProjectHandler) FindAllProjects(c *gin.Context) {
 			PaymentRate: p.PaymentRate,
 			PaymentType: p.PaymentType,
 			StartDate:   p.StartDate,
+			WorkersNeeded: p.WorkersNeeded,
 		})
 	}
 
