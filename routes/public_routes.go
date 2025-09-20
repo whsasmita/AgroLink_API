@@ -21,9 +21,11 @@ func PublicRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	authHandler := handlers.NewAuthHandler(authService)
 
 	// (Nantinya, inisialisasi untuk Project, dll. juga di sini)
-	// projectRepo := repositories.NewProjectRepository(db)
-	// projectService := services.NewProjectService(projectRepo)
-	// projectHandler := handlers.NewProjectHandler(projectService)
+	projectRepo := repositories.NewProjectRepository(db)
+	assignRepo := repositories.NewAssignmentRepository(db)
+	invoiceRepo := repositories.NewInvoiceRepository(db)
+	projectService := services.NewProjectService(projectRepo, assignRepo, invoiceRepo)
+	projectHandler := handlers.NewProjectHandler(projectService)
 
 	//Komponen Worker
 	workerRepo := repositories.NewWorkerRepository(config.DB)
@@ -36,14 +38,14 @@ func PublicRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	driverHandler := handlers.NewDriverHandler(driverService)
 
 	// transactionRepo := repositories.NewTransactionRepository(db)
-    // userRepo sudah diinisialisasi di atas
+	// userRepo sudah diinisialisasi di atas
 
-    // 2. Inisialisasi Service Pembayaran
-    // PaymentService membutuhkan TransactionRepository dan UserRepository
-    // paymentService := services.NewPaymentService(transactionRepo, userRepo)
+	// 2. Inisialisasi Service Pembayaran
+	// PaymentService membutuhkan TransactionRepository dan UserRepository
+	// paymentService := services.NewPaymentService(transactionRepo, userRepo)
 
-    // 3. Inisialisasi Handler Pembayaran (untuk rute terproteksi)
-    // webhookHandler := handlers.NewWebhookHandler(paymentService)
+	// 3. Inisialisasi Handler Pembayaran (untuk rute terproteksi)
+	// webhookHandler := handlers.NewWebhookHandler(paymentService)
 
 	// =================================================================
 	// ROUTE DEFINITIONS (Daftarkan semua endpoint di sini)
@@ -57,15 +59,20 @@ func PublicRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	// Worker Routes
 	workerGroup := router.Group("/workers")
 	workerGroup.GET("/", workerHandler.GetWorkers)
-	workerGroup.GET("/:id", workerHandler.GetWorker) 
+	workerGroup.GET("/:id", workerHandler.GetWorker)
 
 	// Driver Routes
 	driverGroup := router.Group("/drivers")
 	driverGroup.GET("/", driverHandler.GetDrivers)
-	driverGroup.GET("/:id", driverHandler.GetDriver) 
+	driverGroup.GET("/:id", driverHandler.GetDriver)
 
 	// paymentRoute := router.Group("/transactions")
 	// paymentRoute.POST("/webhooks/midtrans-notification", webhookHandler.HandleMidtransNotification)
+
+	projects := router.Group("/projects")
+	{
+		projects.GET("/", projectHandler.FindAllProjects)
+	}
 
 	// Tambahkan juga routes lain seperti: search, contracts, payments, reviews, notifications ke sini.
 }
