@@ -30,7 +30,7 @@ func main() {
 	db := config.ConnectDatabase()
 
 	// Run migrations
-	// config.RunMigrationWithReset()
+	config.RunMigrationWithReset()
 	// config.AutoMigrate()
 	// config.CreateIndexes()
 
@@ -83,6 +83,7 @@ func main() {
 	payoutRepo := repositories.NewPayoutRepository(db)
 	assignRepo := repositories.NewAssignmentRepository(db)
 	projectRepo := repositories.NewProjectRepository(db) // Perlu diinisialisasi di sini
+	webhookRepo := repositories.NewWebhookLogRepository(db)
 
 	// Inisialisasi PaymentService dengan SEMUA dependensi yang dibutuhkan
 	paymentService := services.NewPaymentService(
@@ -92,9 +93,10 @@ func main() {
 		assignRepo,
 		projectRepo,
 		userRepo,
+		db,
 	)
 
-	webhookHandler := handlers.NewWebhookHandler(paymentService)
+	webhookHandler := handlers.NewWebhookHandler(paymentService, webhookRepo)
 	
 
 	// Buat grup API level atas

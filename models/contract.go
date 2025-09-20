@@ -9,27 +9,34 @@ import (
 
 // Contract represents digital contracts
 type Contract struct {
-	ID        uuid.UUID `gorm:"type:char(36);primary_key"`
-	ProjectID uuid.UUID `gorm:"type:char(36);not null"`
-	FarmerID  uuid.UUID `gorm:"type:char(36);not null"`
-	WorkerID  uuid.UUID `gorm:"type:char(36);not null"`
-	// Content   string    `gorm:"type:text;not null"`
+	ID uuid.UUID `gorm:"type:char(36);primary_key"`
 
-	SignedByFarmer bool `gorm:"default:false"`
-	SignedByWorker bool `gorm:"default:false"`
-	SignedAt       *time.Time
+	// [BARU] Menandakan jenis kontrak: 'work' untuk proyek, 'delivery' untuk pengiriman.
+	ContractType string `gorm:"type:enum('work', 'delivery');not null"`
 
-	Status    string `gorm:"type:enum('pending_signature','active','completed','terminated');default:'pending_signature'"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	// [DIUBAH] Menjadi pointer (*), karena kontrak bisa untuk Proyek ATAU Pengiriman.
+	ProjectID  *uuid.UUID `gorm:"type:char(36)"`
+	DeliveryID *uuid.UUID `gorm:"type:char(36)"` // Akan digunakan nanti
+
+	FarmerID uuid.UUID `gorm:"type:char(36);not null"` // Pemberi kerja selalu Petani
+
+	// [DIUBAH] Menjadi pointer (*), karena pihak kedua bisa Pekerja ATAU Driver.
+	WorkerID *uuid.UUID `gorm:"type:char(36)"`
+	DriverID *uuid.UUID `gorm:"type:char(36)"` // Akan digunakan nanti
+
+	// Field lain tidak berubah
+	SignedByFarmer      bool `gorm:"default:false"`
+	SignedBySecondParty bool `gorm:"default:false"` // Mungkin perlu diganti nama menjadi SignedBySecondParty
+	SignedAt            *time.Time
+	Status              string `gorm:"type:enum('pending_signature','active','completed','terminated');default:'pending_signature'"`
+	CreatedAt           time.Time
+	UpdatedAt           time.Time
 
 	// Relasi
-	Project            Project
-	Farmer             Farmer
-	Worker             Worker
-	ProjectAssignments []ProjectAssignment
-    // [PERBAIKAN] Hapus relasi ke Transaction dari sini karena sudah ditangani oleh Invoice
-	// Transactions       []Transaction `gorm:"foreignKey:ContractID"` 
+	Project  *Project // Diubah menjadi pointer
+	Delivery *Delivery
+	Farmer   Farmer
+	Worker   *Worker // Diubah menjadi pointer
 }
 
 func (c *Contract) BeforeCreate(tx *gorm.DB) error {

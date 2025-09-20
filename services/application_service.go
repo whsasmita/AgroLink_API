@@ -105,9 +105,10 @@ func (s *applicationService) AcceptApplication(applicationID string, farmerID st
 
 	// Buat Kontrak (tanpa konten)
 	newContract := &models.Contract{
-		ProjectID:      app.ProjectID,
+		ContractType:   "work", // <-- Eksplisit tentukan tipe kontrak
+		ProjectID:      &app.ProjectID, // <-- Gunakan pointer (&)
 		FarmerID:       app.Project.FarmerID,
-		WorkerID:       app.WorkerID,
+		WorkerID:       &app.WorkerID, // <-- Gunakan pointer (&)
 		Status:         "pending_signature",
 		SignedByFarmer: true,
 	}

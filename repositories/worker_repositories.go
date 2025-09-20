@@ -12,7 +12,7 @@ import (
 type WorkerRepository interface {
 	GetWorkers(search, sortBy, order string, limit, offset int, minDailyRate, maxDailyRate, minHourlyRate, maxHourlyRate float64) ([]models.Worker, int64, error)
 	GetWorkerByID(id string) (models.Worker, error)
-	UpdateRating(workerID uuid.UUID, newRating float64, reviewCount int) error
+	UpdateRating(tx *gorm.DB, workerID uuid.UUID, newRating float64, reviewCount int) error
 }
 
 type workerRepository struct {
@@ -94,9 +94,10 @@ func (r *workerRepository) GetWorkerByID(id string) (models.Worker, error) {
 	return worker, nil
 }
 
-func (r *workerRepository) UpdateRating(workerID uuid.UUID, newRating float64, reviewCount int) error {
-	return r.db.Model(&models.Worker{}).Where("user_id = ?", workerID).Updates(map[string]interface{}{
-		"rating":       newRating,
-		"review_count": reviewCount,
-	}).Error
+func (r *workerRepository) UpdateRating(tx *gorm.DB, workerID uuid.UUID, newRating float64, reviewCount int) error {
+    // Gunakan 'tx' yang dioper dari service.
+    return tx.Model(&models.Worker{}).Where("user_id = ?", workerID).Updates(map[string]interface{}{
+        "rating":       newRating,
+        "review_count": reviewCount,
+    }).Error
 }

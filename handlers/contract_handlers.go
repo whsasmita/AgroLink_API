@@ -40,6 +40,17 @@ func (h *ContractHandler) SignContract(c *gin.Context) {
 	utils.SuccessResponse(c, http.StatusOK, "Contract signed successfully", response)
 }
 
+func (h *ContractHandler) GetMyContracts(c *gin.Context) {
+	currentUser := c.MustGet("user").(*models.User)
+
+	contracts, err := h.contractService.GetMyContracts(currentUser.ID)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to retrieve contracts", err)
+		return
+	}
+	utils.SuccessResponse(c, http.StatusOK, "Contracts retrieved successfully", contracts)
+}
+
 
 func (h *ContractHandler) DownloadContractPDF(c *gin.Context) {
 	contractID := c.Param("id")

@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"github.com/google/uuid"
 	"github.com/whsasmita/AgroLink_API/models"
 	"gorm.io/gorm"
 )
@@ -10,8 +11,9 @@ type ContractRepository interface {
 	// Create menggunakan 'tx *gorm.DB' agar bisa menjadi bagian dari sebuah transaksi.
 	Create(tx *gorm.DB, contract *models.Contract) error
 	FindByID(id string) (*models.Contract, error)
-	Update(contract *models.Contract) error
+	Update(tx *gorm.DB, contract *models.Contract) error
 	FindByIDWithDetails(id string) (*models.Contract, error)
+	FindByUserID(userID uuid.UUID) ([]models.Contract, error)
 }
 
 type contractRepository struct {
@@ -40,8 +42,8 @@ func (r *contractRepository) FindByID(id string) (*models.Contract, error) {
 
 // Update memperbarui data kontrak di database.
 // Menggunakan Save() akan memperbarui semua kolom.
-func (r *contractRepository) Update(contract *models.Contract) error {
-	return r.db.Save(contract).Error
+func (r *contractRepository) Update(tx *gorm.DB, contract *models.Contract) error {
+	return tx.Save(contract).Error
 }
 
 func (r *contractRepository) FindByIDWithDetails(id string) (*models.Contract, error) {
@@ -53,4 +55,16 @@ func (r *contractRepository) FindByIDWithDetails(id string) (*models.Contract, e
 		Where("id = ?", id).
 		First(&contract).Error
 	return &contract, err
+}
+
+func (r *contractRepository) FindByUserID(userID uuid.UUID) ([]models.Contract, error) {
+	var contracts []models.Contract
+	// Preload Project dan Delivery agar bisa menampilkan judulnya
+	err := r.db.
+		Preload("Project").
+		Preload("Delivery").
+		Where("worker_id = ? OR driver_id = ?", userID, userID).
+		Order("created_at DESC").
+		Find(&contracts).Error
+	return contracts, err
 }

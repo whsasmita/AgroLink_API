@@ -6,7 +6,7 @@ import (
 )
 
 type PayoutRepository interface {
-	Create(payout *models.Payout) error
+	Create(tx *gorm.DB ,payout *models.Payout) error
 	FindPendingPayouts() ([]models.Payout, error)
 }
 
@@ -16,7 +16,7 @@ func NewPayoutRepository(db *gorm.DB) PayoutRepository {
 	return &payoutRepository{db: db}
 }
 
-func (r *payoutRepository) Create(payout *models.Payout) error {
+func (r *payoutRepository) Create(tx *gorm.DB, payout *models.Payout) error {
 	return r.db.Create(payout).Error
 }
 func (r *payoutRepository) FindPendingPayouts() ([]models.Payout, error) {

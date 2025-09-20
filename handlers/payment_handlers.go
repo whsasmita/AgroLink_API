@@ -42,6 +42,23 @@ func (h *PaymentHandler) ReleaseProjectPayment(c *gin.Context) {
 	utils.SuccessResponse(c, http.StatusOK, "Payment released and payouts initiated", nil)
 }
 
+func (h *PaymentHandler) ReleaseDeliveryPayment(c *gin.Context) {
+	deliveryID := c.Param("id")
+	currentUser := c.MustGet("user").(*models.User)
+
+    if currentUser.Farmer == nil {
+		utils.ErrorResponse(c, http.StatusForbidden, "Forbidden: Only farmers can release payments", nil)
+		return
+	}
+
+	if err := h.paymentService.ReleaseDeliveryPayment(deliveryID, currentUser.Farmer.UserID); err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error(), nil)
+		return
+	}
+	utils.SuccessResponse(c, http.StatusOK, "Delivery payment released and payout scheduled", nil)
+}
+
+
 // Handler untuk melihat riwayat Invoice (contoh)
 func (h *PaymentHandler) GetUserInvoices(c *gin.Context) {
     // Implementasi untuk mengambil daftar invoice milik user...

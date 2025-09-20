@@ -12,6 +12,7 @@ import (
 type DriverRepository interface {
 	GetDrivers(sortBy, order string, limit, offset int) ([]models.Driver, int64, error)
 	GetDriverByID(id string) (models.Driver, error)
+	FindNearby(lat, lng float64, radius int) ([]models.Driver, error)
 	// Anda bisa menambahkan method pencarian yang lebih spesifik nanti
 }
 
@@ -75,3 +76,19 @@ func (r *driverRepository) GetDriverByID(id string) (models.Driver, error) {
 
 	return driver, nil
 }
+
+func (r *driverRepository) FindNearby(lat, lng float64, radius int) ([]models.Driver, error) {
+	var drivers []models.Driver
+
+	haversine := fmt.Sprintf(`(6371 * acos(cos(radians(%f)) * cos(radians(current_lat)) * cos(radians(current_lng) - radians(%f)) + sin(radians(%f)) * sin(radians(current_lat))))`, lat, lng, lat)
+
+	err := r.db.
+		Preload("User"). // <-- [TAMBAHAN] Muat data User untuk mendapatkan nama driver
+		Select(fmt.Sprintf("*, %s AS distance", haversine)).
+		Where(fmt.Sprintf("%s <= ?", haversine), radius).
+		Order("distance ASC").
+		Find(&drivers).Error
+
+	return drivers, err
+}
+

@@ -11,59 +11,176 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/whsasmita/AgroLink_API/dto"
+	"github.com/whsasmita/AgroLink_API/models"
 	"github.com/whsasmita/AgroLink_API/repositories"
+	"gorm.io/gorm"
 )
 
+// [PERBAIKAN] Interface sekarang mengembalikan DTO
 type ContractService interface {
-	SignContract(contractID string, workerID uuid.UUID) (*dto.SignContractResponse, error)
+	SignContract(contractID string, userID uuid.UUID) (*dto.SignContractResponse, error)
 	GenerateContractPDF(contractID string) (*bytes.Buffer, error)
+	GetMyContracts(userID uuid.UUID) ([]dto.MyContractResponse, error)
 }
 
 type contractService struct {
-	contractRepo   repositories.ContractRepository
-	projectService ProjectService
+	contractRepo repositories.ContractRepository
+	invoiceRepo  repositories.InvoiceRepository
+	projectService ProjectService // <-- Gunakan interface
+	deliveryRepo repositories.DeliveryRepository
+	db           *gorm.DB
 }
 
-func NewContractService(repo repositories.ContractRepository, projectService ProjectService) ContractService {
+// [PERBAIKAN] Konstruktor sekarang menggunakan interface ProjectService
+func NewContractService(
+	contractRepo repositories.ContractRepository,
+	projectService ProjectService,
+	invoiceRepo repositories.InvoiceRepository,
+	deliveryRepo repositories.DeliveryRepository,
+	db *gorm.DB,
+) ContractService {
 	return &contractService{
-		contractRepo:   repo,
+		contractRepo: contractRepo,
+		invoiceRepo:  invoiceRepo,
 		projectService: projectService,
+		deliveryRepo: deliveryRepo,
+		db:           db,
 	}
 }
 
-func (s *contractService) SignContract(contractID string, workerID uuid.UUID) (*dto.SignContractResponse, error) {
-	contract, err := s.contractRepo.FindByID(contractID)
+func (s *contractService) GetMyContracts(userID uuid.UUID) ([]dto.MyContractResponse, error) {
+	contracts, err := s.contractRepo.FindByUserID(userID)
 	if err != nil {
-		return nil, fmt.Errorf("contract not found")
-	}
-	if contract.WorkerID != workerID {
-		return nil, fmt.Errorf("forbidden: you are not authorized to sign this contract")
-	}
-	if contract.Status != "pending_signature" {
-		return nil, fmt.Errorf("contract is no longer pending signature")
+		return nil, err
 	}
 
-	contract.SignedByWorker = true
-	contract.Status = "active"
+	var responseDTOs []dto.MyContractResponse
+	for _, contract := range contracts {
+		dto := dto.MyContractResponse{
+			ContractID:   contract.ID,
+			ContractType: contract.ContractType,
+			Status:       contract.Status,
+			OfferedAt:    contract.CreatedAt,
+		}
+        // Tentukan judul berdasarkan tipe kontrak
+		if contract.ContractType == "work" && contract.Project != nil {
+			dto.Title = contract.Project.Title
+		} else if contract.ContractType == "delivery" && contract.Delivery != nil {
+			dto.Title = "Pengiriman: " + contract.Delivery.ItemDescription
+		}
+		responseDTOs = append(responseDTOs, dto)
+	}
+
+	return responseDTOs, nil
+}
+
+
+// [PERBAIKAN] Fungsi SignContract sekarang mengembalikan DTO dan memiliki logika yang benar
+func (s *contractService) SignContract(contractID string, userID uuid.UUID) (*dto.SignContractResponse, error) {
+	tx := s.db.Begin()
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	contract, err := s.contractRepo.FindByIDWithDetails(contractID)
+	if err != nil {
+		tx.Rollback()
+		return nil, errors.New("contract not found")
+	}
+
+	if contract.Status != "pending_signature" {
+		tx.Rollback()
+		return nil, errors.New("contract is not awaiting signature")
+	}
+
+	// Tentukan peran dan validasi
+	switch contract.ContractType {
+	case "work":
+		if contract.WorkerID == nil || *contract.WorkerID != userID {
+			tx.Rollback()
+			return nil, errors.New("forbidden: you are not the designated worker for this contract")
+		}
+		contract.SignedBySecondParty = true
+	case "delivery":
+		if contract.DriverID == nil || *contract.DriverID != userID {
+			tx.Rollback()
+			return nil, errors.New("forbidden: you are not the designated driver for this contract")
+		}
+		contract.SignedBySecondParty = true // Menggunakan field yang sama
+	default:
+		tx.Rollback()
+		return nil, errors.New("unknown contract type")
+	}
+
 	now := time.Now()
 	contract.SignedAt = &now
+	contract.Status = "active"
 
-	if err := s.contractRepo.Update(contract); err != nil {
-		return nil, fmt.Errorf("failed to update contract status: %w", err)
+	if err := s.contractRepo.Update(tx, contract); err != nil {
+		tx.Rollback()
+		return nil, fmt.Errorf("failed to update contract: %w", err)
 	}
 
-	go s.projectService.CheckAndFinalizeProject(contract.ProjectID)
+	// Buat Invoice HANYA jika ini adalah kontrak pengiriman
+	if contract.ContractType == "delivery" {
+		delivery, err := s.deliveryRepo.FindByID(contract.DeliveryID.String())
+		if err != nil {
+			tx.Rollback()
+			return nil, errors.New("associated delivery not found")
+		}
 
-	response := &dto.SignContractResponse{
-		ContractID:     contract.ID,
-		ProjectTitle:   contract.Project.Title,
-		Status:         contract.Status,
-		SignedByWorker: contract.SignedByWorker,
-		SignedAt:       *contract.SignedAt,
-		Message:        "Kontrak telah berhasil ditandatangani dan sekarang aktif.",
+		totalAmount := 150000.0
+		platformFee := totalAmount * 0.05
+
+		newInvoice := &models.Invoice{
+			DeliveryID:  contract.DeliveryID,
+			FarmerID:    contract.FarmerID,
+			Amount:      totalAmount - platformFee,
+			PlatformFee: platformFee,
+			TotalAmount: totalAmount,
+			Status:      "pending",
+			DueDate:     time.Now().Add(24 * time.Hour),
+		}
+		if err := s.invoiceRepo.Create(tx, newInvoice); err != nil {
+			tx.Rollback()
+			return nil, fmt.Errorf("failed to create invoice: %w", err)
+		}
+
+		delivery.Status = "pending_payment"
+		if err := s.deliveryRepo.Update(tx, delivery); err != nil {
+			tx.Rollback()
+			return nil, fmt.Errorf("failed to update delivery status: %w", err)
+		}
+	} else if contract.ContractType == "work" {
+		// Panggil fungsi pengecekan untuk proyek kerja
+		go s.projectService.CheckAndFinalizeProject(*contract.ProjectID)
 	}
+
+	if err := tx.Commit().Error; err != nil {
+		return nil, err
+	}
+    
+    // Buat dan kembalikan DTO
+    response := &dto.SignContractResponse{
+        ContractID: contract.ID,
+        Status:     contract.Status,
+        SignedAt:   *contract.SignedAt,
+        Message:    "Contract signed successfully.",
+    }
+    if contract.Project != nil {
+        response.ProjectTitle = contract.Project.Title
+    }
+    if contract.DeliveryID != nil {
+        response.DeliveryID = contract.DeliveryID
+    }	
 	return response, nil
 }
+
 
 func (s *contractService) GenerateContractPDF(contractID string) (*bytes.Buffer, error) {
 	contract, err := s.contractRepo.FindByIDWithDetails(contractID)

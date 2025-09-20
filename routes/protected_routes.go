@@ -29,6 +29,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	payoutRepo := repositories.NewPayoutRepository(db)
 	notifRepo := repositories.NewNotificationRepository(db)
 	reviewRepo := repositories.NewReviewRepository(db)
+	deliveryRepo := repositories.NewDeliveryRepository(db)
 	// workerRepo dan projectRepo sudah ada
 
 	// 2. Inisialisasi Services
@@ -36,14 +37,13 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	profileService := services.NewProfileService(userRepo)
 	farmService := services.NewFarmService(farmRepo)
 	projectService := services.NewProjectService(projectRepo, assignRepo, invoiceRepo)
-	contractService := services.NewContractService(contractRepo, projectService)
+	contractService := services.NewContractService(contractRepo, projectService, invoiceRepo, deliveryRepo, db)
 	emailService := services.NewEmailService()
 	notificationService := services.NewNotificationService(notifRepo, emailService, userRepo)
 	appService := services.NewApplicationService(appRepo, projectRepo, contractRepo, assignRepo, notificationService, db)
-	paymentService := services.NewPaymentService(invoiceRepo, transactionRepo, payoutRepo, assignRepo, projectRepo, userRepo)
+	paymentService := services.NewPaymentService(invoiceRepo, transactionRepo, payoutRepo, assignRepo, projectRepo, userRepo, deliveryRepo, db)
 	reviewService := services.NewReviewService(reviewRepo, workerRepo, projectRepo, db)
-	offerService := services.NewOfferService(projectRepo, contractRepo, assignRepo,userRepo, db)
-	
+	offerService := services.NewOfferService(projectRepo, contractRepo, assignRepo, userRepo, db)
 
 	notifHandler := handlers.NewNotificationHandler(notifRepo)
 
@@ -57,6 +57,9 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	paymentHandler := handlers.NewPaymentHandler(paymentService)
 	reviewHandler := handlers.NewReviewHandler(reviewService)
 	offerHandler := handlers.NewOfferHandler(offerService)
+	driverRepo := repositories.NewDriverRepository(db)
+	deliveryService := services.NewDeliveryService(deliveryRepo, driverRepo, contractRepo, db)
+	deliveryHandler := handlers.NewDeliveryHandler(deliveryService)
 
 	// =================================================================
 	// [DIREVISI] ROUTE DEFINITIONS
@@ -85,7 +88,6 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	projects := router.Group("/projects")
 	{
 		projects.POST("/", middleware.RoleMiddleware("farmer"), projectHandler.CreateProject)
-		projects.GET("/", projectHandler.FindAllProjects)
 		projects.GET("/my", middleware.RoleMiddleware("farmer"), projectHandler.GetMyProjects)
 		projects.GET("/:id", projectHandler.GetProjectByID)
 		projects.GET("/:id/applications", middleware.RoleMiddleware("farmer"), appHandler.FindApplicationsByProjectID)
@@ -104,6 +106,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	// Contract Routes
 	contracts := router.Group("/contracts")
 	{
+		contracts.GET("/my", contractHandler.GetMyContracts)
 		contracts.POST("/:id/sign", middleware.RoleMiddleware("worker"), contractHandler.SignContract)
 		contracts.GET("/:id/download", contractHandler.DownloadContractPDF)
 	}
@@ -124,10 +127,22 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	}
 
 	workers := router.Group("/workers")
-{
-    // ... (misalnya rute untuk GET /workers)
-    
-    // Rute untuk petani menawarkan proyek langsung ke pekerja
-    workers.POST("/:workerId/direct-offer", middleware.RoleMiddleware("farmer"), offerHandler.CreateDirectOffer)
-}
+	{
+		// Rute untuk petani menawarkan proyek langsung ke pekerja
+		workers.POST("/:workerId/direct-offer", middleware.RoleMiddleware("farmer"), offerHandler.CreateDirectOffer)
+	}
+
+	deliveries := router.Group("/deliveries")
+	deliveries.Use(middleware.RoleMiddleware("farmer")) // Hanya petani yang bisa akses endpoint ini
+	{
+		// Petani membuat permintaan pengiriman baru
+		deliveries.POST("/", deliveryHandler.CreateDelivery)
+
+		// Petani mencari driver yang cocok untuk pengiriman tersebut
+		deliveries.GET("/:id/find-drivers", deliveryHandler.FindDrivers)
+
+		// Petani memilih driver dan menawarkan kontrak
+		deliveries.POST("/:id/select-driver/:driverId", deliveryHandler.SelectDriver)
+		deliveries.POST("/:id/release-payment", middleware.RoleMiddleware("farmer"), paymentHandler.ReleaseDeliveryPayment)
+	}
 }

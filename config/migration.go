@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -36,22 +37,14 @@ var migrationModels = []interface{}{
 	&models.Schedule{},
 	&models.ScheduleNotification{},
 	&models.Notification{},
+	&models.WebhookLog{},
+
+	&models.Delivery{},
+	&models.DriverRoute{},
+	&models.LocationTrack{},
 
 	// // Review and support models
-	// &models.Review{},
-	// &models.SupportTicket{},
-	// &models.SupportMessage{},
-	// &models.Dispute{},
-
-	// System models
-	// &models.SystemSetting{},
-	// &models.ActivityLog{},
-	// &models.UserSession{},
-
-	// // AI models
-	// &models.AIRecommendation{},
-	// &models.UserPreference{},
-	// &models.MLTrainingData{},
+	&models.Review{},
 }
 
 // =====================================================================
@@ -112,7 +105,7 @@ func SeedDefaultData() {
 	seedSystemSettings()
 	seedUsers() // <-- Panggil seeder pengguna baru
 	// seedContractTemplates()
-	// seedCompletedProjectScenario()
+	seedCompletedProjectScenario()
 	log.Println("✅ Default data seeded successfully")
 }
 
@@ -272,60 +265,51 @@ func CreateIndexes() {
 
 
 func seedCompletedProjectScenario() {
-	log.Println("Creating a completed project scenario...")
+	log.Println("Creating a completed project scenario for rating test...")
 
 	// Gunakan transaksi agar semua data dibuat atau tidak sama sekali
 	err := DB.Transaction(func(tx *gorm.DB) error {
-		// 1. Ambil data Petani dan Pekerja yang sudah ada dari seeder sebelumnya
+		// 1. Ambil data Petani dan Pekerja yang sudah ada
 		var farmerUser, workerUser models.User
 		if err := tx.Preload("Farmer").Where("email = ?", "farmer1@agrolink.com").First(&farmerUser).Error; err != nil {
-			return err
+			return fmt.Errorf("seeder failed: could not find farmer1@agrolink.com")
 		}
 		if err := tx.Preload("Worker").Where("email = ?", "worker1@agrolink.com").First(&workerUser).Error; err != nil {
-			return err
+			return fmt.Errorf("seeder failed: could not find worker1@agrolink.com")
 		}
 
-		// 2. Buat Lokasi Lahan
-		farmLocation := models.FarmLocation{
-			FarmerID:  farmerUser.Farmer.UserID,
-			Name:      "Lahan Proyek Selesai",
-			Latitude:  -8.200,
-			Longitude: 115.200,
-			AreaSize:  25.0,
-		}
-		if err := tx.Create(&farmLocation).Error; err != nil {
-			return err
-		}
-
-		// 3. Buat Proyek dengan status "completed"
+		// 2. Buat Proyek dengan status "completed" (tanpa FarmLocation)
 		project := models.Project{
 			FarmerID:      farmerUser.Farmer.UserID,
-			Title:         "Proyek Penanaman Tomat Ceri (Selesai)",
-			Description:   "Proyek ini sudah selesai dan siap untuk di-review.",
+			Title:         "Proyek Panen Jagung (Selesai)",
+			Description:   "Proyek ini sudah selesai dan siap untuk di-review oleh petani.",
+			Location:      "Sawah Seeder, Bali",
 			WorkersNeeded: 1,
 			StartDate:     time.Now().AddDate(0, 0, -10), // 10 hari yang lalu
 			EndDate:       time.Now().AddDate(0, 0, -1),  // Kemarin
-			PaymentRate:   Float64Ptr(120000),
-			Status:        "completed", // <-- Langsung set status selesai
+			PaymentRate:   Float64Ptr(125000),
+			PaymentType:   "per_day",
+			Status:        "open", // Langsung set status selesai
 		}
 		if err := tx.Create(&project).Error; err != nil {
 			return err
 		}
 
-		// 4. Buat Kontrak
+		// 3. Buat Kontrak
 		contract := models.Contract{
-			ProjectID:      project.ID,
+			ProjectID:      &project.ID,
 			FarmerID:       farmerUser.Farmer.UserID,
-			WorkerID:       workerUser.Worker.UserID,
+			WorkerID:       &workerUser.Worker.UserID,
 			SignedByFarmer: true,
-			SignedByWorker: true,
+			SignedBySecondParty: true,
+			ContractType: "work",
 			Status:         "completed",
 		}
 		if err := tx.Create(&contract).Error; err != nil {
 			return err
 		}
 
-		// 5. Buat Penugasan (Assignment)
+		// 4. Buat Penugasan (Assignment)
 		assignment := models.ProjectAssignment{
 			ProjectID:  project.ID,
 			WorkerID:   workerUser.Worker.UserID,
@@ -337,9 +321,6 @@ func seedCompletedProjectScenario() {
 			return err
 		}
 
-		// 6. Buat Invoice, Transaction, dan Payout (jika diperlukan untuk konsistensi)
-		// Untuk tujuan testing review, langkah 1-5 di atas sudah cukup.
-
 		return nil // Commit transaksi
 	})
 
@@ -347,6 +328,7 @@ func seedCompletedProjectScenario() {
 		log.Fatalf("Failed to seed completed project scenario: %v", err)
 	}
 }
+
 
 // seedSystemSettings... (fungsi Anda yang sudah ada)
 func seedSystemSettings() {
