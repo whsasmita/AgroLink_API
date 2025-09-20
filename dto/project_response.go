@@ -25,6 +25,7 @@ type ProjectBriefResponse struct {
 	PaymentRate *float64  `json:"payment_rate"`
 	PaymentType string    `json:"payment_type"`
 	StartDate   time.Time `json:"start_date"`
+	WorkersNeeded int     `json:"workers_needed"`
 	// Kita bisa tambahkan info ringkas petani jika perlu
 	// FarmerName string `json:"farmer_name"`
 }
