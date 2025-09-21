@@ -16,7 +16,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// [PERBAIKAN] Interface sekarang mengembalikan DTO
 type ContractService interface {
 	SignContract(contractID string, userID uuid.UUID) (*dto.SignContractResponse, error)
 	GenerateContractPDF(contractID string) (*bytes.Buffer, error)
@@ -24,14 +23,13 @@ type ContractService interface {
 }
 
 type contractService struct {
-	contractRepo repositories.ContractRepository
-	invoiceRepo  repositories.InvoiceRepository
-	projectService ProjectService // <-- Gunakan interface
-	deliveryRepo repositories.DeliveryRepository
-	db           *gorm.DB
+	contractRepo   repositories.ContractRepository
+	invoiceRepo    repositories.InvoiceRepository
+	projectService ProjectService
+	deliveryRepo   repositories.DeliveryRepository
+	db             *gorm.DB
 }
 
-// [PERBAIKAN] Konstruktor sekarang menggunakan interface ProjectService
 func NewContractService(
 	contractRepo repositories.ContractRepository,
 	projectService ProjectService,
@@ -40,11 +38,11 @@ func NewContractService(
 	db *gorm.DB,
 ) ContractService {
 	return &contractService{
-		contractRepo: contractRepo,
-		invoiceRepo:  invoiceRepo,
+		contractRepo:   contractRepo,
+		invoiceRepo:    invoiceRepo,
 		projectService: projectService,
-		deliveryRepo: deliveryRepo,
-		db:           db,
+		deliveryRepo:   deliveryRepo,
+		db:             db,
 	}
 }
 
@@ -62,7 +60,6 @@ func (s *contractService) GetMyContracts(userID uuid.UUID) ([]dto.MyContractResp
 			Status:       contract.Status,
 			OfferedAt:    contract.CreatedAt,
 		}
-        // Tentukan judul berdasarkan tipe kontrak
 		if contract.ContractType == "work" && contract.Project != nil {
 			dto.Title = contract.Project.Title
 		} else if contract.ContractType == "delivery" && contract.Delivery != nil {
@@ -70,12 +67,9 @@ func (s *contractService) GetMyContracts(userID uuid.UUID) ([]dto.MyContractResp
 		}
 		responseDTOs = append(responseDTOs, dto)
 	}
-
 	return responseDTOs, nil
 }
 
-
-// [PERBAIKAN] Fungsi SignContract sekarang mengembalikan DTO dan memiliki logika yang benar
 func (s *contractService) SignContract(contractID string, userID uuid.UUID) (*dto.SignContractResponse, error) {
 	tx := s.db.Begin()
 	if tx.Error != nil {
@@ -98,7 +92,6 @@ func (s *contractService) SignContract(contractID string, userID uuid.UUID) (*dt
 		return nil, errors.New("contract is not awaiting signature")
 	}
 
-	// Tentukan peran dan validasi
 	switch contract.ContractType {
 	case "work":
 		if contract.WorkerID == nil || *contract.WorkerID != userID {
@@ -111,7 +104,7 @@ func (s *contractService) SignContract(contractID string, userID uuid.UUID) (*dt
 			tx.Rollback()
 			return nil, errors.New("forbidden: you are not the designated driver for this contract")
 		}
-		contract.SignedBySecondParty = true // Menggunakan field yang sama
+		contract.SignedBySecondParty = true
 	default:
 		tx.Rollback()
 		return nil, errors.New("unknown contract type")
@@ -126,9 +119,9 @@ func (s *contractService) SignContract(contractID string, userID uuid.UUID) (*dt
 		return nil, fmt.Errorf("failed to update contract: %w", err)
 	}
 
-	// Buat Invoice HANYA jika ini adalah kontrak pengiriman
-	if contract.ContractType == "delivery" {
-		delivery, err := s.deliveryRepo.FindByID(contract.DeliveryID.String())
+	switch contract.ContractType {
+	case "delivery":
+		delivery, err := s.deliveryRepo.FindByContractID(contractID)
 		if err != nil {
 			tx.Rollback()
 			return nil, errors.New("associated delivery not found")
@@ -136,9 +129,8 @@ func (s *contractService) SignContract(contractID string, userID uuid.UUID) (*dt
 
 		totalAmount := 150000.0
 		platformFee := totalAmount * 0.05
-
 		newInvoice := &models.Invoice{
-			DeliveryID:  contract.DeliveryID,
+			DeliveryID:  &delivery.ID,
 			FarmerID:    contract.FarmerID,
 			Amount:      totalAmount - platformFee,
 			PlatformFee: platformFee,
@@ -156,31 +148,28 @@ func (s *contractService) SignContract(contractID string, userID uuid.UUID) (*dt
 			tx.Rollback()
 			return nil, fmt.Errorf("failed to update delivery status: %w", err)
 		}
-	} else if contract.ContractType == "work" {
-		// Panggil fungsi pengecekan untuk proyek kerja
+	case "work":
 		go s.projectService.CheckAndFinalizeProject(*contract.ProjectID)
 	}
 
 	if err := tx.Commit().Error; err != nil {
 		return nil, err
 	}
-    
-    // Buat dan kembalikan DTO
-    response := &dto.SignContractResponse{
-        ContractID: contract.ID,
-        Status:     contract.Status,
-        SignedAt:   *contract.SignedAt,
-        Message:    "Contract signed successfully.",
-    }
-    if contract.Project != nil {
-        response.ProjectTitle = contract.Project.Title
-    }
-    if contract.DeliveryID != nil {
-        response.DeliveryID = contract.DeliveryID
-    }	
+
+	response := &dto.SignContractResponse{
+		ContractID: contract.ID,
+		Status:     contract.Status,
+		SignedAt:   *contract.SignedAt,
+		Message:    "Contract signed successfully.",
+	}
+	if contract.Project != nil {
+		response.ProjectTitle = contract.Project.Title
+	}
+	if contract.Delivery != nil {
+		response.DeliveryID = &contract.Delivery.ID
+	}
 	return response, nil
 }
-
 
 func (s *contractService) GenerateContractPDF(contractID string) (*bytes.Buffer, error) {
 	contract, err := s.contractRepo.FindByIDWithDetails(contractID)
@@ -188,24 +177,25 @@ func (s *contractService) GenerateContractPDF(contractID string) (*bytes.Buffer,
 		return nil, errors.New("contract details not found")
 	}
 
-	durationDays := contract.Project.EndDate.Sub(contract.Project.StartDate).Hours()/24 + 1
-
-	// paymentRate := contract.Project.PaymentRate
-
-	// log(paymentRate)
+	var durationDays float64
 	var upahPerHari string
-	if contract.Project.PaymentRate != nil {
-		// Jika data ada, format dengan benar
-		upahPerHari = fmt.Sprintf("Rp %.0f", *contract.Project.PaymentRate)
+
+	if contract.ContractType == "work" && contract.Project != nil {
+		durationDays = contract.Project.EndDate.Sub(contract.Project.StartDate).Hours()/24 + 1
+		if contract.Project.PaymentRate != nil {
+			upahPerHari = fmt.Sprintf("Rp %.0f", *contract.Project.PaymentRate)
+		} else {
+			upahPerHari = "[JUMLAH BELUM DITETAPKAN]"
+		}
 	} else {
-		// Jika data tidak ada, berikan nilai default
-		upahPerHari = "[JUMLAH BELUM DITETAPKAN]"
+		durationDays = 0
+		upahPerHari = "[TIDAK BERLAKU]"
 	}
 
 	data := gin.H{
 		"Contract":         contract,
-		"TanggalPembuatan": contract.CreatedAt.Format("2 January 2006"), // Format tanggal sederhana
-		"DurasiHari":       fmt.Sprintf("%.0f", durationDays),           // <-- Tambahkan ini
+		"TanggalPembuatan": contract.CreatedAt.Format("2 January 2006"),
+		"DurasiHari":       fmt.Sprintf("%.0f", durationDays),
 		"UpahPerHari":      upahPerHari,
 	}
 
@@ -227,6 +217,5 @@ func (s *contractService) GenerateContractPDF(contractID string) (*bytes.Buffer,
 	if err := pdfg.Create(); err != nil {
 		return nil, fmt.Errorf("could not create PDF: %w", err)
 	}
-
 	return pdfg.Buffer(), nil
 }

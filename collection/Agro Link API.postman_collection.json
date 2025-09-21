@@ -99,11 +99,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/auth/login",
+							"raw": "{{base_url}}/public/auth/login",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
+								"public",
 								"auth",
 								"login"
 							]
@@ -845,11 +846,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/drivers?limit=5&sort_by=total_deliveries&order=desc",
+							"raw": "{{base_url}}/public/drivers?limit=5&sort_by=total_deliveries&order=desc",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
+								"public",
 								"drivers"
 							],
 							"query": [
@@ -1051,7 +1053,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{token_worker}}",
+									"value": "{{token_farmer}}",
 									"type": "string"
 								}
 							]
@@ -1063,13 +1065,13 @@
 							"raw": "{\r\n    \"title\": \"Proyek Panen Jagung Musim Kering\",\r\n    \"description\": \"Dibutuhkan 5 orang untuk membantu proses panen jagung di lahan seluas 2 hektar. Pengalaman tidak diutamakan.\",\r\n    \"project_type\": \"harvesting\",\r\n    \"required_skills\": [\"memetik\", \"mengangkut\"],\r\n    \"workers_needed\": 5,\r\n    \"start_date\": \"2025-09-10\",\r\n    \"end_date\": \"2025-09-20\",\r\n    \"payment_rate\": 150000.00,\r\n    \"payment_type\": \"per_day\"\r\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/projects/2c85eb71-85f2-4efa-8455-d4c73b7f39eb",
+							"raw": "{{base_url}}/projects/d84b9d28-c573-4c87-b3ae-3c9c9c109f8f",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"projects",
-								"2c85eb71-85f2-4efa-8455-d4c73b7f39eb"
+								"d84b9d28-c573-4c87-b3ae-3c9c9c109f8f"
 							]
 						}
 					},
@@ -1328,6 +1330,39 @@
 					"response": []
 				},
 				{
+					"name": "SignedContract Driver",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_driver}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"message\": \"Saya sangat tertarik dengan proyek ini dan siap bekerja sesuai jadwal.\"\r\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/contracts/{{contract_id}}/sign",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"contracts",
+								"{{contract_id}}",
+								"sign"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Download Contract",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true,
@@ -1473,7 +1508,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/projects/{{project_id}}/workers/200cea81-c9ba-43ad-abb0-720e3ed8e401/review",
+							"raw": "{{base_url}}/projects/{{project_id}}/workers/{{worker_id}}/review",
 							"host": [
 								"{{base_url}}"
 							],
@@ -1481,8 +1516,197 @@
 								"projects",
 								"{{project_id}}",
 								"workers",
-								"200cea81-c9ba-43ad-abb0-720e3ed8e401",
+								"{{worker_id}}",
 								"review"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delivery",
+			"item": [
+				{
+					"name": "Create Delivery",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_farmer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"pickup_address\": \"Kintamani, Bangli, Bali\",\r\n    \"pickup_lat\": -8.243,\r\n    \"pickup_lng\": 115.321,\r\n    \"destination_address\": \"Pasar Badung, Denpasar, Bali\",\r\n    \"item_description\": \"50 Kg Kopi Arabika Kintamani\",\r\n    \"item_weight\": 50.0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/deliveries",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"deliveries"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Nearby Driver",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_farmer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"pickup_address\": \"Kintamani, Bangli, Bali\",\r\n    \"pickup_lat\": -8.243,\r\n    \"pickup_lng\": 115.321,\r\n    \"destination_address\": \"Pasar Badung, Denpasar, Bali\",\r\n    \"item_description\": \"50 Kg Kopi Arabika Kintamani\",\r\n    \"item_weight\": 50.0\r\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/deliveries/{{DELIVERY_ID}}/find-drivers?radius=100",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"deliveries",
+								"{{DELIVERY_ID}}",
+								"find-drivers"
+							],
+							"query": [
+								{
+									"key": "radius",
+									"value": "100"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Select Driver",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_farmer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"pickup_address\": \"Kintamani, Bangli, Bali\",\r\n    \"pickup_lat\": -8.243,\r\n    \"pickup_lng\": 115.321,\r\n    \"destination_address\": \"Pasar Badung, Denpasar, Bali\",\r\n    \"item_description\": \"50 Kg Kopi Arabika Kintamani\",\r\n    \"item_weight\": 50.0\r\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/deliveries/{{DELIVERY_ID}}/select-driver/{{DRIVER_ID}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"deliveries",
+								"{{DELIVERY_ID}}",
+								"select-driver",
+								"{{DRIVER_ID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Driver Tracking",
+			"item": [
+				{
+					"name": "Driver Tracking",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_driver}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"latitude\": -8.5, \"longitude\": 115.25}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/deliveries/{{DELIVERY_ID}}/location",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"deliveries",
+								"{{DELIVERY_ID}}",
+								"location"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Track My Delivery",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_farmer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/deliveries/{{DELIVERY_ID}}/track",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"deliveries",
+								"{{DELIVERY_ID}}",
+								"track"
 							]
 						}
 					},
@@ -1557,6 +1781,11 @@
 		},
 		{
 			"key": "worker_id",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "token_driver",
 			"value": "",
 			"type": "default"
 		}

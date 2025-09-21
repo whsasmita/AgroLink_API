@@ -10,6 +10,7 @@ type DeliveryRepository interface {
 	FindByID(id string) (*models.Delivery, error)
 	// [PERBAIKAN] Tambahkan *gorm.DB sebagai argumen
 	Update(tx *gorm.DB, delivery *models.Delivery) error
+	FindByContractID(contractID string) (*models.Delivery, error)
 }
 
 type deliveryRepository struct{ db *gorm.DB }
@@ -18,6 +19,11 @@ func NewDeliveryRepository(db *gorm.DB) DeliveryRepository {
 	return &deliveryRepository{db: db}
 }
 
+func (r *deliveryRepository) FindByContractID(contractID string) (*models.Delivery, error) {
+	var delivery models.Delivery
+	err := r.db.Where("contract_id = ?", contractID).First(&delivery).Error
+	return &delivery, err
+}
 func (r *deliveryRepository) Create(delivery *models.Delivery) error {
 	return r.db.Create(delivery).Error
 }

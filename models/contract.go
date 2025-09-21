@@ -9,34 +9,35 @@ import (
 
 // Contract represents digital contracts
 type Contract struct {
-	ID uuid.UUID `gorm:"type:char(36);primary_key"`
+	ID uuid.UUID `gorm:"type:char(36);primaryKey"`
 
-	// [BARU] Menandakan jenis kontrak: 'work' untuk proyek, 'delivery' untuk pengiriman.
-	ContractType string `gorm:"type:enum('work', 'delivery');not null"`
+	// 'work' untuk proyek, 'delivery' untuk pengiriman
+	ContractType string `gorm:"type:enum('work','delivery');not null"`
 
-	// [DIUBAH] Menjadi pointer (*), karena kontrak bisa untuk Proyek ATAU Pengiriman.
-	ProjectID  *uuid.UUID `gorm:"type:char(36)"`
-	DeliveryID *uuid.UUID `gorm:"type:char(36)"` // Akan digunakan nanti
+	// Kontrak bisa untuk Proyek ATAU Delivery
+	ProjectID *uuid.UUID `gorm:"type:char(36);index"`
 
-	FarmerID uuid.UUID `gorm:"type:char(36);not null"` // Pemberi kerja selalu Petani
+	FarmerID uuid.UUID  `gorm:"type:char(36);not null;index"` // pemberi kerja selalu Petani
+	WorkerID *uuid.UUID `gorm:"type:char(36);index"`          // pihak kedua jika 'work'
+	DriverID *uuid.UUID `gorm:"type:char(36);index"`          // pihak kedua jika 'delivery'
 
-	// [DIUBAH] Menjadi pointer (*), karena pihak kedua bisa Pekerja ATAU Driver.
-	WorkerID *uuid.UUID `gorm:"type:char(36)"`
-	DriverID *uuid.UUID `gorm:"type:char(36)"` // Akan digunakan nanti
-
-	// Field lain tidak berubah
-	SignedByFarmer      bool `gorm:"default:false"`
-	SignedBySecondParty bool `gorm:"default:false"` // Mungkin perlu diganti nama menjadi SignedBySecondParty
+	SignedByFarmer      bool       `gorm:"default:false"`
+	SignedBySecondParty bool       `gorm:"default:false"`
 	SignedAt            *time.Time
-	Status              string `gorm:"type:enum('pending_signature','active','completed','terminated');default:'pending_signature'"`
+	Status              string     `gorm:"type:enum('pending_signature','active','completed','terminated');default:'pending_signature'"`
 	CreatedAt           time.Time
 	UpdatedAt           time.Time
 
-	// Relasi
-	Project  *Project // Diubah menjadi pointer
-	Delivery *Delivery
-	Farmer   Farmer
-	Worker   *Worker // Diubah menjadi pointer
+	// Relations
+	Project  *Project `gorm:"foreignKey:ProjectID;references:ID"`
+
+	// HAS ONE Delivery: Delivery.ContractID -> Contract.ID
+	// Bila ContractType = 'delivery', baris Delivery akan merefer ke kontrak ini.
+	Delivery *Delivery `gorm:"foreignKey:ContractID;references:ID"`
+
+	Farmer Farmer  `gorm:"foreignKey:FarmerID;references:UserID"`
+	Worker *Worker `gorm:"foreignKey:WorkerID;references:UserID"`
+	Driver *Driver `gorm:"foreignKey:DriverID;references:UserID"`
 }
 
 func (c *Contract) BeforeCreate(tx *gorm.DB) error {

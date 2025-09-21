@@ -13,38 +13,32 @@ import (
 // List semua model untuk migrasi.
 var migrationModels = []interface{}{
 	// Base user models first
+	// 1. Model dasar tanpa banyak dependensi
 	&models.User{},
+	&models.SystemSetting{},
+
+	// 2. Model profil yang bergantung pada User
 	&models.Farmer{},
 	&models.Worker{},
 	&models.Driver{},
-
-	// Location and farm models
-	&models.FarmLocation{},
-	&models.WorkerAvailability{},
-
-	// Project related models
+	
+	// 3. Model utama yang bergantung pada profil
 	&models.Project{},
-	&models.ProjectApplication{},
-	&models.ProjectAssignment{},
-	&models.Contract{},
+	&models.Delivery{}, // Bergantung pada Driver & Farmer
+	&models.FarmLocation{}, // Bergantung pada Farmer
 
-	// [BARU] Financial models
+	// 4. Model transaksi & perjanjian yang bergantung pada Project/Delivery
 	&models.Invoice{},
 	&models.Transaction{},
+	&models.Contract{},
+
+	// 5. Model-model pendukung yang memiliki banyak relasi
+	&models.ProjectApplication{},
+	&models.ProjectAssignment{},
 	&models.Payout{},
-
-	// Schedule models
-	&models.Schedule{},
-	&models.ScheduleNotification{},
-	&models.Notification{},
-	&models.WebhookLog{},
-
-	&models.Delivery{},
-	&models.DriverRoute{},
-	&models.LocationTrack{},
-
-	// // Review and support models
 	&models.Review{},
+	&models.WorkerAvailability{},
+	&models.LocationTrack{},
 }
 
 // =====================================================================
@@ -106,6 +100,7 @@ func SeedDefaultData() {
 	seedUsers() // <-- Panggil seeder pengguna baru
 	// seedContractTemplates()
 	seedCompletedProjectScenario()
+	seedInProgressDeliveryScenario()
 	log.Println("✅ Default data seeded successfully")
 }
 
@@ -113,10 +108,12 @@ func SeedDefaultData() {
 func seedUsers() {
 	log.Println("Creating seed users...")
 
+	// [PERBAIKAN] Tambahkan *models.Driver ke dalam struct
 	usersToSeed := []struct {
 		User     models.User
 		Farmer   *models.Farmer
 		Worker   *models.Worker
+		Driver   *models.Driver // <-- Tambahkan ini
 		Password string
 	}{
 		// 1. Admin User
@@ -126,7 +123,7 @@ func seedUsers() {
 		},
 		// 2. Farmer User
 		{
-			User:     models.User{Name: "Budi Petani", Email: "farmer1@agrolink.com", Role: "farmer", EmailVerified: true},
+			User:     models.User{Name: "Budi Petani", Email: "farmer1@agrolink.com", Role: "farmer", EmailVerified: true, PhoneNumber: StringPtr("081082083099")},
 			Farmer:   &models.Farmer{Address: StringPtr("Desa Sukamaju No. 10")},
 			Password: "password123",
 		},
@@ -137,34 +134,48 @@ func seedUsers() {
 				Email:         "worker1@agrolink.com",
 				Role:          "worker",
 				EmailVerified: true,
+				PhoneNumber:   StringPtr("081234567890"),
 			},
 			Worker: &models.Worker{
 				Skills:            `["menanam","menyiram","panen"]`,
 				DailyRate:         Float64Ptr(120000),
-				Address:           StringPtr("Jalan Tani No. 15, Desa Makmur"), // [LENGKAP]
-				NationalID:        StringPtr("3501234567890001"),               // [LENGKAP]
-				BankName:          StringPtr("BCA"),                            // [LENGKAP]
-				BankAccountNumber: StringPtr("1234567890"),                     // [LENGKAP]
-				BankAccountHolder: StringPtr("JOKO PEKERJA"),                   // [LENGKAP]
+				Address:           StringPtr("Jalan Tani No. 15, Desa Makmur"),
+				NationalID:        StringPtr("3501234567890001"),
+				BankName:          StringPtr("BCA"),
+				BankAccountNumber: StringPtr("1234567890"),
+				BankAccountHolder: StringPtr("JOKO PEKERJA"),
 			},
 			Password: "password123",
 		},
+		// [BARU] 4. Driver User
 		{
-			User:     models.User{Name: "Siti Pekerja", Email: "worker2@agrolink.com", Role: "worker", EmailVerified: true},
-			Worker:   &models.Worker{Skills: `["panen","sortir"]`, DailyRate: Float64Ptr(125000)},
+			User: models.User{
+				Name:          "Eka Supir",
+				Email:         "driver1@agrolink.com",
+				Role:          "driver",
+				EmailVerified: true,
+				PhoneNumber:   StringPtr("085678901234"),
+			},
+			Driver: &models.Driver{
+				Address:      StringPtr("Jalan Logistik No. 1, Denpasar"),
+				// Simpan sebagai string JSON
+				PricingScheme: `{"per_km": 5000, "base_fare": 20000}`,
+				VehicleTypes:  `["pickup", "truk engkel"]`,
+				// Lokasi awal driver
+				CurrentLat:    Float64Ptr(-8.65),
+				CurrentLng:    Float64Ptr(115.21),
+			},
 			Password: "password123",
 		},
 	}
 
 	for _, data := range usersToSeed {
-		// Cek apakah email sudah terdaftar
 		var existingUser models.User
 		if err := DB.Where("email = ?", data.User.Email).First(&existingUser).Error; err == nil {
 			log.Printf("User with email %s already exists, skipping seed.", data.User.Email)
 			continue
 		}
 
-		// Hash password
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(data.Password), bcrypt.DefaultCost)
 		if err != nil {
 			log.Printf("Failed to hash password for %s: %v", data.User.Email, err)
@@ -172,20 +183,23 @@ func seedUsers() {
 		}
 		data.User.Password = string(hashedPassword)
 
-		// Hubungkan profil jika ada
+		// [PERBAIKAN] Hubungkan profil Farmer, Worker, dan Driver
 		if data.Farmer != nil {
 			data.User.Farmer = data.Farmer
 		}
 		if data.Worker != nil {
 			data.User.Worker = data.Worker
 		}
+		if data.Driver != nil {
+			data.User.Driver = data.Driver
+		}
 
-		// Buat user baru (dan profil terkait secara otomatis oleh GORM)
 		if err := DB.Create(&data.User).Error; err != nil {
 			log.Printf("Failed to create user %s: %v", data.User.Email, err)
 		}
 	}
 }
+
 
 func CreateIndexes() {
 	log.Println("🔄 Creating database indexes...")
@@ -326,6 +340,82 @@ func seedCompletedProjectScenario() {
 
 	if err != nil {
 		log.Fatalf("Failed to seed completed project scenario: %v", err)
+	}
+}
+
+func seedInProgressDeliveryScenario() {
+	log.Println("Creating an in-progress delivery scenario for tracking test...")
+
+	// Gunakan transaksi agar semua data dibuat atau tidak sama sekali
+	err := DB.Transaction(func(tx *gorm.DB) error {
+		// 1. Ambil data Petani dan Driver yang sudah ada
+		var farmerUser, driverUser models.User
+		if err := tx.Preload("Farmer").Where("email = ?", "farmer1@agrolink.com").First(&farmerUser).Error; err != nil {
+			return fmt.Errorf("seeder failed: could not find farmer")
+		}
+		if err := tx.Preload("Driver").Where("email = ?", "driver1@agrolink.com").First(&driverUser).Error; err != nil {
+			return fmt.Errorf("seeder failed: could not find driver")
+		}
+
+		// 2. Buat Kontrak terlebih dahulu
+		contract := models.Contract{
+			ContractType:   "delivery",
+			FarmerID:       farmerUser.Farmer.UserID,
+			DriverID:       &driverUser.Driver.UserID,
+			SignedByFarmer: true,
+			SignedBySecondParty: true, // Asumsikan driver langsung setuju
+			Status:         "active",
+		}
+		if err := tx.Create(&contract).Error; err != nil {
+			return err
+		}
+
+		// 3. Buat Delivery dengan status "in_transit" dan hubungkan ke kontrak
+		delivery := models.Delivery{
+			FarmerID:           farmerUser.Farmer.UserID,
+			DriverID:           &driverUser.Driver.UserID,
+			ContractID:         &contract.ID,
+			PickupAddress:      "Bedugul, Bali",
+			PickupLat:          -8.275,
+			PickupLng:          115.163,
+			DestinationAddress: "Canggu, Bali",
+			ItemDescription:    "100kg Stroberi Segar",
+			ItemWeight:         100.0,
+			Status:             "in_transit", // Langsung set status in_transit
+		}
+		if err := tx.Create(&delivery).Error; err != nil {
+			return err
+		}
+
+		// 4. Buat Invoice yang lunas
+		invoice := models.Invoice{
+			DeliveryID:  &delivery.ID,
+			FarmerID:    farmerUser.Farmer.UserID,
+			Amount:      200000,
+			PlatformFee: 10000,
+			TotalAmount: 210000,
+			Status:      "paid",
+			DueDate:     time.Now().Add(48 * time.Hour),
+		}
+		if err := tx.Create(&invoice).Error; err != nil {
+			return err
+		}
+
+		// 5. Buat Transaction sebagai bukti pembayaran
+		transaction := models.Transaction{
+			InvoiceID:     invoice.ID,
+			AmountPaid:    invoice.TotalAmount,
+			PaymentMethod: StringPtr("gopay"),
+		}
+		if err := tx.Create(&transaction).Error; err != nil {
+			return err
+		}
+
+		return nil // Commit transaksi
+	})
+
+	if err != nil {
+		log.Fatalf("Failed to seed in-progress delivery scenario: %v", err)
 	}
 }
 

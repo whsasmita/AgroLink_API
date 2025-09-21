@@ -125,7 +125,6 @@ func (s *deliveryService) SelectDriver(deliveryID, driverID, farmerID string) (*
 	// 2. Buat Kontrak baru dengan tipe 'delivery'
 	newContract := &models.Contract{
 		ContractType:   "delivery",
-		DeliveryID:     &delivery.ID,
 		FarmerID:       farmerUUID,
 		DriverID:       &driverUUID,
 		Status:         "pending_signature",
