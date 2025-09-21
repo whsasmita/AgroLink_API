@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/whsasmita/AgroLink_API/models"
 	"github.com/whsasmita/AgroLink_API/services"
 	"github.com/whsasmita/AgroLink_API/utils"
@@ -24,20 +25,47 @@ func (h *ContractHandler) SignContract(c *gin.Context) {
 	userInterface, _ := c.Get("user")
 	currentUser := userInterface.(*models.User)
 
-	if currentUser.Worker == nil {
-		utils.ErrorResponse(c, http.StatusForbidden, "Forbidden: Only workers can sign contracts", nil)
+	var secondPartyID uuid.UUID
+
+	switch currentUser.Role {
+	case "worker":
+		if currentUser.Worker == nil {
+			utils.ErrorResponse(c, http.StatusForbidden, "Forbidden: Worker profile not found", nil)
+			return
+		}
+		secondPartyID = currentUser.Worker.UserID
+
+	case "driver":
+		if currentUser.Driver == nil {
+			utils.ErrorResponse(c, http.StatusForbidden, "Forbidden: Driver profile not found", nil)
+			return
+		}
+		secondPartyID = currentUser.Driver.UserID
+	default:
+		utils.ErrorResponse(c, http.StatusForbidden, "Forbidden: Only workers or drivers can sign contracts", nil)
 		return
 	}
-	workerID := currentUser.Worker.UserID
 
-    // 'response' sekarang sudah bertipe *dto.SignContractResponse
-	response, err := h.contractService.SignContract(contractID, workerID)
+	// Panggil service dengan ID pihak kedua & tipe nya
+	response, err := h.contractService.SignContract(contractID, secondPartyID)
 	if err != nil {
 		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 
 	utils.SuccessResponse(c, http.StatusOK, "Contract signed successfully", response)
+}
+
+
+func (h *ContractHandler) GetMyContracts(c *gin.Context) {
+	currentUser := c.MustGet("user").(*models.User)
+
+	contracts, err := h.contractService.GetMyContracts(currentUser.ID)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to retrieve contracts", err)
+		return
+	}
+	utils.SuccessResponse(c, http.StatusOK, "Contracts retrieved successfully", contracts)
 }
 
 

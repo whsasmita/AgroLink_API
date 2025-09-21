@@ -36,11 +36,11 @@ func (h *ReviewHandler) CreateReview(c *gin.Context) {
 	inputDTO.ReviewedWorkerID = workerID
 	inputDTO.ReviewerID = currentUser.ID // Petani yang sedang login
 
-	review, err := h.reviewService.CreateReview(inputDTO)
+	response, err := h.reviewService.CreateReview(inputDTO)
 	if err != nil {
 		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 
-	utils.SuccessResponse(c, http.StatusCreated, "Review submitted successfully", review)
+	utils.SuccessResponse(c, http.StatusCreated, "Review submitted successfully", response)
 }

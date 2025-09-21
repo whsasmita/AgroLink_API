@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -12,46 +13,32 @@ import (
 // List semua model untuk migrasi.
 var migrationModels = []interface{}{
 	// Base user models first
+	// 1. Model dasar tanpa banyak dependensi
 	&models.User{},
+	&models.SystemSetting{},
+
+	// 2. Model profil yang bergantung pada User
 	&models.Farmer{},
 	&models.Worker{},
 	&models.Driver{},
-
-	// Location and farm models
-	&models.FarmLocation{},
-	&models.WorkerAvailability{},
-
-	// Project related models
+	
+	// 3. Model utama yang bergantung pada profil
 	&models.Project{},
-	&models.ProjectApplication{},
-	&models.ProjectAssignment{},
-	&models.Contract{},
+	&models.Delivery{}, // Bergantung pada Driver & Farmer
+	&models.FarmLocation{}, // Bergantung pada Farmer
 
-	// [BARU] Financial models
+	// 4. Model transaksi & perjanjian yang bergantung pada Project/Delivery
 	&models.Invoice{},
 	&models.Transaction{},
+	&models.Contract{},
+
+	// 5. Model-model pendukung yang memiliki banyak relasi
+	&models.ProjectApplication{},
+	&models.ProjectAssignment{},
 	&models.Payout{},
-
-	// Schedule models
-	&models.Schedule{},
-	&models.ScheduleNotification{},
-	&models.Notification{},
-
-	// // Review and support models
-	// &models.Review{},
-	// &models.SupportTicket{},
-	// &models.SupportMessage{},
-	// &models.Dispute{},
-
-	// System models
-	// &models.SystemSetting{},
-	// &models.ActivityLog{},
-	// &models.UserSession{},
-
-	// // AI models
-	// &models.AIRecommendation{},
-	// &models.UserPreference{},
-	// &models.MLTrainingData{},
+	&models.Review{},
+	&models.WorkerAvailability{},
+	&models.LocationTrack{},
 }
 
 // =====================================================================
@@ -112,7 +99,8 @@ func SeedDefaultData() {
 	seedSystemSettings()
 	seedUsers() // <-- Panggil seeder pengguna baru
 	// seedContractTemplates()
-	// seedCompletedProjectScenario()
+	seedCompletedProjectScenario()
+	seedInProgressDeliveryScenario()
 	log.Println("✅ Default data seeded successfully")
 }
 
@@ -120,10 +108,12 @@ func SeedDefaultData() {
 func seedUsers() {
 	log.Println("Creating seed users...")
 
+	// [PERBAIKAN] Tambahkan *models.Driver ke dalam struct
 	usersToSeed := []struct {
 		User     models.User
 		Farmer   *models.Farmer
 		Worker   *models.Worker
+		Driver   *models.Driver // <-- Tambahkan ini
 		Password string
 	}{
 		// 1. Admin User
@@ -133,7 +123,7 @@ func seedUsers() {
 		},
 		// 2. Farmer User
 		{
-			User:     models.User{Name: "Budi Petani", Email: "farmer1@agrolink.com", Role: "farmer", EmailVerified: true},
+			User:     models.User{Name: "Budi Petani", Email: "farmer1@agrolink.com", Role: "farmer", EmailVerified: true, PhoneNumber: StringPtr("081082083099")},
 			Farmer:   &models.Farmer{Address: StringPtr("Desa Sukamaju No. 10")},
 			Password: "password123",
 		},
@@ -144,34 +134,48 @@ func seedUsers() {
 				Email:         "worker1@agrolink.com",
 				Role:          "worker",
 				EmailVerified: true,
+				PhoneNumber:   StringPtr("081234567890"),
 			},
 			Worker: &models.Worker{
 				Skills:            `["menanam","menyiram","panen"]`,
 				DailyRate:         Float64Ptr(120000),
-				Address:           StringPtr("Jalan Tani No. 15, Desa Makmur"), // [LENGKAP]
-				NationalID:        StringPtr("3501234567890001"),               // [LENGKAP]
-				BankName:          StringPtr("BCA"),                            // [LENGKAP]
-				BankAccountNumber: StringPtr("1234567890"),                     // [LENGKAP]
-				BankAccountHolder: StringPtr("JOKO PEKERJA"),                   // [LENGKAP]
+				Address:           StringPtr("Jalan Tani No. 15, Desa Makmur"),
+				NationalID:        StringPtr("3501234567890001"),
+				BankName:          StringPtr("BCA"),
+				BankAccountNumber: StringPtr("1234567890"),
+				BankAccountHolder: StringPtr("JOKO PEKERJA"),
 			},
 			Password: "password123",
 		},
+		// [BARU] 4. Driver User
 		{
-			User:     models.User{Name: "Siti Pekerja", Email: "worker2@agrolink.com", Role: "worker", EmailVerified: true},
-			Worker:   &models.Worker{Skills: `["panen","sortir"]`, DailyRate: Float64Ptr(125000)},
+			User: models.User{
+				Name:          "Eka Supir",
+				Email:         "driver1@agrolink.com",
+				Role:          "driver",
+				EmailVerified: true,
+				PhoneNumber:   StringPtr("085678901234"),
+			},
+			Driver: &models.Driver{
+				Address:      StringPtr("Jalan Logistik No. 1, Denpasar"),
+				// Simpan sebagai string JSON
+				PricingScheme: `{"per_km": 5000, "base_fare": 20000}`,
+				VehicleTypes:  `["pickup", "truk engkel"]`,
+				// Lokasi awal driver
+				CurrentLat:    Float64Ptr(-8.65),
+				CurrentLng:    Float64Ptr(115.21),
+			},
 			Password: "password123",
 		},
 	}
 
 	for _, data := range usersToSeed {
-		// Cek apakah email sudah terdaftar
 		var existingUser models.User
 		if err := DB.Where("email = ?", data.User.Email).First(&existingUser).Error; err == nil {
 			log.Printf("User with email %s already exists, skipping seed.", data.User.Email)
 			continue
 		}
 
-		// Hash password
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(data.Password), bcrypt.DefaultCost)
 		if err != nil {
 			log.Printf("Failed to hash password for %s: %v", data.User.Email, err)
@@ -179,20 +183,23 @@ func seedUsers() {
 		}
 		data.User.Password = string(hashedPassword)
 
-		// Hubungkan profil jika ada
+		// [PERBAIKAN] Hubungkan profil Farmer, Worker, dan Driver
 		if data.Farmer != nil {
 			data.User.Farmer = data.Farmer
 		}
 		if data.Worker != nil {
 			data.User.Worker = data.Worker
 		}
+		if data.Driver != nil {
+			data.User.Driver = data.Driver
+		}
 
-		// Buat user baru (dan profil terkait secara otomatis oleh GORM)
 		if err := DB.Create(&data.User).Error; err != nil {
 			log.Printf("Failed to create user %s: %v", data.User.Email, err)
 		}
 	}
 }
+
 
 func CreateIndexes() {
 	log.Println("🔄 Creating database indexes...")
@@ -272,60 +279,51 @@ func CreateIndexes() {
 
 
 func seedCompletedProjectScenario() {
-	log.Println("Creating a completed project scenario...")
+	log.Println("Creating a completed project scenario for rating test...")
 
 	// Gunakan transaksi agar semua data dibuat atau tidak sama sekali
 	err := DB.Transaction(func(tx *gorm.DB) error {
-		// 1. Ambil data Petani dan Pekerja yang sudah ada dari seeder sebelumnya
+		// 1. Ambil data Petani dan Pekerja yang sudah ada
 		var farmerUser, workerUser models.User
 		if err := tx.Preload("Farmer").Where("email = ?", "farmer1@agrolink.com").First(&farmerUser).Error; err != nil {
-			return err
+			return fmt.Errorf("seeder failed: could not find farmer1@agrolink.com")
 		}
 		if err := tx.Preload("Worker").Where("email = ?", "worker1@agrolink.com").First(&workerUser).Error; err != nil {
-			return err
+			return fmt.Errorf("seeder failed: could not find worker1@agrolink.com")
 		}
 
-		// 2. Buat Lokasi Lahan
-		farmLocation := models.FarmLocation{
-			FarmerID:  farmerUser.Farmer.UserID,
-			Name:      "Lahan Proyek Selesai",
-			Latitude:  -8.200,
-			Longitude: 115.200,
-			AreaSize:  25.0,
-		}
-		if err := tx.Create(&farmLocation).Error; err != nil {
-			return err
-		}
-
-		// 3. Buat Proyek dengan status "completed"
+		// 2. Buat Proyek dengan status "completed" (tanpa FarmLocation)
 		project := models.Project{
 			FarmerID:      farmerUser.Farmer.UserID,
-			Title:         "Proyek Penanaman Tomat Ceri (Selesai)",
-			Description:   "Proyek ini sudah selesai dan siap untuk di-review.",
+			Title:         "Proyek Panen Jagung (Selesai)",
+			Description:   "Proyek ini sudah selesai dan siap untuk di-review oleh petani.",
+			Location:      "Sawah Seeder, Bali",
 			WorkersNeeded: 1,
 			StartDate:     time.Now().AddDate(0, 0, -10), // 10 hari yang lalu
 			EndDate:       time.Now().AddDate(0, 0, -1),  // Kemarin
-			PaymentRate:   Float64Ptr(120000),
-			Status:        "completed", // <-- Langsung set status selesai
+			PaymentRate:   Float64Ptr(125000),
+			PaymentType:   "per_day",
+			Status:        "open", // Langsung set status selesai
 		}
 		if err := tx.Create(&project).Error; err != nil {
 			return err
 		}
 
-		// 4. Buat Kontrak
+		// 3. Buat Kontrak
 		contract := models.Contract{
-			ProjectID:      project.ID,
+			ProjectID:      &project.ID,
 			FarmerID:       farmerUser.Farmer.UserID,
-			WorkerID:       workerUser.Worker.UserID,
+			WorkerID:       &workerUser.Worker.UserID,
 			SignedByFarmer: true,
-			SignedByWorker: true,
+			SignedBySecondParty: true,
+			ContractType: "work",
 			Status:         "completed",
 		}
 		if err := tx.Create(&contract).Error; err != nil {
 			return err
 		}
 
-		// 5. Buat Penugasan (Assignment)
+		// 4. Buat Penugasan (Assignment)
 		assignment := models.ProjectAssignment{
 			ProjectID:  project.ID,
 			WorkerID:   workerUser.Worker.UserID,
@@ -337,9 +335,6 @@ func seedCompletedProjectScenario() {
 			return err
 		}
 
-		// 6. Buat Invoice, Transaction, dan Payout (jika diperlukan untuk konsistensi)
-		// Untuk tujuan testing review, langkah 1-5 di atas sudah cukup.
-
 		return nil // Commit transaksi
 	})
 
@@ -347,6 +342,83 @@ func seedCompletedProjectScenario() {
 		log.Fatalf("Failed to seed completed project scenario: %v", err)
 	}
 }
+
+func seedInProgressDeliveryScenario() {
+	log.Println("Creating an in-progress delivery scenario for tracking test...")
+
+	// Gunakan transaksi agar semua data dibuat atau tidak sama sekali
+	err := DB.Transaction(func(tx *gorm.DB) error {
+		// 1. Ambil data Petani dan Driver yang sudah ada
+		var farmerUser, driverUser models.User
+		if err := tx.Preload("Farmer").Where("email = ?", "farmer1@agrolink.com").First(&farmerUser).Error; err != nil {
+			return fmt.Errorf("seeder failed: could not find farmer")
+		}
+		if err := tx.Preload("Driver").Where("email = ?", "driver1@agrolink.com").First(&driverUser).Error; err != nil {
+			return fmt.Errorf("seeder failed: could not find driver")
+		}
+
+		// 2. Buat Kontrak terlebih dahulu
+		contract := models.Contract{
+			ContractType:   "delivery",
+			FarmerID:       farmerUser.Farmer.UserID,
+			DriverID:       &driverUser.Driver.UserID,
+			SignedByFarmer: true,
+			SignedBySecondParty: true, // Asumsikan driver langsung setuju
+			Status:         "active",
+		}
+		if err := tx.Create(&contract).Error; err != nil {
+			return err
+		}
+
+		// 3. Buat Delivery dengan status "in_transit" dan hubungkan ke kontrak
+		delivery := models.Delivery{
+			FarmerID:           farmerUser.Farmer.UserID,
+			DriverID:           &driverUser.Driver.UserID,
+			ContractID:         &contract.ID,
+			PickupAddress:      "Bedugul, Bali",
+			PickupLat:          -8.275,
+			PickupLng:          115.163,
+			DestinationAddress: "Canggu, Bali",
+			ItemDescription:    "100kg Stroberi Segar",
+			ItemWeight:         100.0,
+			Status:             "in_transit", // Langsung set status in_transit
+		}
+		if err := tx.Create(&delivery).Error; err != nil {
+			return err
+		}
+
+		// 4. Buat Invoice yang lunas
+		invoice := models.Invoice{
+			DeliveryID:  &delivery.ID,
+			FarmerID:    farmerUser.Farmer.UserID,
+			Amount:      200000,
+			PlatformFee: 10000,
+			TotalAmount: 210000,
+			Status:      "paid",
+			DueDate:     time.Now().Add(48 * time.Hour),
+		}
+		if err := tx.Create(&invoice).Error; err != nil {
+			return err
+		}
+
+		// 5. Buat Transaction sebagai bukti pembayaran
+		transaction := models.Transaction{
+			InvoiceID:     invoice.ID,
+			AmountPaid:    invoice.TotalAmount,
+			PaymentMethod: StringPtr("gopay"),
+		}
+		if err := tx.Create(&transaction).Error; err != nil {
+			return err
+		}
+
+		return nil // Commit transaksi
+	})
+
+	if err != nil {
+		log.Fatalf("Failed to seed in-progress delivery scenario: %v", err)
+	}
+}
+
 
 // seedSystemSettings... (fungsi Anda yang sudah ada)
 func seedSystemSettings() {

@@ -19,13 +19,13 @@ type CreateProjectRequest struct {
 }
 
 type ProjectBriefResponse struct {
-	ID          uuid.UUID `json:"id"`
-	Title       string    `json:"title"`
-	ProjectType string    `json:"project_type"`
-	PaymentRate *float64  `json:"payment_rate"`
-	PaymentType string    `json:"payment_type"`
-	StartDate   time.Time `json:"start_date"`
-	WorkersNeeded int     `json:"workers_needed"`
+	ID            uuid.UUID `json:"id"`
+	Title         string    `json:"title"`
+	ProjectType   string    `json:"project_type"`
+	PaymentRate   *float64  `json:"payment_rate"`
+	PaymentType   string    `json:"payment_type"`
+	StartDate     time.Time `json:"start_date"`
+	WorkersNeeded int       `json:"workers_needed"`
 	// Kita bisa tambahkan info ringkas petani jika perlu
 	// FarmerName string `json:"farmer_name"`
 }
@@ -70,6 +70,7 @@ type MyProjectResponse struct {
 	ProjectID     uuid.UUID `json:"project_id"`
 	ProjectTitle  string    `json:"project_title"`
 	ProjectStatus string    `json:"project_status"`
+	WorkerNeeed   int    `json:"worker_needed"`
 	// Menggunakan pointer dan omitempty agar field ini tidak muncul jika invoice belum ada.
 	InvoiceID *uuid.UUID `json:"invoice_id,omitempty"`
 }

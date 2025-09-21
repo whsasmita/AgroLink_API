@@ -74,9 +74,10 @@ func (s *offerService) CreateDirectOffer(input dto.DirectOfferRequest, farmerID,
 
 	// 3. Buat Kontrak (tidak berubah)
 	newContract := &models.Contract{
-		ProjectID:      newProject.ID,
+		ProjectID:      &newProject.ID,
 		FarmerID:       farmerID,
-		WorkerID:       workerID,
+		WorkerID:       &workerID,
+		ContractType: "work",
 		Status:         "pending_signature",
 		SignedByFarmer: true,
 	}

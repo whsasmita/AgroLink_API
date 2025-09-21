@@ -46,8 +46,8 @@ type Farmer struct {
 	CreatedAt      time.Time `json:"created_at"`
 
 	// Relationships
-	User          User           `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"-"`
-	Projects      []Project      `gorm:"foreignKey:FarmerID;constraint:OnDelete:CASCADE"`
+	User     User      `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"-"`
+	Projects []Project `gorm:"foreignKey:FarmerID;constraint:OnDelete:CASCADE"`
 }
 
 // Worker represents worker profile details
@@ -64,8 +64,8 @@ type Worker struct {
 	AvailabilitySchedule *string   `gorm:"type:json" json:"availability_schedule"`
 	CurrentLocationLat   *float64  `gorm:"type:decimal(10,8)" json:"current_location_lat"`
 	CurrentLocationLng   *float64  `gorm:"type:decimal(11,8)" json:"current_location_lng"`
-	Rating      float64 `gorm:"default:0" json:"rating"`
-    ReviewCount int     `gorm:"default:0" json:"review_count"`
+	Rating               float64   `gorm:"default:0" json:"rating"`
+	ReviewCount          int       `gorm:"default:0" json:"review_count"`
 	TotalJobsCompleted   int       `gorm:"default:0" json:"total_jobs_completed"`
 	CreatedAt            time.Time `json:"created_at"`
 
@@ -84,12 +84,17 @@ type Driver struct {
 	PricingScheme   string    `gorm:"type:json;not null" json:"pricing_scheme"`
 	VehicleTypes    string    `gorm:"type:json;not null" json:"vehicle_types"` // JSON array as string
 	Rating          float64   `gorm:"default:0" json:"rating"`
+	ReviewCount     int       `gorm:"default:0" json:"review_count"`
 	TotalDeliveries int       `gorm:"default:0" json:"total_deliveries"`
 	CreatedAt       time.Time `json:"created_at"`
+	Distance        float64   `gorm:"-" json:"distance"`
 
+	CurrentLat *float64 `gorm:"type:decimal(10,8)"`
+	CurrentLng *float64 `gorm:"type:decimal(11,8)"`
 	// Relationships
-	User       User       `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"-"`
-	Deliveries []Delivery `gorm:"foreignKey:ExpeditionID;constraint:OnDelete:CASCADE"`
+	User         User          `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"-"`
+	Deliveries   []Delivery    `gorm:"foreignKey:DriverID"`
+	DriverRoutes []DriverRoute `gorm:"foreignKey:DriverID"`
 }
 
 // FarmLocation represents individual farm locations
@@ -108,7 +113,7 @@ type FarmLocation struct {
 	CreatedAt      time.Time `json:"created_at"`
 
 	// Relationships
-	Farmer   Farmer    `gorm:"foreignKey:FarmerID;constraint:OnDelete:CASCADE" json:"-"`
+	Farmer Farmer `gorm:"foreignKey:FarmerID;constraint:OnDelete:CASCADE" json:"-"`
 }
 
 // BeforeCreate hook for FarmLocation

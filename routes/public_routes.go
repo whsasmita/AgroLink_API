@@ -2,7 +2,6 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/whsasmita/AgroLink_API/config"
 	"github.com/whsasmita/AgroLink_API/handlers"
 	"github.com/whsasmita/AgroLink_API/repositories"
 	"github.com/whsasmita/AgroLink_API/services"
@@ -28,7 +27,7 @@ func PublicRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	projectHandler := handlers.NewProjectHandler(projectService)
 
 	//Komponen Worker
-	workerRepo := repositories.NewWorkerRepository(config.DB)
+	workerRepo := repositories.NewWorkerRepository(db)
 	workerService := services.NewWorkerService(workerRepo)
 	workerHandler := handlers.NewWorkerHandler(workerService)
 

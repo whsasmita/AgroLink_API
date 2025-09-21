@@ -30,13 +30,12 @@ func main() {
 	db := config.ConnectDatabase()
 
 	// Run migrations
-	// config.RunMigrationWithReset()
+	config.RunMigrationWithReset()
 	// config.AutoMigrate()
 	// config.CreateIndexes()
 
 	// Graceful shutdown
 	defer config.CloseDatabase()
-
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
@@ -83,6 +82,8 @@ func main() {
 	payoutRepo := repositories.NewPayoutRepository(db)
 	assignRepo := repositories.NewAssignmentRepository(db)
 	projectRepo := repositories.NewProjectRepository(db) // Perlu diinisialisasi di sini
+	webhookRepo := repositories.NewWebhookLogRepository(db)
+	deliveryRepo := repositories.NewDeliveryRepository(db)
 
 	// Inisialisasi PaymentService dengan SEMUA dependensi yang dibutuhkan
 	paymentService := services.NewPaymentService(
@@ -92,10 +93,11 @@ func main() {
 		assignRepo,
 		projectRepo,
 		userRepo,
+		deliveryRepo,
+		db,
 	)
 
-	webhookHandler := handlers.NewWebhookHandler(paymentService)
-	
+	webhookHandler := handlers.NewWebhookHandler(paymentService, webhookRepo)
 
 	// Buat grup API level atas
 	api := r.Group("/api")
@@ -108,9 +110,14 @@ func main() {
 		// --- RUTE APLIKASI ANDA (TETAP DI DALAM /v1) ---
 		v1 := api.Group("/v1")
 		{
+			v1Public := v1.Group("/public")
+			{
+				// routes.PublicRoutes menerima *gin.RouterGroup, jadi pass v1Public
+				routes.PublicRoutes(v1Public, db)
+			}
 			// Grup untuk rute publik (Login, Register)
-			publicRoutes := v1.Group("/")
-			routes.PublicRoutes(publicRoutes, db)
+			// publicRoutes := v1.Group("/")
+			// routes.PublicRoutes(publicRoutes, db)
 
 			// Grup untuk rute yang dilindungi otentikasi
 			protectedGroup := v1.Group("/")

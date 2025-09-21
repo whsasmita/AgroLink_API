@@ -10,7 +10,8 @@ import (
 // Invoice merepresentasikan tagihan total untuk satu proyek.
 type Invoice struct {
 	ID        uuid.UUID `gorm:"type:char(36);primary_key"`
-	ProjectID uuid.UUID `gorm:"type:char(36);not null;uniqueIndex"`
+	ProjectID   *uuid.UUID `gorm:"type:char(36)"`
+	DeliveryID  *uuid.UUID `gorm:"type:char(36)"` // <-- [TAMBAHAN]
 	FarmerID  uuid.UUID `gorm:"type:char(36);not null"`
 	Amount    float64   `gorm:"type:decimal(12,2)"`
 	PlatformFee float64 `gorm:"type:decimal(10,2)"`
