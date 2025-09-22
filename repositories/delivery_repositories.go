@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"github.com/google/uuid"
 	"github.com/whsasmita/AgroLink_API/models"
 	"gorm.io/gorm"
 )
@@ -11,6 +12,8 @@ type DeliveryRepository interface {
 	// [PERBAIKAN] Tambahkan *gorm.DB sebagai argumen
 	Update(tx *gorm.DB, delivery *models.Delivery) error
 	FindByContractID(contractID string) (*models.Delivery, error)
+	FindAllByUserID(userID uuid.UUID, role string) ([]models.Delivery, error)
+
 }
 
 type deliveryRepository struct{ db *gorm.DB }
@@ -38,4 +41,21 @@ func (r *deliveryRepository) FindByID(id string) (*models.Delivery, error) {
 func (r *deliveryRepository) Update(tx *gorm.DB, delivery *models.Delivery) error {
 	// Gunakan 'tx' yang dioper dari service, bukan 'r.db'
 	return tx.Save(delivery).Error
+}
+
+func (r *deliveryRepository) FindAllByUserID(userID uuid.UUID, role string) ([]models.Delivery, error) {
+	var deliveries []models.Delivery
+	query := r.db
+
+	if role == "farmer" {
+		query = query.Where("farmer_id = ?", userID)
+	} else if role == "driver" {
+		query = query.Where("driver_id = ?", userID)
+	} else {
+		// Jika peran tidak sesuai, kembalikan daftar kosong
+		return deliveries, nil
+	}
+
+	err := query.Order("created_at DESC").Find(&deliveries).Error
+	return deliveries, err
 }
