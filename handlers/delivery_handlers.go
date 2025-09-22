@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/whsasmita/AgroLink_API/dto"
 	"github.com/whsasmita/AgroLink_API/models"
 	"github.com/whsasmita/AgroLink_API/services"
@@ -81,4 +82,25 @@ func (h *DeliveryHandler) SelectDriver(c *gin.Context) {
 	}
 
 	utils.SuccessResponse(c, http.StatusOK, "Driver selected and contract offered", contract)
+}
+
+func (h *DeliveryHandler) GetMyDeliveries(c *gin.Context) {
+	currentUser := c.MustGet("user").(*models.User)
+	
+	var userID uuid.UUID
+	if currentUser.Role == "farmer" && currentUser.Farmer != nil {
+		userID = currentUser.Farmer.UserID
+	} else if currentUser.Role == "driver" && currentUser.Driver != nil {
+		userID = currentUser.Driver.UserID
+	} else {
+        utils.ErrorResponse(c, http.StatusForbidden, "User does not have a valid role for this action", nil)
+        return
+    }
+
+	deliveries, err := h.deliveryService.GetMyDeliveries(userID, currentUser.Role)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to retrieve deliveries", err)
+		return
+	}
+	utils.SuccessResponse(c, http.StatusOK, "Deliveries retrieved successfully", deliveries)
 }

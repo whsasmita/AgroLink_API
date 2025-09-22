@@ -15,6 +15,7 @@ type DeliveryService interface {
 	CreateDelivery(input dto.CreateDeliveryRequest, farmerID uuid.UUID) (*models.Delivery, error)
 	FindAvailableDrivers(deliveryID string, farmerID uuid.UUID, radius int) ([]dto.DriverRecommendationResponse, error)
 	SelectDriver(deliveryID, driverID, farmerID string) (*models.Contract, error)
+	GetMyDeliveries(userID uuid.UUID, role string) ([]dto.MyDeliveryResponse, error)
 }
 
 type deliveryService struct {
@@ -150,3 +151,24 @@ func (s *deliveryService) SelectDriver(deliveryID, driverID, farmerID string) (*
 
 	return newContract, nil
 }
+
+func (s *deliveryService) GetMyDeliveries(userID uuid.UUID, role string) ([]dto.MyDeliveryResponse, error) {
+	deliveries, err := s.deliveryRepo.FindAllByUserID(userID, role)
+	if err != nil {
+		return nil, err
+	}
+
+	var responseDTOs []dto.MyDeliveryResponse
+	for _, d := range deliveries {
+		responseDTOs = append(responseDTOs, dto.MyDeliveryResponse{
+			DeliveryID:         d.ID,
+			ItemDescription:    d.ItemDescription,
+			DestinationAddress: d.DestinationAddress,
+			Status:             d.Status,
+			CreatedAt:          d.CreatedAt,
+		})
+	}
+
+	return responseDTOs, nil
+}
+
