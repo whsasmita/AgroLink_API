@@ -95,7 +95,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	{
 		projects.POST("/", middleware.RoleMiddleware("farmer"), projectHandler.CreateProject)
 		projects.GET("/my", middleware.RoleMiddleware("farmer"), projectHandler.GetMyProjects)
-		projects.GET("/:id", projectHandler.GetProjectByID)
+		
 		projects.GET("/:id/applications", middleware.RoleMiddleware("farmer"), appHandler.FindApplicationsByProjectID)
 		projects.POST("/:id/apply", middleware.RoleMiddleware("worker"), appHandler.ApplyToProject)
 		// Rute baru untuk melepaskan dana (payout)
@@ -148,6 +148,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
         // Petani memilih driver dan menawarkan kontrak
         deliveries.POST("/:id/select-driver/:driverId", middleware.RoleMiddleware("farmer"), deliveryHandler.SelectDriver)
         
+		 deliveries.GET("/my", deliveryHandler.GetMyDeliveries)
         // [RUTE BARU] Petani melacak pengiriman
         deliveries.GET("/:id/track", middleware.RoleMiddleware("farmer"), trackingHandler.GetLatestLocation)
         

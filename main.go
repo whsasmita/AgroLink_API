@@ -1,5 +1,6 @@
 package main
 
+// TODO tambahakan fitur review untuk Driver
 // TODO pertimbangkan untuk menggunakan cloud storage
 import (
 	"log"
@@ -30,7 +31,7 @@ func main() {
 	db := config.ConnectDatabase()
 
 	// Run migrations
-	config.RunMigrationWithReset()
+	// config.RunMigrationWithReset()
 	// config.AutoMigrate()
 	// config.CreateIndexes()
 

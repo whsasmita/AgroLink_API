@@ -70,6 +70,7 @@ func PublicRoutes(router *gin.RouterGroup, db *gorm.DB) {
 
 	projects := router.Group("/projects")
 	{
+		projects.GET("/:id", projectHandler.GetProjectByID)
 		projects.GET("/", projectHandler.FindAllProjects)
 	}
 
