@@ -69,6 +69,7 @@ func main() {
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 	}))
+	
 
 	// Health check endpoint
 	r.GET("/health", func(c *gin.Context) {
