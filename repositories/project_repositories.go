@@ -14,7 +14,7 @@ type ProjectRepository interface {
 	FindAllByFarmerID(farmerID uuid.UUID) ([]models.Project, error)
 	HasWorkerApplied(projectID, workerID string) (bool, error)
 	IsWorkerOnActiveProject(workerID string) (bool, error)
-	UpdateStatus(tx *gorm.DB, projectID string, status string) error
+	UpdateStatus( projectID string, status string) error
 }
 
 type projectRepository struct {
@@ -97,11 +97,8 @@ func (r *projectRepository) IsWorkerOnActiveProject(workerID string) (bool, erro
 }
 
 // UpdateStatus memperbarui kolom status dari sebuah proyek.
-func (r *projectRepository) UpdateStatus(tx *gorm.DB, projectID string, status string) error {
+func (r *projectRepository) UpdateStatus( projectID string, status string) error {
 	db := r.db
-	if tx != nil {
-		db = tx
-	}
 	result := db.Model(&models.Project{}).Where("id = ?", projectID).Update("status", status)
 	if result.Error != nil {
 		return result.Error

@@ -39,6 +39,7 @@ var migrationModels = []interface{}{
 	&models.Review{},
 	&models.WorkerAvailability{},
 	&models.LocationTrack{},
+	&models.WebhookLog{},
 }
 
 // =====================================================================

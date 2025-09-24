@@ -8,7 +8,6 @@ import (
 	"github.com/whsasmita/AgroLink_API/dto"
 	"github.com/whsasmita/AgroLink_API/models"
 	"github.com/whsasmita/AgroLink_API/repositories"
-	"gorm.io/gorm"
 )
 
 type ProjectService interface {
@@ -17,7 +16,7 @@ type ProjectService interface {
 	FindByID(id string) (*models.Project, error)
 	FindMyProjects(farmerID uuid.UUID) ([]dto.MyProjectResponse, error)
 	CheckAndFinalizeProject(projectID uuid.UUID) error
-	UpdateStatus(tx *gorm.DB, projectID string, status string) error
+	UpdateStatus(projectID string, status string) error
 }
 
 type projectService struct {
@@ -146,11 +145,11 @@ func (s *projectService) CheckAndFinalizeProject(projectID uuid.UUID) error {
 			return fmt.Errorf("failed to create invoice: %w", err)
 		}
 
-		return s.projectRepo.UpdateStatus(nil, project.ID.String(), "waiting_payment") // Menggunakan 'nil'
+		return s.projectRepo.UpdateStatus( project.ID.String(), "waiting_payment") // Menggunakan 'nil'
 	}
 	return nil
 }
 
-func (s *projectService) UpdateStatus(tx *gorm.DB, projectID string, status string) error {
-	return s.projectRepo.UpdateStatus(tx, projectID, status)
+func (s *projectService) UpdateStatus( projectID string, status string) error {
+	return s.projectRepo.UpdateStatus( projectID, status)
 }

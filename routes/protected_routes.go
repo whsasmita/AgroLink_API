@@ -31,6 +31,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	reviewRepo := repositories.NewReviewRepository(db)
 	deliveryRepo := repositories.NewDeliveryRepository(db)
 	locationTrackRepo := repositories.NewLocationTrackRepository(db)
+	driverRepo := repositories.NewDriverRepository(db)
 	// workerRepo dan projectRepo sudah ada
 
 	// 2. Inisialisasi Services
@@ -43,7 +44,8 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	notificationService := services.NewNotificationService(notifRepo, emailService, userRepo)
 	appService := services.NewApplicationService(appRepo, projectRepo, contractRepo, assignRepo, notificationService, db)
 	paymentService := services.NewPaymentService(invoiceRepo, transactionRepo, payoutRepo, assignRepo, projectRepo, userRepo, deliveryRepo, db)
-	reviewService := services.NewReviewService(reviewRepo, workerRepo, projectRepo, db)
+	reviewService := services.NewReviewService(reviewRepo, workerRepo, projectRepo, driverRepo, deliveryRepo, db)
+	deliveryService := services.NewDeliveryService(deliveryRepo, driverRepo, contractRepo, db)
 	offerService := services.NewOfferService(projectRepo, contractRepo, assignRepo, userRepo, db)
 	trackingService := services.NewTrackingService(locationTrackRepo, deliveryRepo)
 
@@ -57,10 +59,8 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	appHandler := handlers.NewApplicationHandler(appService)
 	contractHandler := handlers.NewContractHandler(contractService)
 	paymentHandler := handlers.NewPaymentHandler(paymentService)
-	reviewHandler := handlers.NewReviewHandler(reviewService)
 	offerHandler := handlers.NewOfferHandler(offerService)
-	driverRepo := repositories.NewDriverRepository(db)
-	deliveryService := services.NewDeliveryService(deliveryRepo, driverRepo, contractRepo, db)
+	reviewHandler := handlers.NewReviewHandler(reviewService, deliveryService)
 	deliveryHandler := handlers.NewDeliveryHandler(deliveryService)
 
 	// deliveryRepo sudah diinisialisasi sebelumnya

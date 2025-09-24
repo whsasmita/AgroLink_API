@@ -13,10 +13,11 @@ import (
 
 type ReviewHandler struct {
 	reviewService services.ReviewService
+	deliveryService services.DeliveryService
 }
 
-func NewReviewHandler(service services.ReviewService) *ReviewHandler {
-	return &ReviewHandler{reviewService: service}
+func NewReviewHandler(service services.ReviewService, deliverService services.DeliveryService) *ReviewHandler {
+	return &ReviewHandler{reviewService: service, deliveryService: deliverService}
 }
 
 func (h *ReviewHandler) CreateReview(c *gin.Context) {
@@ -43,4 +44,31 @@ func (h *ReviewHandler) CreateReview(c *gin.Context) {
 	}
 
 	utils.SuccessResponse(c, http.StatusCreated, "Review submitted successfully", response)
+}
+
+func (h *ReviewHandler) CreateDriverReview(c *gin.Context) {
+	deliveryID, _ := uuid.Parse(c.Param("deliveryId"))
+	
+	var inputDTO dto.CreateDriverReviewInput
+	if err := c.ShouldBindJSON(&inputDTO); err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid input data", err)
+		return
+	}
+
+	currentUser := c.MustGet("user").(*models.User)
+    
+    // Ambil driverID dari delivery (perlu sedikit penyesuaian di service/repo)
+    delivery, _ := h.deliveryService.FindByID(deliveryID.String())
+
+	inputDTO.DeliveryID = deliveryID
+	inputDTO.ReviewedDriverID = *delivery.DriverID
+	inputDTO.ReviewerID = currentUser.ID // Petani yang sedang login
+
+	review, err := h.reviewService.CreateDriverReview(inputDTO)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error(), nil)
+		return
+	}
+
+	utils.SuccessResponse(c, http.StatusCreated, "Driver review submitted successfully", review)
 }
