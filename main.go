@@ -1,7 +1,7 @@
 package main
 
-// TODO tambahakan fitur review untuk Driver
-// TODO pertimbangkan untuk menggunakan cloud storage
+
+// TODO pertimbangkan untuk menggunakan cloud storage 
 import (
 	"log"
 	"os"
@@ -69,7 +69,7 @@ func main() {
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 	}))
-	
+
 
 	// Health check endpoint
 	r.GET("/health", func(c *gin.Context) {
