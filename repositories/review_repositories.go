@@ -12,6 +12,9 @@ type ReviewRepository interface {
 	// [BARU] Fungsi untuk membaca review di dalam transaksi
 	GetReviewsByWorkerIDWithTx(tx *gorm.DB, workerID uuid.UUID) ([]models.Review, error)
 	CheckExistingReview(reviewerID, reviewedWorkerID, projectID uuid.UUID) (int64, error)
+	GetReviewsByDriverID(driverID uuid.UUID) ([]models.Review, error)
+	GetReviewsByDriverIDWithTx(tx *gorm.DB, driverID uuid.UUID) ([]models.Review, error)
+
 }
 
 type reviewRepository struct{ db *gorm.DB }
@@ -45,4 +48,16 @@ func (r *reviewRepository) CheckExistingReview(reviewerID, reviewedWorkerID, pro
 		Where("reviewer_id = ? AND reviewed_worker_id = ? AND project_id = ?", reviewerID, reviewedWorkerID, projectID).
 		Count(&count).Error
 	return count, err
+}
+
+func (r *reviewRepository) GetReviewsByDriverID(driverID uuid.UUID) ([]models.Review, error) {
+	var reviews []models.Review
+	err := r.db.Where("reviewed_driver_id = ?", driverID).Find(&reviews).Error
+	return reviews, err
+}
+
+func (r *reviewRepository) GetReviewsByDriverIDWithTx(tx *gorm.DB, driverID uuid.UUID) ([]models.Review, error) {
+	var reviews []models.Review
+	err := tx.Where("reviewed_driver_id = ?", driverID).Find(&reviews).Error
+	return reviews, err
 }

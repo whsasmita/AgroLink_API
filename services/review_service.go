@@ -11,20 +11,26 @@ import (
 
 type ReviewService interface {
 	CreateReview(input dto.CreateReviewInput) (*dto.CreateReviewResponse, error)
+	CreateDriverReview(input dto.CreateDriverReviewInput) (*models.Review, error)
+
 }
 
 type reviewService struct {
 	reviewRepo  repositories.ReviewRepository
+	driverRepo repositories.DriverRepository
 	workerRepo  repositories.WorkerRepository
 	projectRepo repositories.ProjectRepository
+	deliveryRepo repositories.DeliveryRepository
 	db          *gorm.DB
 }
 
-func NewReviewService(reviewRepo repositories.ReviewRepository, workerRepo repositories.WorkerRepository, projectRepo repositories.ProjectRepository, db *gorm.DB) ReviewService {
+func NewReviewService(reviewRepo repositories.ReviewRepository, workerRepo repositories.WorkerRepository, projectRepo repositories.ProjectRepository,driverRepo repositories.DriverRepository, deliveryRepo repositories.DeliveryRepository, db *gorm.DB) ReviewService {
 	return &reviewService{
 		reviewRepo:  reviewRepo,
 		workerRepo:  workerRepo,
 		projectRepo: projectRepo,
+		driverRepo: driverRepo,
+		deliveryRepo: deliveryRepo,
 		db:          db,
 	}
 }
@@ -51,9 +57,9 @@ func (s *reviewService) CreateReview(input dto.CreateReviewInput) (*dto.CreateRe
 	}
 
 	newReview := &models.Review{
-		ProjectID:        input.ProjectID,
+		ProjectID:        &input.ProjectID,
 		ReviewerID:       input.ReviewerID,
-		ReviewedWorkerID: input.ReviewedWorkerID,
+		ReviewedWorkerID: &input.ReviewedWorkerID,
 		Rating:           input.Rating,
 		Comment:          &input.Comment,
 	}
@@ -105,9 +111,9 @@ func (s *reviewService) CreateReview(input dto.CreateReviewInput) (*dto.CreateRe
 
 	response := &dto.CreateReviewResponse{
         ID:               newReview.ID,
-        ProjectID:        newReview.ProjectID,
+		ProjectID:        *newReview.ProjectID,
         ReviewerID:       newReview.ReviewerID,
-        ReviewedWorkerID: newReview.ReviewedWorkerID,
+        ReviewedWorkerID: *newReview.ReviewedWorkerID,
         Rating:           newReview.Rating,
         Comment:          newReview.Comment,
         CreatedAt:        newReview.CreatedAt,
@@ -116,4 +122,53 @@ func (s *reviewService) CreateReview(input dto.CreateReviewInput) (*dto.CreateRe
 
 	return response, nil
 
+}
+
+func (s *reviewService) CreateDriverReview(input dto.CreateDriverReviewInput) (*models.Review, error) {
+    // 1. Validasi: Pastikan pengiriman sudah selesai
+    delivery, err := s.deliveryRepo.FindByID(input.DeliveryID.String()) // Perlu deliveryRepo
+    if err != nil {
+        return nil, fmt.Errorf("delivery not found")
+    }
+    if delivery.Status != "delivered" {
+        return nil, fmt.Errorf("reviews can only be submitted for delivered orders")
+    }
+    if delivery.FarmerID != input.ReviewerID {
+        return nil, fmt.Errorf("forbidden: you are not the owner of this delivery")
+    }
+
+    // 2. Validasi: Mencegah ulasan ganda
+    // Anda perlu membuat fungsi CheckExistingDriverReview di reviewRepo
+    
+    newReview := &models.Review{
+        DeliveryID:       &input.DeliveryID,
+        ReviewerID:       input.ReviewerID,
+        ReviewedDriverID: &input.ReviewedDriverID,
+        Rating:           input.Rating,
+        Comment:          &input.Comment,
+    }
+
+    tx := s.db.Begin()
+	if err := s.reviewRepo.Create(tx, newReview); err != nil {
+		tx.Rollback(); return nil, err
+	}
+
+    // 3. Kalkulasi ulang rating driver
+    // Anda perlu membuat GetReviewsByDriverID di reviewRepo
+    allReviews, _ := s.reviewRepo.GetReviewsByDriverID(input.ReviewedDriverID) 
+    
+    var totalRating int
+    for _, r := range allReviews { totalRating += r.Rating }
+    newReviewCount := len(allReviews)
+    newAverageRating := float64(totalRating) / float64(newReviewCount)
+
+    if err := s.driverRepo.UpdateRating(tx, input.ReviewedDriverID, newAverageRating, newReviewCount); err != nil {
+		tx.Rollback(); return nil, err
+	}
+    
+    if err := tx.Commit().Error; err != nil {
+		return nil, err
+	}
+
+    return newReview, nil
 }

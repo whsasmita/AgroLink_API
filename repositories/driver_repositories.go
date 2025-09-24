@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/whsasmita/AgroLink_API/models"
 	"gorm.io/gorm"
 )
@@ -13,6 +14,7 @@ type DriverRepository interface {
 	GetDrivers(sortBy, order string, limit, offset int) ([]models.Driver, int64, error)
 	GetDriverByID(id string) (models.Driver, error)
 	FindNearby(lat, lng float64, radius int) ([]models.Driver, error)
+	UpdateRating(tx *gorm.DB, driverID uuid.UUID, newRating float64, reviewCount int) error
 	// Anda bisa menambahkan method pencarian yang lebih spesifik nanti
 }
 
@@ -92,3 +94,9 @@ func (r *driverRepository) FindNearby(lat, lng float64, radius int) ([]models.Dr
 	return drivers, err
 }
 
+func (r *driverRepository) UpdateRating(tx *gorm.DB, driverID uuid.UUID, newRating float64, reviewCount int) error {
+    return tx.Model(&models.Driver{}).Where("user_id = ?", driverID).Updates(map[string]interface{}{
+        "rating":       newRating,
+        "review_count": reviewCount,
+    }).Error
+}

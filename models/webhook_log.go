@@ -12,7 +12,7 @@ type WebhookLog struct {
 	ID                uuid.UUID `gorm:"type:char(36);primaryKey" json:"id"`
 	Provider          string    `gorm:"type:varchar(50);index;not null" json:"provider"`  // ex: "midtrans"
 	Event             string    `gorm:"type:varchar(50);index" json:"event"`              // ex: transaction_status
-	OrderID           string    `gorm:"type:varchar(64);index" json:"order_id"`           // invoice UUID
+	OrderID           string    `gorm:"type:varchar(100);index" json:"order_id"`           // invoice UUID
 	TransactionID     string    `gorm:"type:varchar(64);index" json:"transaction_id"`     // midtrans transaction_id
 	PaymentType       string    `gorm:"type:varchar(50)" json:"payment_type"`             // credit_card / qris / bank_transfer
 	StatusCode        string    `gorm:"type:varchar(10)" json:"status_code"`              // "200", etc

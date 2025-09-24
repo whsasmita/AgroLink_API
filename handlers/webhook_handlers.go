@@ -30,25 +30,41 @@ func NewWebhookHandler(service services.PaymentService, logRepo repositories.Web
 
 func (h *WebhookHandler) HandleMidtransNotification(c *gin.Context) {
 	ctx := context.Background()
+	reqIDAny, _ := c.Get("req_id")
+	reqID, _ := reqIDAny.(string)
+	if reqID == "" {
+		reqID = uuid.NewString()
+	}
 
 	// 1) Read raw body
 	bodyBytes, err := io.ReadAll(c.Request.Body)
 	if err != nil {
-		log.Printf("ERROR reading webhook body: %v", err)
+		log.Printf("[WEBHOOK %s] ERROR reading body: %v", reqID, err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot read request body"})
 		return
 	}
-	// reset body for binding downstream
 	c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+
+	log.Printf("[WEBHOOK %s] >>> NEW MIDTRANS NOTIFICATION", reqID)
+	log.Printf("[WEBHOOK %s] method=%s path=%s host=%s clientIP=%s xff=%q ua=%q",
+		reqID, c.Request.Method, c.Request.URL.Path, c.Request.Host, c.ClientIP(),
+		c.Request.Header.Get("X-Forwarded-For"), c.Request.UserAgent(),
+	)
 
 	// 2) Snapshot headers
 	headersMap := map[string][]string(c.Request.Header)
+	log.Printf("[WEBHOOK %s] headers=%v", reqID, headersMap)
 
 	// 3) Parse payload (best-effort)
 	var payload map[string]interface{}
-	_ = json.Unmarshal(bodyBytes, &payload)
+	if err := json.Unmarshal(bodyBytes, &payload); err != nil {
+		log.Printf("[WEBHOOK %s] WARN cannot parse JSON: %v", reqID, err)
+	}
 
-	// 4) Pre-calc signature_valid (handler-level)
+	// Tambahkan req_id ke payload agar service bisa ikut log
+	payload["_req_id"] = reqID
+
+	// 4) Validasi signature (handler-level)
 	orderID := getString(payload, "order_id")
 	statusCode := getString(payload, "status_code")
 	grossAmount := getString(payload, "gross_amount")
@@ -60,6 +76,10 @@ func (h *WebhookHandler) HandleMidtransNotification(c *gin.Context) {
 		calc := sha512.Sum512([]byte(orderID + statusCode + grossAmount + serverKey))
 		calcHex := fmt.Sprintf("%x", calc[:])
 		sigValid = (calcHex == sig)
+		log.Printf("[WEBHOOK %s] signature check: order_id=%s status_code=%s gross_amount=%s valid=%v",
+			reqID, orderID, statusCode, grossAmount, sigValid)
+	} else {
+		log.Printf("[WEBHOOK %s] signature fields missing (serverKey or payload fields empty)", reqID)
 	}
 
 	// 5) Create log entry
@@ -80,13 +100,14 @@ func (h *WebhookHandler) HandleMidtransNotification(c *gin.Context) {
 		RawBody:           datatypes.JSON(bodyBytes),
 		ParsedBody:        datatypes.JSON([]byte(mustJSON(payload))),
 	}
-
 	if err := h.webhookLogRepo.Create(ctx, logEntry); err != nil {
-		log.Printf("WARNING: failed to persist webhook log: %v", err)
+		log.Printf("[WEBHOOK %s] WARNING persist log failed: %v", reqID, err)
 	}
 
 	// 6) Call service
+	log.Printf("[WEBHOOK %s] delegating to service.HandleWebhookNotification ...", reqID)
 	if err := h.paymentService.HandleWebhookNotification(payload); err != nil {
+		log.Printf("[WEBHOOK %s] SERVICE ERROR: %v", reqID, err)
 		_ = h.webhookLogRepo.AttachError(ctx, logEntry.ID.String(), err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -94,8 +115,10 @@ func (h *WebhookHandler) HandleMidtransNotification(c *gin.Context) {
 
 	// 7) Mark processed
 	_ = h.webhookLogRepo.MarkProcessed(ctx, logEntry.ID.String())
+	log.Printf("[WEBHOOK %s] processed OK", reqID)
 	c.JSON(http.StatusOK, gin.H{"message": "Notification processed successfully"})
 }
+
 
 // helpers
 func getString(m map[string]interface{}, key string) string {

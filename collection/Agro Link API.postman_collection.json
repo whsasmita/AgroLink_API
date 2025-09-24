@@ -91,7 +91,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\" : \"farmer1@agrolink.com\",\r\n    \"password\" : \"password123\"\r\n}",
+							"raw": "{\r\n    \"email\" : \"driver1@agrolink.com\",\r\n    \"password\" : \"password123\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -104,6 +104,85 @@
 								"{{base_url}}"
 							],
 							"path": [
+								"public",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Login Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\" : \"Bunga@gmail.com\",\r\n    \"password\" : \"AdminPassword\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/auth/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 03 Aug 2025 16:07:35 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "261"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTQzMjM2NTUsInJvbGUiOiJmYXJtZXIiLCJ1c2VyX2lkIjoiOTkwYjJhYmQtYWUxMy00NDQ1LWJhN2EtNGZiZWQ2NzkwZWIyIn0.BdPmgHDHerB_4vd7m8fqqTtBZ3vpJq0-Xs5ayK9lvs8\"\n    },\n    \"message\": \"Login successful\",\n    \"status\": \"success\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Login Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\" : \"farmer1@agrolink.com\",\r\n    \"password\" : \"password123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.goagrolink.com/api/v1/public/auth/login",
+							"protocol": "https",
+							"host": [
+								"api",
+								"goagrolink",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
 								"public",
 								"auth",
 								"login"
@@ -1241,13 +1320,14 @@
 							"raw": "{\r\n    \"title\": \"Proyek Panen Jagung Musim Kering\",\r\n    \"description\": \"Dibutuhkan 5 orang untuk membantu proses panen jagung di lahan seluas 2 hektar. Pengalaman tidak diutamakan.\",\r\n    \"project_type\": \"harvesting\",\r\n    \"required_skills\": [\"memetik\", \"mengangkut\"],\r\n    \"workers_needed\": 5,\r\n    \"start_date\": \"2025-09-10\",\r\n    \"end_date\": \"2025-09-20\",\r\n    \"payment_rate\": 150000.00,\r\n    \"payment_type\": \"per_day\"\r\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/projects/30dba8cf-80d1-4867-aedb-ccc969dec4a6applications",
+							"raw": "{{base_url}}/projects/{{project_id}}/applications",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"projects",
-								"30dba8cf-80d1-4867-aedb-ccc969dec4a6applications"
+								"{{project_id}}",
+								"applications"
 							]
 						}
 					},
@@ -1304,7 +1384,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{token_worker}}",
+									"value": "{{token_driver}}",
 									"type": "string"
 								}
 							]
@@ -1477,6 +1557,39 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Release Fee Delivery",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_farmer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"message\": \"Saya siap untuk menguji proyek ini.\"\r\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/deliveries/{{DELIVERY_ID}}/release-payment",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"deliveries",
+								"{{DELIVERY_ID}}",
+								"release-payment"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -1635,6 +1748,41 @@
 								"{{DELIVERY_ID}}",
 								"select-driver",
 								"{{DRIVER_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "My Deliveries",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_farmer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"pickup_address\": \"Kintamani, Bangli, Bali\",\r\n    \"pickup_lat\": -8.243,\r\n    \"pickup_lng\": 115.321,\r\n    \"destination_address\": \"Pasar Badung, Denpasar, Bali\",\r\n    \"item_description\": \"50 Kg Kopi Arabika Kintamani\",\r\n    \"item_weight\": 50.0\r\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/my/deliveries",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"my",
+								"deliveries"
 							]
 						}
 					},

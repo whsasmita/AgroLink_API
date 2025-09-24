@@ -71,7 +71,6 @@ func (s *applicationService) ApplyToProject(projectID string, workerID string, i
 }
 
 func (s *applicationService) FindApplicationsByProjectID(projectID string, farmerID string) ([]models.ProjectApplication, error) {
-	// ... (kode ini tidak berubah)
 	project, err := s.projectRepo.FindByID(projectID)
 	if err != nil {
 		return nil, errors.New("project not found")

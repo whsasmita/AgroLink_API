@@ -15,6 +15,7 @@ type DeliveryService interface {
 	CreateDelivery(input dto.CreateDeliveryRequest, farmerID uuid.UUID) (*models.Delivery, error)
 	FindAvailableDrivers(deliveryID string, farmerID uuid.UUID, radius int) ([]dto.DriverRecommendationResponse, error)
 	SelectDriver(deliveryID, driverID, farmerID string) (*models.Contract, error)
+	FindByID(deliveryID string) (*models.Delivery, error)
 	GetMyDeliveries(userID uuid.UUID, role string) ([]dto.MyDeliveryResponse, error)
 }
 
@@ -40,6 +41,9 @@ func NewDeliveryService(
 	}
 }
 
+func (s *deliveryService) FindByID(deliveryID string) (*models.Delivery, error) {
+	return s.deliveryRepo.FindByID(deliveryID)
+}
 // CreateDelivery membuat permintaan pengiriman baru dari petani.
 func (s *deliveryService) CreateDelivery(input dto.CreateDeliveryRequest, farmerID uuid.UUID) (*models.Delivery, error) {
 	newDelivery := &models.Delivery{

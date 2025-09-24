@@ -27,3 +27,12 @@ type CreateReviewResponse struct {
 	CreatedAt        time.Time `json:"created_at"`
 	Message          string    `json:"message"`
 }
+
+type CreateDriverReviewInput struct {
+	DeliveryID       uuid.UUID `json:"-"`
+	ReviewerID       uuid.UUID `json:"-"`
+	ReviewedDriverID uuid.UUID `json:"-"`
+
+	Rating  int    `json:"rating" binding:"required,min=1,max=5"`
+	Comment string `json:"comment"`
+}

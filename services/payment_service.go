@@ -149,27 +149,60 @@ func (s *paymentService) HandleWebhookNotification(notificationPayload map[strin
 	}
 
 	finalizeSuccess := func() error {
-		if err := s.invoiceRepo.UpdateStatus(invoice.ID.String(), "paid"); err != nil {
-			return err
-		}
-		newTx := &models.Transaction{
-			InvoiceID:                 invoice.ID,
-			AmountPaid:                invoice.TotalAmount,
-			PaymentMethod:             &paymentType,
-			PaymentGatewayReferenceID: &transactionIDMidtrans,
-		}
-		if err := s.transactionRepo.Create(newTx); err != nil {
-			_ = s.invoiceRepo.UpdateStatus(invoice.ID.String(), "pending")
-			return fmt.Errorf("failed to create transaction record after payment: %w", err)
-		}
+    // 1) Invoice -> paid
+    if err := s.invoiceRepo.UpdateStatus(invoice.ID.String(), "paid"); err != nil {
+        return err
+    }
 
-		// Jangan gagalkan webhook bila update project gagal; log & retry async
-		if err := s.projectRepo.UpdateStatus(nil, invoice.ProjectID.String(), "in_progress"); err != nil {
-			log.Printf("WARN: project status update failed for project %s: %v", invoice.ProjectID.String(), err)
-			// TODO: enqueue retry job / outbox pattern
-		}
-		return nil
-	}
+    // 2) Catat transaction (idempotensi di level DB: tambahkan unique index jika belum)
+    newTx := &models.Transaction{
+        InvoiceID:                 invoice.ID,
+        AmountPaid:                invoice.TotalAmount,
+        PaymentMethod:             &paymentType,
+        PaymentGatewayReferenceID: &transactionIDMidtrans,
+    }
+    if err := s.transactionRepo.Create(newTx); err != nil {
+        _ = s.invoiceRepo.UpdateStatus(invoice.ID.String(), "pending")
+        return fmt.Errorf("failed to create transaction record after payment: %w", err)
+    }
+
+    // 3) Routing: Project vs Delivery
+    //    NOTE: hindari panic bila pointer nil
+    if invoice.ProjectID != nil {
+        // Jangan kirim tx = nil kalau repo tidak siap; sediakan variant tanpa tx
+        if err := s.projectRepo.UpdateStatus(invoice.ProjectID.String(), "in_progress"); err != nil {
+            log.Printf("WARN: project status update failed for project %s: %v", invoice.ProjectID.String(), err)
+            // TODO: enqueue retry / outbox (jangan gagalkan webhook)
+        }
+        return nil
+    }
+
+    if invoice.DeliveryID != nil {
+        // Ambil delivery & set status ke 'in_transit'
+        delivery, derr := s.deliveryRepo.FindByID(invoice.DeliveryID.String())
+        if derr != nil {
+            log.Printf("WARN: delivery load failed for delivery %s: %v", invoice.DeliveryID.String(), derr)
+            return nil // jangan gagalkan webhook
+        }
+        // Pastikan transisi sesuai enum kamu
+        if delivery.Status == "pending_payment" || delivery.Status == "pending_signature" || delivery.Status == "pending_driver" {
+            delivery.Status = "in_transit"
+        } else {
+            // fallback aman: tetap set in_transit setelah paid
+            delivery.Status = "in_transit"
+        }
+        if err := s.deliveryRepo.Update(nil, delivery); err != nil {
+            // Jika Update(nil, ...) tidak diterima, ganti ke UpdateStatus seperti di bawah (bagian repo)
+            log.Printf("WARN: delivery update failed for delivery %s: %v", delivery.ID.String(), err)
+        }
+        return nil
+    }
+
+    // 4) Invoice tanpa project & delivery (kasus tak terduga)
+    log.Printf("INFO: invoice %s has no ProjectID nor DeliveryID; skipped resource status update", invoice.ID.String())
+    return nil
+}
+
 
 	switch transactionStatus {
 	case "capture":
@@ -254,7 +287,7 @@ func (s *paymentService) ReleaseProjectPayment(projectID string, farmerID uuid.U
 	}
 
 	// 3. Update status project menjadi 'completed' di dalam transaksi
-	if err := s.projectRepo.UpdateStatus(tx, projectID, "completed"); err != nil {
+	if err := s.projectRepo.UpdateStatus( projectID, "completed"); err != nil {
 		tx.Rollback()
 		return err
 	}
