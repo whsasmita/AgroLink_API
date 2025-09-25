@@ -1,7 +1,6 @@
 package main
 
-
-// TODO pertimbangkan untuk menggunakan cloud storage 
+// TODO pertimbangkan untuk menggunakan cloud storage
 import (
 	"log"
 	"os"
@@ -30,7 +29,7 @@ func main() {
 	// Connect to database
 	db := config.ConnectDatabase()
 
-	// Run migrations
+	// Run migration
 	// config.RunMigrationWithReset()
 	// config.AutoMigrate()
 	// config.CreateIndexes()
