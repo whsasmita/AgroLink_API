@@ -34,7 +34,7 @@ func main() {
 	// config.AutoMigrate()
 	// config.CreateIndexes()
 
-	// Graceful shutdown
+	// Graceful shutdown 
 	defer config.CloseDatabase()
 
 	c := make(chan os.Signal, 1)
