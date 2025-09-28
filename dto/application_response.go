@@ -38,3 +38,10 @@ type ApplicationSubmissionResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
+type MyApplicationResponse struct {
+	ApplicationID uuid.UUID `json:"application_id"`
+	ProjectTitle  string    `json:"project_title"`
+	FarmerName    string    `json:"farmer_name"`
+	Status        string    `json:"status"` // pending, accepted, rejected
+	AppliedAt     time.Time `json:"applied_at"`
+}

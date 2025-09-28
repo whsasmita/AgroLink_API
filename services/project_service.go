@@ -1,7 +1,9 @@
 package services
 
 import (
+	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/google/uuid"
@@ -13,7 +15,7 @@ import (
 type ProjectService interface {
 	CreateProject(request dto.CreateProjectRequest, farmerID uuid.UUID) (*models.Project, error)
 	FindAll(pagination dto.PaginationRequest) (*[]models.Project, int64, error)
-	FindByID(id string) (*models.Project, error)
+	FindByID(id string) (*dto.ProjectDetailResponse, error)
 	FindMyProjects(farmerID uuid.UUID) ([]dto.MyProjectResponse, error)
 	CheckAndFinalizeProject(projectID uuid.UUID) error
 	UpdateStatus(projectID string, status string) error
@@ -73,9 +75,43 @@ func (s *projectService) FindAll(pagination dto.PaginationRequest) (*[]models.Pr
 	return s.projectRepo.FindAll(pagination)
 }
 
-func (s *projectService) FindByID(id string) (*models.Project, error) {
-	return s.projectRepo.FindByID(id)
+func (s *projectService) FindByID(id string) (*dto.ProjectDetailResponse, error) {
+	// Langkah 1: Ambil data mentah dari repository
+	project, err := s.projectRepo.FindByID(id) // Asumsi repo mengambil data dengan relasi (Farmer.User)
+	if err != nil {
+		return nil, errors.New("project not found")
+	}
+
+	// Langkah 2: Lakukan logika bisnis tambahan (menghitung pekerja)
+	currentWorkers, err := s.projectRepo.CountActiveContracts(id)
+	if err != nil {
+		// Tangani error, misalnya dengan log dan set nilai default
+		log.Printf("Warning: could not count active contracts for project %s: %v", id, err)
+		currentWorkers = 0
+	}
+
+	// Langkah 3: Transformasi data dari model ke DTO
+	response := &dto.ProjectDetailResponse{
+		ID:             project.ID,
+		Title:          project.Title,
+		Description:    project.Description,
+		Location:       project.Location,
+		StartDate:      project.StartDate,
+		EndDate:        project.EndDate,
+		WorkersNeeded:  project.WorkersNeeded,
+		CurrentWorkers: int(currentWorkers),
+		PaymentRate:    project.PaymentRate,
+		Status:         project.Status,
+		Farmer: dto.FarmerInfoResponse{
+			ID:   project.Farmer.UserID,
+			Name: project.Farmer.User.Name,
+		},
+		CreatedAt:      project.CreatedAt,
+	}
+
+	return response, nil
 }
+
 
 func (s *projectService) FindMyProjects(farmerID uuid.UUID) ([]dto.MyProjectResponse, error) {
 	projects, err := s.projectRepo.FindAllByFarmerID(farmerID)
@@ -85,10 +121,16 @@ func (s *projectService) FindMyProjects(farmerID uuid.UUID) ([]dto.MyProjectResp
 
 	var responseDTOs []dto.MyProjectResponse
 	for _, p := range projects {
+		currentWorkers, err := s.projectRepo.CountActiveContracts(p.ID.String())
+		if err != nil {
+			// Jika ada error, anggap 0 untuk sementara agar tidak menggagalkan seluruh list
+			currentWorkers = 0
+		}
 		dto := dto.MyProjectResponse{
 			ProjectID:     p.ID,
 			ProjectTitle:  p.Title,
 			ProjectStatus: p.Status,
+			CurrentWorkers: int(currentWorkers),
 			WorkerNeeed:   p.WorkersNeeded,
 		}
 		if p.Invoice.ID != uuid.Nil {

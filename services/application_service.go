@@ -14,6 +14,9 @@ import (
 type ApplicationService interface {
 	ApplyToProject(projectID string, workerID string, input dto.ApplyProjectInput) (*models.ProjectApplication, error)
 	// [PERUBAHAN] Mengembalikan *models.Contract, bukan DTO
+	GetMyApplications(workerID uuid.UUID) ([]dto.MyApplicationResponse, error)
+
+	RejectApplication(applicationID string, farmerID uuid.UUID) error
 	AcceptApplication(applicationID string, farmerID string) (*dto.AcceptApplicationResponse, error)
 	FindApplicationsByProjectID(projectID string, farmerID string) ([]models.ProjectApplication, error)
 }
@@ -85,6 +88,52 @@ func (s *applicationService) FindApplicationsByProjectID(projectID string, farme
 	return applications, nil
 }
 
+func (s *applicationService) RejectApplication(applicationID string, farmerID uuid.UUID) error {
+	tx := s.db.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	// 1. Ambil data lamaran
+	application, err := s.appRepo.FindByID(applicationID)
+	if err != nil {
+		tx.Rollback()
+		return errors.New("application not found")
+	}
+
+	// 2. Validasi
+	if application.Project.FarmerID != farmerID {
+		tx.Rollback()
+		return errors.New("forbidden: you are not the owner of this project")
+	}
+	if application.Status != "pending" {
+		tx.Rollback()
+		return errors.New("this application has already been processed")
+	}
+
+	// 3. Ubah status menjadi 'rejected'
+	appUUID, err := uuid.Parse(applicationID)
+	if err != nil {
+		tx.Rollback()
+		return errors.New("invalid application ID format")
+	}
+	if err := s.appRepo.UpdateStatus(tx, appUUID, "rejected"); err != nil {
+		tx.Rollback()
+		return err
+	}
+	
+	// TODO: Kirim notifikasi ke pekerja bahwa lamarannya ditolak
+
+	return tx.Commit().Error
+}
+
+
+
 // ... (Pastikan semua import ini ada di bagian atas file Anda)
 
 func (s *applicationService) AcceptApplication(applicationID string, farmerID string) (*dto.AcceptApplicationResponse, error) {
@@ -145,3 +194,28 @@ func (s *applicationService) AcceptApplication(applicationID string, farmerID st
 	return response, nil
 }
 
+func (s *applicationService) GetMyApplications(workerID uuid.UUID) ([]dto.MyApplicationResponse, error) {
+	applications, err := s.appRepo.FindAllByWorkerID(workerID)
+	if err != nil {
+		return nil, err
+	}
+
+	var responseDTOs []dto.MyApplicationResponse
+	for _, app := range applications {
+		dto := dto.MyApplicationResponse{
+			ApplicationID: app.ID,
+			Status:        app.Status,
+			AppliedAt:     app.CreatedAt,
+		}
+		// Pastikan data hasil preload tidak nil sebelum diakses
+		if app.Project.ID != uuid.Nil {
+			dto.ProjectTitle = app.Project.Title
+			if app.Project.Farmer.UserID != uuid.Nil && app.Project.Farmer.User.Name != "" {
+				dto.FarmerName = app.Project.Farmer.User.Name
+			}
+		}
+		responseDTOs = append(responseDTOs, dto)
+	}
+
+	return responseDTOs, nil
+}

@@ -95,7 +95,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	{
 		projects.POST("/", middleware.RoleMiddleware("farmer"), projectHandler.CreateProject)
 		projects.GET("/my", middleware.RoleMiddleware("farmer"), projectHandler.GetMyProjects)
-		
+
 		projects.GET("/:id/applications", middleware.RoleMiddleware("farmer"), appHandler.FindApplicationsByProjectID)
 		projects.POST("/:id/apply", middleware.RoleMiddleware("worker"), appHandler.ApplyToProject)
 		// Rute baru untuk melepaskan dana (payout)
@@ -106,13 +106,15 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	// Application Routes
 	applications := router.Group("/applications")
 	{
+		applications.GET("/my", middleware.RoleMiddleware("worker"), appHandler.GetMyApplications)
+		applications.POST("/:id/reject", middleware.RoleMiddleware("farmer"), appHandler.RejectApplication)
 		applications.POST("/:id/accept", middleware.RoleMiddleware("farmer"), appHandler.AcceptApplication)
 	}
 
 	// Contract Routes
 	contracts := router.Group("/contracts")
 	{
-		contracts.GET("/my", contractHandler.GetMyContracts)
+		contracts.GET("/my", middleware.RoleMiddleware("worker", "driver"), contractHandler.GetMyContracts)
 		contracts.POST("/:id/sign", middleware.RoleMiddleware("worker", "driver"), contractHandler.SignContract)
 		contracts.GET("/:id/download", contractHandler.DownloadContractPDF)
 	}
@@ -139,24 +141,24 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	}
 
 	deliveries := router.Group("/deliveries")
-    // Middleware di sini bisa disesuaikan jika ada endpoint yang bisa diakses kedua peran
-    {
-        // Petani membuat permintaan pengiriman baru
-        deliveries.POST("/", middleware.RoleMiddleware("farmer"), deliveryHandler.CreateDelivery)
-        // Petani mencari driver yang cocok
-        deliveries.GET("/:id/find-drivers", middleware.RoleMiddleware("farmer"), deliveryHandler.FindDrivers)
-        // Petani memilih driver dan menawarkan kontrak
-        deliveries.POST("/:id/select-driver/:driverId", middleware.RoleMiddleware("farmer"), deliveryHandler.SelectDriver)
-        
-		 deliveries.GET("/my", deliveryHandler.GetMyDeliveries)
-        // [RUTE BARU] Petani melacak pengiriman
-        deliveries.GET("/:id/track", middleware.RoleMiddleware("farmer"), trackingHandler.GetLatestLocation)
-        
-        // [RUTE BARU] Driver mengirim update lokasi
-        deliveries.POST("/:id/location", middleware.RoleMiddleware("driver"), trackingHandler.UpdateLocation)
+	// Middleware di sini bisa disesuaikan jika ada endpoint yang bisa diakses kedua peran
+	{
+		// Petani membuat permintaan pengiriman baru
+		deliveries.POST("/", middleware.RoleMiddleware("farmer"), deliveryHandler.CreateDelivery)
+		// Petani mencari driver yang cocok
+		deliveries.GET("/:id/find-drivers", middleware.RoleMiddleware("farmer"), deliveryHandler.FindDrivers)
+		// Petani memilih driver dan menawarkan kontrak
+		deliveries.POST("/:id/select-driver/:driverId", middleware.RoleMiddleware("farmer"), deliveryHandler.SelectDriver)
 
-        // [RUTE BARU] Petani melepaskan dana pengiriman
-        deliveries.POST("/:id/release-payment", middleware.RoleMiddleware("farmer"), paymentHandler.ReleaseDeliveryPayment)
-    }
+		deliveries.GET("/my", deliveryHandler.GetMyDeliveries)
+		// [RUTE BARU] Petani melacak pengiriman
+		deliveries.GET("/:id/track", middleware.RoleMiddleware("farmer"), trackingHandler.GetLatestLocation)
+
+		// [RUTE BARU] Driver mengirim update lokasi
+		deliveries.POST("/:id/location", middleware.RoleMiddleware("driver"), trackingHandler.UpdateLocation)
+
+		// [RUTE BARU] Petani melepaskan dana pengiriman
+		deliveries.POST("/:id/release-payment", middleware.RoleMiddleware("farmer"), paymentHandler.ReleaseDeliveryPayment)
+	}
 
 }
