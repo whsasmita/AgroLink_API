@@ -38,17 +38,19 @@ type FarmerInfoResponse struct {
 
 // ProjectDetailResponse adalah DTO untuk response detail proyek.
 type ProjectDetailResponse struct {
-	ID            uuid.UUID          `json:"id"`
-	Title         string             `json:"title"`
-	Description   string             `json:"description"`
-	Location      string             `json:"location" `
-	WorkersNeeded int                `json:"workers_needed"`
-	StartDate     time.Time          `json:"start_date"`
-	EndDate       time.Time          `json:"end_date"`
-	PaymentRate   *float64           `json:"payment_rate"`
-	PaymentType   string             `json:"payment_type"`
-	Status        string             `json:"status"`
-	Farmer        FarmerInfoResponse `json:"farmer"`
+	ID             uuid.UUID          `json:"id"`
+	Title          string             `json:"title"`
+	Description    string             `json:"description"`
+	Location       string             `json:"location" `
+	WorkersNeeded  int                `json:"workers_needed"`
+	CurrentWorkers int                `json:"current_workers"`
+	StartDate      time.Time          `json:"start_date"`
+	EndDate        time.Time          `json:"end_date"`
+	PaymentRate    *float64           `json:"payment_rate"`
+	Status         string             `json:"status"`
+	Farmer         FarmerInfoResponse `json:"farmer"`
+	// CreatedAt indicates the timestamp when the project was created.
+	CreatedAt      time.Time          `json:"created_at"`
 }
 
 type CreateProjectResponse struct {
@@ -67,10 +69,11 @@ type CreateProjectResponse struct {
 }
 
 type MyProjectResponse struct {
-	ProjectID     uuid.UUID `json:"project_id"`
-	ProjectTitle  string    `json:"project_title"`
-	ProjectStatus string    `json:"project_status"`
-	WorkerNeeed   int    `json:"worker_needed"`
+	ProjectID      uuid.UUID `json:"project_id"`
+	ProjectTitle   string    `json:"project_title"`
+	ProjectStatus  string    `json:"project_status"`
+	WorkerNeeed    int       `json:"worker_needed"`
+	CurrentWorkers int       `json:"current_workers"`
 	// Menggunakan pointer dan omitempty agar field ini tidak muncul jika invoice belum ada.
 	InvoiceID *uuid.UUID `json:"invoice_id,omitempty"`
 }

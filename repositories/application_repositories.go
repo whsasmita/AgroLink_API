@@ -11,6 +11,7 @@ type ApplicationRepository interface {
 	FindByID(id string) (*models.ProjectApplication, error) // Perbaikan nama
 	UpdateStatus(tx *gorm.DB, applicationID uuid.UUID, status string) error
 	FindAllByProjectID(projectID string) ([]models.ProjectApplication, error)
+	FindAllByWorkerID(workerID uuid.UUID) ([]models.ProjectApplication, error)
 }
 
 type applicationRepository struct {
@@ -45,5 +46,16 @@ func (r *applicationRepository) UpdateStatus(tx *gorm.DB, applicationID uuid.UUI
 func (r *applicationRepository) FindAllByProjectID(projectID string) ([]models.ProjectApplication, error) {
 	var applications []models.ProjectApplication
 	err := r.db.Preload("Worker.User").Where("project_id = ?", projectID).Find(&applications).Error
+	return applications, err
+}
+
+func (r *applicationRepository) FindAllByWorkerID(workerID uuid.UUID) ([]models.ProjectApplication, error) {
+	var applications []models.ProjectApplication
+	// Lakukan Preload untuk mendapatkan data Proyek dan Petani terkait
+	err := r.db.
+		Preload("Project.Farmer.User").
+		Where("worker_id = ?", workerID).
+		Order("created_at DESC").
+		Find(&applications).Error
 	return applications, err
 }

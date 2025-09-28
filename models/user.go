@@ -7,8 +7,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// TODO checking untuk pemilihan tipa data untuk masalah financial
-// TODO perbarui untuk field dari lahan petani
 // User represents the main user table
 type User struct {
 	ID             uuid.UUID `gorm:"type:char(36);primary_key;default:(UUID())" json:"id"`

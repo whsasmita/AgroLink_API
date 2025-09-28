@@ -136,3 +136,39 @@ func (h *ApplicationHandler) FindApplicationsByProjectID(c *gin.Context) {
 
 	utils.SuccessResponse(c, http.StatusOK, "Applications retrieved successfully", responses)
 }
+
+func (h *ApplicationHandler) RejectApplication(c *gin.Context) {
+	applicationID := c.Param("id")
+	currentUser := c.MustGet("user").(*models.User)
+
+	if currentUser.Farmer == nil {
+		utils.ErrorResponse(c, http.StatusForbidden, "Forbidden: Only farmers can reject applications", nil)
+		return
+	}
+
+	err := h.appService.RejectApplication(applicationID, currentUser.Farmer.UserID)
+	if err != nil {
+		// Tangani error dengan lebih spesifik jika perlu
+		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error(), nil)
+		return
+	}
+
+	utils.SuccessResponse(c, http.StatusOK, "Application rejected successfully", nil)
+}
+
+func (h *ApplicationHandler) GetMyApplications(c *gin.Context) {
+	currentUser := c.MustGet("user").(*models.User)
+
+	if currentUser.Worker == nil {
+		utils.ErrorResponse(c, http.StatusForbidden, "Forbidden: Only workers can view their applications", nil)
+		return
+	}
+
+	applications, err := h.appService.GetMyApplications(currentUser.Worker.UserID)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to retrieve applications", err)
+		return
+	}
+
+	utils.SuccessResponse(c, http.StatusOK, "Applications retrieved successfully", applications)
+}

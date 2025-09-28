@@ -113,30 +113,18 @@ func (h *ProjectHandler) FindAllProjects(c *gin.Context) {
 func (h *ProjectHandler) GetProjectByID(c *gin.Context) {
 	projectID := c.Param("id")
 
-	project, err := h.projectService.FindByID(projectID)
+	// Panggil service yang sudah mengembalikan DTO
+	projectDTO, err := h.projectService.FindByID(projectID)
 	if err != nil {
-		utils.ErrorResponse(c, http.StatusNotFound, "Project not found", err)
+		// Service sudah menangani error, jadi kita bisa langsung tampilkan
+		utils.ErrorResponse(c, http.StatusNotFound, err.Error(), nil)
 		return
 	}
 
-	response := dto.ProjectDetailResponse{
-		ID:            project.ID,
-		Title:         project.Title,
-		Description:   project.Description,
-		WorkersNeeded: project.WorkersNeeded,
-		StartDate:     project.StartDate,
-		EndDate:       project.EndDate,
-		PaymentRate:   project.PaymentRate,
-		PaymentType:   project.PaymentType,
-		Status:        project.Status,
-		Farmer: dto.FarmerInfoResponse{
-			ID:   project.Farmer.UserID,
-			Name: project.Farmer.User.Name,
-		},
-	}
-
-	utils.SuccessResponse(c, http.StatusOK, "Project retrieved successfully", response)
+	// Langsung kirim DTO sebagai respons
+	utils.SuccessResponse(c, http.StatusOK, "Project retrieved successfully", projectDTO)
 }
+
 
 func (h *ProjectHandler) GetMyProjects(c *gin.Context) {
 	currentUser := c.MustGet("user").(*models.User)

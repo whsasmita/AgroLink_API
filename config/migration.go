@@ -60,7 +60,7 @@ func RunMigrationWithReset() {
 	AutoMigrate()
 
 	// 3. Jalankan Seeder untuk mengisi data awal
-	// SeedDefaultData()
+	SeedDefaultData()
 }
 
 // AutoMigrate hanya membuat atau memperbarui tabel tanpa menghapus data.
