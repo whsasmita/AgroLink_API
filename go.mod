@@ -7,6 +7,7 @@ require github.com/gin-contrib/cors v1.7.6
 require (
 	github.com/SebastiaanKlippert/go-wkhtmltopdf v1.9.3 // indirect
 	github.com/go-pdf/fpdf v0.9.0 // indirect
+	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/midtrans/midtrans-go v1.3.8 // indirect
 	github.com/sendgrid/rest v2.6.9+incompatible // indirect
