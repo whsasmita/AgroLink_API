@@ -43,6 +43,7 @@ var migrationModels = []interface{}{
 
 	// 6. Model tambahan dari ERD e-commerce
 	&models.Product{},
+	// &models.UserVerification{},
 	&models.Cart{},
 	&models.Order{},
 	&models.OrderItem{},

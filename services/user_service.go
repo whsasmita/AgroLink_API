@@ -64,6 +64,8 @@ func (s *userService) CreateUser(input dto.RegisterRequest) (*models.User, error
 		newUser.Worker = &models.Worker{}
 	case "driver":
 		newUser.Driver = &models.Driver{}
+	case "general":
+    	break
 	default:
 		return nil, errors.New("invalid user role specified")
 	}
