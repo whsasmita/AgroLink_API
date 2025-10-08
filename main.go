@@ -14,6 +14,7 @@ import (
 	"github.com/whsasmita/AgroLink_API/config"
 	"github.com/whsasmita/AgroLink_API/handlers"
 	"github.com/whsasmita/AgroLink_API/middleware"
+	"github.com/whsasmita/AgroLink_API/pkg/chat"
 	"github.com/whsasmita/AgroLink_API/repositories"
 	"github.com/whsasmita/AgroLink_API/routes"
 	"github.com/whsasmita/AgroLink_API/services"
@@ -69,6 +70,9 @@ func main() {
 		AllowCredentials: true,
 	}))
 
+	chatHub := chat.NewHub()
+	go chatHub.Run()
+
 
 	// Health check endpoint
 	r.GET("/health", func(c *gin.Context) {
@@ -99,6 +103,7 @@ func main() {
 	)
 
 	webhookHandler := handlers.NewWebhookHandler(paymentService, webhookRepo)
+	chatHandler := handlers.NewChatHandler(chatHub)
 
 	// Buat grup API level atas
 	api := r.Group("/api")
@@ -124,7 +129,8 @@ func main() {
 			protectedGroup := v1.Group("/")
 			protectedGroup.Use(middleware.AuthMiddleware(userRepo))
 			{
-				routes.ProtectedRoutes(protectedGroup, db)
+				routes.ProtectedRoutes(protectedGroup, db, chatHandler)
+				// routes.ProtectedRoutes(protectedGroup, db)
 			}
 		}
 	}

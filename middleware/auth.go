@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -11,31 +11,51 @@ import (
 )
 
 func AuthMiddleware(userRepo repositories.UserRepository) gin.HandlerFunc {
-    return func(c *gin.Context) {
-        authHeader := c.GetHeader("Authorization")
-        fmt.Printf("data Header %s\n", authHeader)
-        if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
-            utils.Unauthorized(c, "Authorization header missing or malformed")
-            c.Abort()
-            return
-        }
+	return func(c *gin.Context) {
+		var tokenString string
 
-        tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
-        claims, err := config.ValidateToken(tokenStr)
-        if err != nil {
-            utils.Unauthorized(c, "Invalid token")
-            c.Abort()
-            return
-        }
+		// 1) Authorization: Bearer <token>
+		if ah := c.GetHeader("Authorization"); strings.HasPrefix(strings.ToLower(ah), "bearer ") {
+			tokenString = strings.TrimSpace(ah[7:])
+		}
+		// 2) Jika handshake WebSocket, izinkan token via query / subprotocol
+		if tokenString == "" && strings.EqualFold(c.GetHeader("Upgrade"), "websocket") {
+			// a) query ?token=...
+			tokenString = c.Query("token")
+			// b) (opsional) Sec-WebSocket-Protocol: "Bearer, <token>"
+			if tokenString == "" {
+				if sp := c.GetHeader("Sec-WebSocket-Protocol"); sp != "" {
+					parts := strings.Split(sp, ",")
+					for _, p := range parts {
+						p = strings.TrimSpace(p)
+						if strings.HasPrefix(strings.ToLower(p), "bearer ") {
+							tokenString = strings.TrimSpace(p[7:])
+							break
+						}
+					}
+				}
+			}
+		}
 
-        user, err := userRepo.FindByID(claims.Subject)
-        if err != nil {
-            utils.Unauthorized(c, "User not found")
-            c.Abort()
-            return
-        }
+		if tokenString == "" {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "missing token"})
+			return
+		}
+		claims, err := config.ValidateToken(tokenString)
+		if err != nil {
+			utils.Unauthorized(c, "Invalid token")
+			c.Abort()
+			return
+		}
 
-        c.Set("user", user)
-        c.Next()
-    }
+		user, err := userRepo.FindByID(claims.Subject)
+		if err != nil {
+			utils.Unauthorized(c, "User not found")
+			c.Abort()
+			return
+		}
+
+		c.Set("user", user)
+		c.Next()
+	}
 }

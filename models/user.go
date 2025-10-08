@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// TODO tambahkan model alamat untuk shipping product ecommerce
 // User represents the main user table
 type User struct {
 	ID             uuid.UUID `gorm:"type:char(36);primary_key;default:(UUID())" json:"id"`
@@ -14,7 +15,7 @@ type User struct {
 	Email          string    `gorm:"type:varchar(100);uniqueIndex;not null" json:"email"`
 	Password       string    `gorm:"type:varchar(255);not null" json:"-"`
 	PhoneNumber    *string   `gorm:"type:varchar(20)" json:"phone_number"`
-	Role           string    `gorm:"type:enum('farmer','worker','driver','admin','cs');not null" json:"role"`
+	Role           string    `gorm:"type:enum('farmer','worker','driver','admin','general');not null" json:"role"`
 	ProfilePicture *string   `gorm:"type:text" json:"profile_picture"`
 	IsActive       bool      `gorm:"default:true" json:"is_active"`
 	EmailVerified  bool      `gorm:"default:false" json:"email_verified"`
@@ -80,6 +81,9 @@ type Driver struct {
 	Address *string   `gorm:"type:text" json:"company_address"`
 	// ServiceAreas    string    `gorm:"type:json;not null" json:"service_areas"` // JSON array as string
 	PricingScheme   string    `gorm:"type:json;not null" json:"pricing_scheme"`
+	BankName             *string   `gorm:"type:varchar(50)" json:"bank_name"`
+	BankAccountNumber    *string   `gorm:"type:varchar(50)" json:"bank_account_number"`
+	BankAccountHolder    *string   `gorm:"type:varchar(100)" json:"bank_account_holder"`
 	VehicleTypes    string    `gorm:"type:json;not null" json:"vehicle_types"` // JSON array as string
 	Rating          float64   `gorm:"default:0" json:"rating"`
 	ReviewCount     int       `gorm:"default:0" json:"review_count"`

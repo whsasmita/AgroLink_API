@@ -1,5 +1,6 @@
 package routes
 
+// TODO refactoring code ini agar semua inisiasi dilakukan di main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/whsasmita/AgroLink_API/handlers"
@@ -10,11 +11,13 @@ import (
 )
 
 // ProtectedRoutes mendaftarkan semua endpoint yang memerlukan autentikasi.
-func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
+func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers.ChatHandler) {
 	// =================================================================
 	// [DIREVISI] DEPENDENCY INJECTION
 	// Diurutkan berdasarkan dependensi: Repositories -> Services -> Handlers
 	// =================================================================
+	// router.GET("/ws", middleware.RoleMiddleware("farmer", "worker", "driver"), chatHandler.ServeWs)
+	
 
 	// 1. Inisialisasi semua Repositories
 	userRepo := repositories.NewUserRepository(db)
@@ -71,6 +74,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	// [DIREVISI] ROUTE DEFINITIONS
 	// Dikelompokkan berdasarkan sumber daya (resource)
 	// =================================================================
+	router.GET("/ws", chatHandler.ServeWs)
 
 	// Profile Routes
 	router.GET("/profile", authHandler.GetProfile)

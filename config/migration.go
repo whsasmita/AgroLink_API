@@ -21,10 +21,10 @@ var migrationModels = []interface{}{
 	&models.Farmer{},
 	&models.Worker{},
 	&models.Driver{},
-	
+
 	// 3. Model utama yang bergantung pada profil
 	&models.Project{},
-	&models.Delivery{}, // Bergantung pada Driver & Farmer
+	&models.Delivery{},     // Bergantung pada Driver & Farmer
 	&models.FarmLocation{}, // Bergantung pada Farmer
 
 	// 4. Model transaksi & perjanjian yang bergantung pada Project/Delivery
@@ -40,6 +40,14 @@ var migrationModels = []interface{}{
 	&models.WorkerAvailability{},
 	&models.LocationTrack{},
 	&models.WebhookLog{},
+
+	// 6. Model tambahan dari ERD e-commerce
+	&models.Product{},
+	// &models.UserVerification{},
+	&models.Cart{},
+	&models.Order{},
+	&models.OrderItem{},
+	&models.PaymentMidtrans{},
 }
 
 // =====================================================================
@@ -158,13 +166,13 @@ func seedUsers() {
 				PhoneNumber:   StringPtr("085678901234"),
 			},
 			Driver: &models.Driver{
-				Address:      StringPtr("Jalan Logistik No. 1, Denpasar"),
+				Address: StringPtr("Jalan Logistik No. 1, Denpasar"),
 				// Simpan sebagai string JSON
 				PricingScheme: `{"per_km": 5000, "base_fare": 20000}`,
 				VehicleTypes:  `["pickup", "truk engkel"]`,
 				// Lokasi awal driver
-				CurrentLat:    Float64Ptr(-8.65),
-				CurrentLng:    Float64Ptr(115.21),
+				CurrentLat: Float64Ptr(-8.65),
+				CurrentLng: Float64Ptr(115.21),
 			},
 			Password: "password123",
 		},
@@ -200,7 +208,6 @@ func seedUsers() {
 		}
 	}
 }
-
 
 func CreateIndexes() {
 	log.Println("🔄 Creating database indexes...")
@@ -277,8 +284,6 @@ func CreateIndexes() {
 	log.Println("✅ Database indexes created successfully")
 }
 
-
-
 func seedCompletedProjectScenario() {
 	log.Println("Creating a completed project scenario for rating test...")
 
@@ -312,13 +317,13 @@ func seedCompletedProjectScenario() {
 
 		// 3. Buat Kontrak
 		contract := models.Contract{
-			ProjectID:      &project.ID,
-			FarmerID:       farmerUser.Farmer.UserID,
-			WorkerID:       &workerUser.Worker.UserID,
-			SignedByFarmer: true,
+			ProjectID:           &project.ID,
+			FarmerID:            farmerUser.Farmer.UserID,
+			WorkerID:            &workerUser.Worker.UserID,
+			SignedByFarmer:      true,
 			SignedBySecondParty: true,
-			ContractType: "work",
-			Status:         "completed",
+			ContractType:        "work",
+			Status:              "completed",
 		}
 		if err := tx.Create(&contract).Error; err != nil {
 			return err
@@ -360,12 +365,12 @@ func seedInProgressDeliveryScenario() {
 
 		// 2. Buat Kontrak terlebih dahulu
 		contract := models.Contract{
-			ContractType:   "delivery",
-			FarmerID:       farmerUser.Farmer.UserID,
-			DriverID:       &driverUser.Driver.UserID,
-			SignedByFarmer: true,
+			ContractType:        "delivery",
+			FarmerID:            farmerUser.Farmer.UserID,
+			DriverID:            &driverUser.Driver.UserID,
+			SignedByFarmer:      true,
 			SignedBySecondParty: true, // Asumsikan driver langsung setuju
-			Status:         "active",
+			Status:              "active",
 		}
 		if err := tx.Create(&contract).Error; err != nil {
 			return err
@@ -419,7 +424,6 @@ func seedInProgressDeliveryScenario() {
 		log.Fatalf("Failed to seed in-progress delivery scenario: %v", err)
 	}
 }
-
 
 // seedSystemSettings... (fungsi Anda yang sudah ada)
 func seedSystemSettings() {
