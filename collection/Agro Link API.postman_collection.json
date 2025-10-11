@@ -18,7 +18,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\" : \"farmer2@gmail.com\",\r\n    \"password\" : \"AdminPassword\",\r\n    \"role\" : \"farmer\",\r\n    \"name\" : \"worrie\",\r\n    \"phone_number\" : \"085497809093\"\r\n}",
+							"raw": "{\r\n    \"email\" : \"worker2@gmail.com\",\r\n    \"password\" : \"password123\",\r\n    \"role\" : \"worker\",\r\n    \"name\" : \"Beni\",\r\n    \"phone_number\" : \"085497809093\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -26,11 +26,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/auth/register",
+							"raw": "{{base_url}}/public/auth/register",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
+								"public",
 								"auth",
 								"register"
 							]
@@ -91,7 +92,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\" : \"worker1@agrolink.com\",\r\n    \"password\" : \"password123\"\r\n}",
+							"raw": "{\r\n    \"email\" : \"farmer1@agrolink.com\",\r\n    \"password\" : \"password123\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -254,7 +255,8 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -264,7 +266,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{token_worker2}}",
+									"value": "{{token_farmer}}",
 									"type": "string"
 								}
 							]
@@ -852,6 +854,16 @@
 				{
 					"name": "getAllWorkers",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_farmer}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -895,13 +907,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/workers/379c3e72-ccde-4a1d-b625-88403677b8f5",
+							"raw": "{{base_url}}/public/workers/7b5a1522-9705-417b-a932-021187a83880",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
+								"public",
 								"workers",
-								"379c3e72-ccde-4a1d-b625-88403677b8f5"
+								"7b5a1522-9705-417b-a932-021187a83880"
 							],
 							"query": [
 								{
@@ -1909,6 +1922,27 @@
 			]
 		},
 		{
+			"name": "Fitur Chat",
+			"item": [
+				{
+					"name": "Farmer",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Worker",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "health",
 			"request": {
 				"method": "GET",
@@ -1936,6 +1970,7 @@
 			"listen": "prerequest",
 			"script": {
 				"type": "text/javascript",
+				"requests": {},
 				"exec": [
 					""
 				]
@@ -1945,6 +1980,7 @@
 			"listen": "test",
 			"script": {
 				"type": "text/javascript",
+				"requests": {},
 				"exec": [
 					""
 				]
@@ -1970,18 +2006,19 @@
 		},
 		{
 			"key": "token_worker",
-			"value": "",
-			"type": "string"
+			"value": ""
 		},
 		{
 			"key": "worker_id",
-			"value": "",
-			"type": "default"
+			"value": ""
 		},
 		{
 			"key": "token_driver",
-			"value": "",
-			"type": "default"
+			"value": ""
+		},
+		{
+			"key": "farmer_id",
+			"value": ""
 		}
 	]
 }

@@ -15,7 +15,7 @@ var migrationModels = []interface{}{
 	// Base user models first
 	// 1. Model dasar tanpa banyak dependensi
 	&models.User{},
-	&models.SystemSetting{},
+	// &models.SystemSetting{},
 
 	// 2. Model profil yang bergantung pada User
 	&models.Farmer{},
@@ -83,7 +83,7 @@ func AutoMigrate() {
 
 	log.Println("✅ Database migrations completed successfully")
 	// Panggil CreateIndexes di sini jika Anda ingin index dibuat setiap kali migrasi berjalan
-	// CreateIndexes()
+	CreateIndexes()
 }
 
 // dropAllTables menghapus semua tabel dalam urutan terbalik untuk menghindari error foreign key.

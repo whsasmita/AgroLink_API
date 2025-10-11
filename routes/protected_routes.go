@@ -17,7 +17,6 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 	// Diurutkan berdasarkan dependensi: Repositories -> Services -> Handlers
 	// =================================================================
 	// router.GET("/ws", middleware.RoleMiddleware("farmer", "worker", "driver"), chatHandler.ServeWs)
-	
 
 	// 1. Inisialisasi semua Repositories
 	userRepo := repositories.NewUserRepository(db)
@@ -35,6 +34,8 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 	deliveryRepo := repositories.NewDeliveryRepository(db)
 	locationTrackRepo := repositories.NewLocationTrackRepository(db)
 	driverRepo := repositories.NewDriverRepository(db)
+	productRepo := repositories.NewProductRepository(db)
+
 	// workerRepo dan projectRepo sudah ada
 
 	// 2. Inisialisasi Services
@@ -51,6 +52,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 	deliveryService := services.NewDeliveryService(deliveryRepo, driverRepo, contractRepo, db)
 	offerService := services.NewOfferService(projectRepo, contractRepo, assignRepo, userRepo, db)
 	trackingService := services.NewTrackingService(locationTrackRepo, deliveryRepo)
+	productService := services.NewProductService(productRepo)
 
 	notifHandler := handlers.NewNotificationHandler(notifRepo)
 
@@ -65,6 +67,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 	offerHandler := handlers.NewOfferHandler(offerService)
 	reviewHandler := handlers.NewReviewHandler(reviewService, deliveryService)
 	deliveryHandler := handlers.NewDeliveryHandler(deliveryService)
+	productHandler := handlers.NewProductHandler(productService)
 
 	// deliveryRepo sudah diinisialisasi sebelumnya
 
@@ -163,6 +166,14 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 
 		// [RUTE BARU] Petani melepaskan dana pengiriman
 		deliveries.POST("/:id/release-payment", middleware.RoleMiddleware("farmer"), paymentHandler.ReleaseDeliveryPayment)
+	}
+	products := router.Group("/products")
+	products.Use(middleware.RoleMiddleware("farmer"))
+	{
+		products.POST("/", productHandler.CreateProduct)
+		products.PUT("/:id", productHandler.UpdateProduct)
+		products.DELETE("/:id", productHandler.DeleteProduct)
+		products.POST("/image",productHandler.UploadImage)
 	}
 
 }
