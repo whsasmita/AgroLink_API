@@ -36,6 +36,10 @@ func PublicRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	driverService := services.NewDriverService(driverRepo)
 	driverHandler := handlers.NewDriverHandler(driverService)
 
+	productRepo := repositories.NewProductRepository(db)
+	productService := services.NewProductService(productRepo)
+	productHandler := handlers.NewProductHandler(productService)
+
 	// transactionRepo := repositories.NewTransactionRepository(db)
 	// userRepo sudah diinisialisasi di atas
 
@@ -73,6 +77,12 @@ func PublicRoutes(router *gin.RouterGroup, db *gorm.DB) {
 		projects.GET("/:id", projectHandler.GetProjectByID)
 		projects.GET("/", projectHandler.FindAllProjects)
 	}
+
+	 products := router.Group("/products")
+    {
+        products.GET("/", productHandler.GetAllProducts)
+        products.GET("/:id", productHandler.GetProductByID)
+    }
 
 	// Tambahkan juga routes lain seperti: search, contracts, payments, reviews, notifications ke sini.
 }

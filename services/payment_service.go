@@ -275,7 +275,8 @@ func (s *paymentService) ReleaseProjectPayment(projectID string, farmerID uuid.U
 	for _, assignment := range assignments {
 		payout := models.Payout{
 			TransactionID: transaction.ID,
-			WorkerID:      assignment.WorkerID,
+			PayeeID:      assignment.WorkerID,
+			PayeeType: "worker",
 			Amount:        assignment.AgreedRate,
 		}
 		// Pastikan payoutRepo.Create menerima objek 'tx'
@@ -342,7 +343,8 @@ func (s *paymentService) ReleaseDeliveryPayment(deliveryID string, farmerID uuid
 	}
 	payout := models.Payout{
 		TransactionID: transaction.ID,
-		WorkerID:      *delivery.DriverID, // Menggunakan WorkerID sebagai field generik
+		PayeeID:      *delivery.DriverID, // Menggunakan WorkerID sebagai field generik
+		PayeeType: "driver",
 		Amount:        invoice.Amount,     // Gaji driver adalah jumlah pokok
 	}
 	if err := s.payoutRepo.Create(tx, &payout); err != nil {
