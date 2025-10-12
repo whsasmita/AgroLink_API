@@ -171,6 +171,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
         products.Use(middleware.RoleMiddleware("farmer"))
         {
             products.POST("/", productHandler.CreateProduct)
+			products.POST("/upload-image", productHandler.UploadImage)
             products.PUT("/:id", productHandler.UpdateProduct)
             products.DELETE("/:id", productHandler.DeleteProduct)
         }
