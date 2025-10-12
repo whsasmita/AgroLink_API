@@ -24,7 +24,7 @@ type RegisterRequest struct {
 	Name     string `json:"name" binding:"required"`
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required,min=6"`
-	Role     string `json:"role" binding:"required,oneof=farmer worker driver admin"`
+	Role     string `json:"role" binding:"required,oneof=farmer worker driver admin general"`
 	PhoneNumber string 	`json:"phone_number" binding:"required"`
 }
 
@@ -100,10 +100,6 @@ func (h *AuthHandler) GetProfile(c *gin.Context) {
         return
     }
 
-    // 3. TIDAK PERLU MEMANGGIL SERVICE LAGI!
-    // Objek 'user' sudah berisi data lengkap yang di-fetch oleh middleware 
-    // (termasuk hasil Preload jika ada).
-    // Langsung kirimkan data ini sebagai respons sukses.
     utils.SuccessResponse(c, http.StatusOK, "User profile fetched successfully", user)
 }
 

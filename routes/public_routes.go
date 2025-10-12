@@ -37,7 +37,7 @@ func PublicRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	driverHandler := handlers.NewDriverHandler(driverService)
 
 	productRepo := repositories.NewProductRepository(db)
-	productService := services.NewProductService(productRepo)
+	productService := services.NewProductService(productRepo,db)
 	productHandler := handlers.NewProductHandler(productService)
 
 	// transactionRepo := repositories.NewTransactionRepository(db)

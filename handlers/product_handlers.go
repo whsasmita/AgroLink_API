@@ -58,6 +58,26 @@ func (h *ProductHandler) GetAllProducts(c *gin.Context) {
 	utils.SuccessResponse(c, http.StatusOK, "Products retrieved successfully", products)
 }
 
+func (h *ProductHandler) GetMyProducts(c *gin.Context) {
+	// Ambil pengguna saat ini dari context
+	currentUser := c.MustGet("user").(*models.User)
+	
+	// Validasi bahwa pengguna adalah seorang petani
+	if currentUser.Farmer == nil {
+		utils.ErrorResponse(c, http.StatusForbidden, "Forbidden: Only farmers can view their products", nil)
+		return
+	}
+
+	products, err := h.productService.GetMyProducts(currentUser.Farmer.UserID)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to retrieve products", err)
+		return
+	}
+
+	utils.SuccessResponse(c, http.StatusOK, "Your products retrieved successfully", products)
+}
+
+
 // GetProductByID menangani pengambilan satu produk berdasarkan ID (publik).
 func (h *ProductHandler) GetProductByID(c *gin.Context) {
 	productID, err := uuid.Parse(c.Param("id"))

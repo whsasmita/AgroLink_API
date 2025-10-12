@@ -35,6 +35,9 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 	locationTrackRepo := repositories.NewLocationTrackRepository(db)
 	driverRepo := repositories.NewDriverRepository(db)
 	productRepo := repositories.NewProductRepository(db)
+	cartRepo := repositories.NewCartRepository(db)
+	
+	
 
 	// workerRepo dan projectRepo sudah ada
 
@@ -52,7 +55,9 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 	deliveryService := services.NewDeliveryService(deliveryRepo, driverRepo, contractRepo, db)
 	offerService := services.NewOfferService(projectRepo, contractRepo, assignRepo, userRepo, db)
 	trackingService := services.NewTrackingService(locationTrackRepo, deliveryRepo)
-	productService := services.NewProductService(productRepo)
+	productService := services.NewProductService(productRepo, db)
+	cartService := services.NewCartService(cartRepo, productRepo, db)
+	
 
 	notifHandler := handlers.NewNotificationHandler(notifRepo)
 
@@ -68,6 +73,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 	reviewHandler := handlers.NewReviewHandler(reviewService, deliveryService)
 	deliveryHandler := handlers.NewDeliveryHandler(deliveryService)
 	productHandler := handlers.NewProductHandler(productService)
+	cartHandler := handlers.NewCartHandler(cartService)
 
 	// deliveryRepo sudah diinisialisasi sebelumnya
 
@@ -143,37 +149,39 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 
 	workers := router.Group("/workers")
 	{
-		// Rute untuk petani menawarkan proyek langsung ke pekerja
 		workers.POST("/:workerId/direct-offer", middleware.RoleMiddleware("farmer"), offerHandler.CreateDirectOffer)
 	}
 
 	deliveries := router.Group("/deliveries")
 	// Middleware di sini bisa disesuaikan jika ada endpoint yang bisa diakses kedua peran
 	{
-		// Petani membuat permintaan pengiriman baru
 		deliveries.POST("/", middleware.RoleMiddleware("farmer"), deliveryHandler.CreateDelivery)
-		// Petani mencari driver yang cocok
 		deliveries.GET("/:id/find-drivers", middleware.RoleMiddleware("farmer"), deliveryHandler.FindDrivers)
-		// Petani memilih driver dan menawarkan kontrak
 		deliveries.POST("/:id/select-driver/:driverId", middleware.RoleMiddleware("farmer"), deliveryHandler.SelectDriver)
-
 		deliveries.GET("/my", deliveryHandler.GetMyDeliveries)
-		// [RUTE BARU] Petani melacak pengiriman
 		deliveries.GET("/:id/track", middleware.RoleMiddleware("farmer"), trackingHandler.GetLatestLocation)
-
-		// [RUTE BARU] Driver mengirim update lokasi
 		deliveries.POST("/:id/location", middleware.RoleMiddleware("driver"), trackingHandler.UpdateLocation)
-
-		// [RUTE BARU] Petani melepaskan dana pengiriman
 		deliveries.POST("/:id/release-payment", middleware.RoleMiddleware("farmer"), paymentHandler.ReleaseDeliveryPayment)
 	}
-	products := router.Group("/products")
-	products.Use(middleware.RoleMiddleware("farmer"))
-	{
-		products.POST("/", productHandler.CreateProduct)
-		products.PUT("/:id", productHandler.UpdateProduct)
-		products.DELETE("/:id", productHandler.DeleteProduct)
-		products.POST("/image",productHandler.UploadImage)
-	}
+	 products := router.Group("/products")
+    {
+        // [RUTE BARU] Pastikan ini didaftarkan SEBELUM rute /:id
+        products.GET("/my", middleware.RoleMiddleware("farmer"), productHandler.GetMyProducts)
+        // Rute lain untuk farmer
+        products.Use(middleware.RoleMiddleware("farmer"))
+        {
+            products.POST("/", productHandler.CreateProduct)
+            products.PUT("/:id", productHandler.UpdateProduct)
+            products.DELETE("/:id", productHandler.DeleteProduct)
+        }
+    }
+
+	cart := router.Group("/cart")
+    {
+        cart.GET("/", cartHandler.GetCart)
+        cart.POST("/", cartHandler.AddToCart)
+        cart.PUT("/:productId", cartHandler.UpdateCartItem)
+        cart.DELETE("/:productId", cartHandler.RemoveFromCart)
+    }
 
 }
