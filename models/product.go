@@ -16,6 +16,7 @@ type Product struct {
 	Category    *string   `gorm:"type:varchar(100)"`
 	Price       float64   `gorm:"type:decimal(12,2);not null;default:0.00"`
 	Stock       int       `gorm:"not null;default:0"`
+	ReservedStock int `gorm:"not null;default:0"`
 	ImageURLs   datatypes.JSON `gorm:"column:image_urls"` 
 	Rating      *float64  `gorm:"type:decimal(3,2)"`
 

@@ -9,11 +9,13 @@ import (
 	"github.com/whsasmita/AgroLink_API/models"
 	"github.com/whsasmita/AgroLink_API/repositories"
 	"gorm.io/datatypes"
+	"gorm.io/gorm"
 )
 
 type ProductService interface {
 	CreateProduct(input dto.CreateProductInput, farmerID uuid.UUID) (*dto.ProductResponse, error)
 	GetAllProducts() ([]dto.ProductResponse, error)
+	GetMyProducts(farmerID uuid.UUID) ([]dto.ProductResponse, error)
 	GetProductByID(productID uuid.UUID) (*dto.ProductResponse, error)
 	UpdateProduct(productID uuid.UUID, input dto.UpdateProductInput, farmerID uuid.UUID) (*dto.ProductResponse, error)
 	DeleteProduct(productID uuid.UUID, farmerID uuid.UUID) error
@@ -21,32 +23,77 @@ type ProductService interface {
 
 type productService struct {
 	productRepo repositories.ProductRepository
+	db          *gorm.DB
 }
 
-func NewProductService(repo repositories.ProductRepository) ProductService {
-	return &productService{productRepo: repo}
+func NewProductService(repo repositories.ProductRepository, db *gorm.DB) ProductService {
+	return &productService{productRepo: repo, db: db}
 }
 
 // Fungsi helper untuk transformasi dari Model ke DTO
-func toProductResponse(product models.Product) dto.ProductResponse {
+func toPublicProductResponse(product models.Product) dto.ProductResponse {
 	var imageURLs []string
 	if product.ImageURLs != nil {
-		// [PERBAIKAN] Unmarshal dari datatypes.JSON ke slice string
 		json.Unmarshal(product.ImageURLs, &imageURLs)
+	}
+	availableStock := product.Stock - product.ReservedStock
+	if availableStock < 0 {
+		availableStock = 0
 	}
 
 	return dto.ProductResponse{
-		ID:          product.ID,
-		FarmerID:    product.FarmerID,
-		FarmerName:  product.Farmer.User.Name,
-		Title:       product.Title,
-		Description: product.Description,
-		Price:       product.Price,
-		Stock:       product.Stock,
-		Category:    product.Category,
-		Location:    product.Location,
-		ImageURLs:   imageURLs,
+		ID:             product.ID,
+		FarmerID:       product.FarmerID,
+		FarmerName:     product.Farmer.User.Name,
+		Title:          product.Title,
+		Description:    product.Description,
+		Price:          product.Price,
+		AvailableStock: &availableStock, // Hanya tampilkan stok tersedia
+		Category:       product.Category,
+		Location:       product.Location,
+		ImageURLs:      imageURLs,
 	}
+}
+
+// [BARU] Helper untuk tampilan pemilik (petani)
+func toFarmerProductResponse(product models.Product) dto.ProductResponse {
+	var imageURLs []string
+	if product.ImageURLs != nil {
+		json.Unmarshal(product.ImageURLs, &imageURLs)
+	}
+	availableStock := product.Stock - product.ReservedStock
+	if availableStock < 0 {
+		availableStock = 0
+	}
+
+	return dto.ProductResponse{
+		ID:             product.ID,
+		FarmerID:       product.FarmerID,
+		FarmerName:     product.Farmer.User.Name,
+		Title:          product.Title,
+		Description:    product.Description,
+		Price:          product.Price,
+		AvailableStock: &availableStock,
+		Stock:          &product.Stock,          // Tampilkan stok total
+		ReservedStock:  &product.ReservedStock, // Tampilkan stok direservasi
+		Category:       product.Category,
+		Location:       product.Location,
+		ImageURLs:      imageURLs,
+	}
+}
+
+
+func (s *productService) GetMyProducts(farmerID uuid.UUID) ([]dto.ProductResponse, error) {
+	products, err := s.productRepo.FindAllByFarmerID(farmerID)
+	if err != nil {
+		return nil, err
+	}
+	// Gunakan kembali helper 'toProductResponse' yang sudah ada
+	var responses []dto.ProductResponse
+	for _, p := range products {
+		responses = append(responses, toFarmerProductResponse(p))
+	}
+	return responses, nil
 }
 
 func (s *productService) CreateProduct(input dto.CreateProductInput, farmerID uuid.UUID) (*dto.ProductResponse, error) {
@@ -72,7 +119,7 @@ func (s *productService) CreateProduct(input dto.CreateProductInput, farmerID uu
 		return nil, err
 	}
 	createdProduct, _ := s.productRepo.FindByID(product.ID)
-	response := toProductResponse(*createdProduct)
+	response := toFarmerProductResponse(*createdProduct)
 	return &response, nil
 }
 
@@ -83,7 +130,7 @@ func (s *productService) GetAllProducts() ([]dto.ProductResponse, error) {
 	}
 	var responses []dto.ProductResponse
 	for _, p := range products {
-		responses = append(responses, toProductResponse(p))
+		responses = append(responses, toPublicProductResponse(p))
 	}
 	return responses, nil
 }
@@ -93,62 +140,50 @@ func (s *productService) GetProductByID(productID uuid.UUID) (*dto.ProductRespon
 	if err != nil {
 		return nil, errors.New("product not found")
 	}
-	response := toProductResponse(*product)
+	response := toPublicProductResponse(*product)
 	return &response, nil
 }
 
 func (s *productService) UpdateProduct(productID uuid.UUID, input dto.UpdateProductInput, farmerID uuid.UUID) (*dto.ProductResponse, error) {
-	// 1. Ambil Produk dari Database
-	// Langkah ini penting untuk mendapatkan data produk yang akan diubah.
-	product, err := s.productRepo.FindByID(productID)
-	if err != nil {
-		return nil, errors.New("product not found")
-	}
+	var updatedProduct *models.Product
 
-	// 2. Validasi Kepemilikan (Authorization)
-	// Pastikan hanya petani pemilik yang bisa mengedit produknya.
-	if product.FarmerID != farmerID {
-		return nil, errors.New("forbidden: you are not the owner of this product")
-	}
-
-	// 3. Ubah Data di Model
-	// Terapkan perubahan dari input DTO ke model yang sudah ada.
-	if input.Title != "" {
-		product.Title = input.Title
-	}
-	if input.Description != "" {
-		product.Description = input.Description
-	}
-	if input.Price > 0 {
-		product.Price = input.Price
-	}
-	if input.Stock >= 0 {
-		product.Stock = input.Stock
-	}
-	if input.Category != "" {
-		product.Category = &input.Category
-	}
-	if input.Location != "" {
-		product.Location = &input.Location
-	}
-	if input.ImageURLs != nil {
-		imageURLsJSON, err := json.Marshal(input.ImageURLs)
+	err := s.db.Transaction(func(tx *gorm.DB) error {
+		// 1. Ambil & Kunci baris produk
+		product, err := s.productRepo.FindByIDForUpdate(tx, productID)
 		if err != nil {
-			return nil, err
+			return errors.New("product not found")
 		}
-		product.ImageURLs = imageURLsJSON
+
+		// 2. Validasi Kepemilikan
+		if product.FarmerID != farmerID {
+			return errors.New("forbidden: you are not the owner of this product")
+		}
+
+		// 3. Ubah Data
+		if input.Title != "" {
+			product.Title = input.Title
+		}
+		// ... (update field lainnya)
+		if input.Stock >= 0 {
+			product.Stock = input.Stock
+		}
+
+		// 4. Simpan Perubahan
+		if err := s.productRepo.Update(product); err != nil { // Seharusnya Update juga menerima tx
+			return err
+		}
+
+		updatedProduct = product
+		return nil // Commit transaksi
+	})
+
+	if err != nil {
+		return nil, err
 	}
 
-	// 4. Simpan Perubahan ke Database
-	// Panggil repository untuk menyimpan model yang sudah diperbarui.
-	if err := s.productRepo.Update(product); err != nil {
-		return nil, err
-	} 
-	// 5. Kembalikan data yang sudah diperbarui
-	response := toProductResponse(*product)
+	response := toFarmerProductResponse(*updatedProduct)
 	return &response, nil
 }
-
 
 func (s *productService) DeleteProduct(productID uuid.UUID, farmerID uuid.UUID) error {
 	product, err := s.productRepo.FindByID(productID)

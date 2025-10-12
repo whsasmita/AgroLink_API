@@ -9,9 +9,10 @@ import (
 type CartRepository interface {
 	FindByUserID(userID uuid.UUID) ([]models.Cart, error)
 	FindByUserAndProduct(userID, productID uuid.UUID) (*models.Cart, error)
-	Create(cartItem *models.Cart) error
-	Update(cartItem *models.Cart) error
-	Delete(userID, productID uuid.UUID) error
+	FindByUserAndProductWithTx(tx *gorm.DB, userID, productID uuid.UUID) (*models.Cart, error) // Baru
+	Create(tx *gorm.DB, cartItem *models.Cart) error
+	Update(tx *gorm.DB, cartItem *models.Cart) error
+	Delete(tx *gorm.DB, userID, productID uuid.UUID) error
 }
 
 type cartRepository struct{ db *gorm.DB }
@@ -32,14 +33,21 @@ func (r *cartRepository) FindByUserAndProduct(userID, productID uuid.UUID) (*mod
 	return &cartItem, err
 }
 
-func (r *cartRepository) Create(cartItem *models.Cart) error {
-	return r.db.Create(cartItem).Error
+// [BARU] Versi transaksional
+func (r *cartRepository) FindByUserAndProductWithTx(tx *gorm.DB, userID, productID uuid.UUID) (*models.Cart, error) {
+	var cartItem models.Cart
+	err := tx.Where("user_id = ? AND product_id = ?", userID, productID).First(&cartItem).Error
+	return &cartItem, err
 }
 
-func (r *cartRepository) Update(cartItem *models.Cart) error {
-	return r.db.Save(cartItem).Error
+func (r *cartRepository) Create(tx *gorm.DB, cartItem *models.Cart) error {
+	return tx.Create(cartItem).Error
 }
 
-func (r *cartRepository) Delete(userID, productID uuid.UUID) error {
-	return r.db.Where("user_id = ? AND product_id = ?", userID, productID).Delete(&models.Cart{}).Error
+func (r *cartRepository) Update(tx *gorm.DB, cartItem *models.Cart) error {
+	return tx.Save(cartItem).Error
+}
+
+func (r *cartRepository) Delete(tx *gorm.DB, userID, productID uuid.UUID) error {
+	return tx.Where("user_id = ? AND product_id = ?", userID, productID).Delete(&models.Cart{}).Error
 }

@@ -21,10 +21,11 @@ type CartService interface {
 type cartService struct {
 	cartRepo    repositories.CartRepository
 	productRepo repositories.ProductRepository
+	db          *gorm.DB
 }
 
-func NewCartService(cartRepo repositories.CartRepository, productRepo repositories.ProductRepository) CartService {
-	return &cartService{cartRepo: cartRepo, productRepo: productRepo}
+func NewCartService(cartRepo repositories.CartRepository, productRepo repositories.ProductRepository, db *gorm.DB) CartService {
+	return &cartService{cartRepo: cartRepo, productRepo: productRepo, db: db}
 }
 
 func (s *cartService) GetCart(userID uuid.UUID) (*dto.CartResponse, error) {
@@ -54,52 +55,94 @@ func (s *cartService) GetCart(userID uuid.UUID) (*dto.CartResponse, error) {
 }
 
 func (s *cartService) AddToCart(userID uuid.UUID, input dto.AddToCartInput) (*models.Cart, error) {
-	product, err := s.productRepo.FindByID(input.ProductID)
-	if err != nil {
-		return nil, errors.New("product not found")
-	}
-	if product.Stock < input.Quantity {
-		return nil, errors.New("insufficient stock")
-	}
-	cartItem, err := s.cartRepo.FindByUserAndProduct(userID, input.ProductID)
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, err
-	}
-	if cartItem.ID != uuid.Nil {
-		cartItem.Quantity += input.Quantity
-		if product.Stock < cartItem.Quantity {
-			return nil, errors.New("insufficient stock for updated quantity")
+	var finalCartItem *models.Cart
+	err := s.db.Transaction(func(tx *gorm.DB) error {
+		product, err := s.productRepo.FindByIDForUpdate(tx, input.ProductID)
+		if err != nil { return errors.New("product not found") }
+
+		availableStock := product.Stock - product.ReservedStock
+		if availableStock < input.Quantity { return errors.New("insufficient stock") }
+
+		cartItem, err := s.cartRepo.FindByUserAndProductWithTx(tx, userID, input.ProductID)
+		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) { return err }
+
+		if cartItem.ID != uuid.Nil {
+			cartItem.Quantity += input.Quantity
+			if err := s.cartRepo.Update(tx, cartItem); err != nil { return err }
+			finalCartItem = cartItem
+		} else {
+			newCartItem := &models.Cart{UserID: userID, ProductID: input.ProductID, Quantity: input.Quantity}
+			if err := s.cartRepo.Create(tx, newCartItem); err != nil { return err }
+			finalCartItem = newCartItem
 		}
-		err = s.cartRepo.Update(cartItem)
-	} else {
-		cartItem = &models.Cart{
-			UserID: userID, ProductID: input.ProductID, Quantity: input.Quantity,
-		}
-		err = s.cartRepo.Create(cartItem)
-	}
-	return cartItem, err
+		
+		product.ReservedStock += input.Quantity
+		if err := s.productRepo.UpdateStock(tx, product); err != nil { return err }
+		
+		return nil
+	})
+	return finalCartItem, err
 }
 
 func (s *cartService) UpdateCartItem(userID, productID uuid.UUID, input dto.UpdateCartInput) (*models.Cart, error) {
-	if input.Quantity == 0 {
-		return nil, s.RemoveFromCart(userID, productID)
+	var updatedCartItem *models.Cart
+	err := s.db.Transaction(func(tx *gorm.DB) error {
+		if input.Quantity == 0 {
+			// Jika kuantitas 0, panggil fungsi Remove (yang juga transaksional)
+			// Kita perlu membuat varian RemoveFromCart yang menerima 'tx'
+			return s.removeFromCartTx(tx, userID, productID)
+		}
+
+		product, err := s.productRepo.FindByIDForUpdate(tx, productID)
+		if err != nil { return errors.New("product not found") }
+
+		cartItem, err := s.cartRepo.FindByUserAndProductWithTx(tx, userID, productID)
+		if err != nil { return errors.New("item not found in cart") }
+
+		qtyDifference := input.Quantity - cartItem.Quantity
+		availableStock := product.Stock - product.ReservedStock
+
+		if qtyDifference > availableStock {
+			return errors.New("insufficient stock")
+		}
+
+		cartItem.Quantity = input.Quantity
+		if err := s.cartRepo.Update(tx, cartItem); err != nil { return err }
+
+		product.ReservedStock += qtyDifference
+		if err := s.productRepo.UpdateStock(tx, product); err != nil { return err }
+
+		updatedCartItem = cartItem
+		return nil
+	})
+	if updatedCartItem == nil && err == nil {
+		// Kasus jika item dihapus (kuantitas 0)
+		return nil, nil
 	}
-	product, err := s.productRepo.FindByID(productID)
-	if err != nil {
-		return nil, errors.New("product not found")
-	}
-	if product.Stock < input.Quantity {
-		return nil, errors.New("insufficient stock")
-	}
-	cartItem, err := s.cartRepo.FindByUserAndProduct(userID, productID)
-	if err != nil {
-		return nil, errors.New("item not found in cart")
-	}
-	cartItem.Quantity = input.Quantity
-	err = s.cartRepo.Update(cartItem)
-	return cartItem, err
+	return updatedCartItem, err
 }
 
 func (s *cartService) RemoveFromCart(userID, productID uuid.UUID) error {
-	return s.cartRepo.Delete(userID, productID)
+	return s.db.Transaction(func(tx *gorm.DB) error {
+		return s.removeFromCartTx(tx, userID, productID)
+	})
+}
+
+// Fungsi helper internal untuk dipanggil di dalam transaksi
+func (s *cartService) removeFromCartTx(tx *gorm.DB, userID, productID uuid.UUID) error {
+	cartItem, err := s.cartRepo.FindByUserAndProductWithTx(tx, userID, productID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) { return errors.New("item not found in cart") }
+		return err
+	}
+	
+	product, err := s.productRepo.FindByIDForUpdate(tx, productID)
+	if err != nil { return errors.New("product not found") }
+	
+	if err := s.cartRepo.Delete(tx, userID, productID); err != nil { return err }
+	
+	product.ReservedStock -= cartItem.Quantity
+	if product.ReservedStock < 0 { product.ReservedStock = 0 }
+	
+	return s.productRepo.UpdateStock(tx, product)
 }

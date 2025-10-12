@@ -55,8 +55,8 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 	deliveryService := services.NewDeliveryService(deliveryRepo, driverRepo, contractRepo, db)
 	offerService := services.NewOfferService(projectRepo, contractRepo, assignRepo, userRepo, db)
 	trackingService := services.NewTrackingService(locationTrackRepo, deliveryRepo)
-	productService := services.NewProductService(productRepo)
-	cartService := services.NewCartService(cartRepo, productRepo)
+	productService := services.NewProductService(productRepo, db)
+	cartService := services.NewCartService(cartRepo, productRepo, db)
 	
 
 	notifHandler := handlers.NewNotificationHandler(notifRepo)
@@ -163,14 +163,18 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 		deliveries.POST("/:id/location", middleware.RoleMiddleware("driver"), trackingHandler.UpdateLocation)
 		deliveries.POST("/:id/release-payment", middleware.RoleMiddleware("farmer"), paymentHandler.ReleaseDeliveryPayment)
 	}
-	products := router.Group("/products")
-	products.Use(middleware.RoleMiddleware("farmer"))
-	{
-		products.POST("/", productHandler.CreateProduct)
-		products.PUT("/:id", productHandler.UpdateProduct)
-		products.DELETE("/:id", productHandler.DeleteProduct)
-		products.POST("/image", productHandler.UploadImage)
-	}
+	 products := router.Group("/products")
+    {
+        // [RUTE BARU] Pastikan ini didaftarkan SEBELUM rute /:id
+        products.GET("/my", middleware.RoleMiddleware("farmer"), productHandler.GetMyProducts)
+        // Rute lain untuk farmer
+        products.Use(middleware.RoleMiddleware("farmer"))
+        {
+            products.POST("/", productHandler.CreateProduct)
+            products.PUT("/:id", productHandler.UpdateProduct)
+            products.DELETE("/:id", productHandler.DeleteProduct)
+        }
+    }
 
 	cart := router.Group("/cart")
     {
