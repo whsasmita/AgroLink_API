@@ -100,10 +100,6 @@ func (h *AuthHandler) GetProfile(c *gin.Context) {
         return
     }
 
-    // 3. TIDAK PERLU MEMANGGIL SERVICE LAGI!
-    // Objek 'user' sudah berisi data lengkap yang di-fetch oleh middleware 
-    // (termasuk hasil Preload jika ada).
-    // Langsung kirimkan data ini sebagai respons sukses.
     utils.SuccessResponse(c, http.StatusOK, "User profile fetched successfully", user)
 }
 
