@@ -146,9 +146,9 @@ func (s *productService) GetProductByID(productID uuid.UUID) (*dto.ProductRespon
 
 func (s *productService) UpdateProduct(productID uuid.UUID, input dto.UpdateProductInput, farmerID uuid.UUID) (*dto.ProductResponse, error) {
 	var updatedProduct *models.Product
-
+	
 	err := s.db.Transaction(func(tx *gorm.DB) error {
-		// 1. Ambil & Kunci baris produk
+		// 1. Ambil & Kunci baris produk di dalam transaksi
 		product, err := s.productRepo.FindByIDForUpdate(tx, productID)
 		if err != nil {
 			return errors.New("product not found")
@@ -159,17 +159,37 @@ func (s *productService) UpdateProduct(productID uuid.UUID, input dto.UpdateProd
 			return errors.New("forbidden: you are not the owner of this product")
 		}
 
-		// 3. Ubah Data
+		// 3. Ubah Data secara lengkap dari input DTO
 		if input.Title != "" {
 			product.Title = input.Title
 		}
-		// ... (update field lainnya)
+		if input.Description != "" {
+			product.Description = input.Description
+		}
+		if input.Price > 0 {
+			product.Price = input.Price
+		}
+		// Pengecekan 'Stock' bisa >= 0 jika Anda ingin mengizinkan stok menjadi 0
 		if input.Stock >= 0 {
 			product.Stock = input.Stock
 		}
+		if input.Category != "" {
+			product.Category = &input.Category
+		}
+		if input.Location != "" {
+			product.Location = &input.Location
+		}
+		// Cek jika array ImageURLs di-provide (bisa juga array kosong untuk menghapus semua gambar)
+		if input.ImageURLs != nil {
+			imageURLsJSON, err := json.Marshal(input.ImageURLs)
+			if err != nil {
+				return err // Gagal mengubah array ke JSON
+			}
+			product.ImageURLs = imageURLsJSON
+		}
 
-		// 4. Simpan Perubahan
-		if err := s.productRepo.Update(product); err != nil { // Seharusnya Update juga menerima tx
+		// 4. Simpan Perubahan menggunakan 'tx'
+		if err := s.productRepo.Update(tx, product); err != nil {
 			return err
 		}
 
@@ -181,6 +201,7 @@ func (s *productService) UpdateProduct(productID uuid.UUID, input dto.UpdateProd
 		return nil, err
 	}
 
+	// 5. Kembalikan data yang sudah diperbarui dengan format DTO yang benar
 	response := toFarmerProductResponse(*updatedProduct)
 	return &response, nil
 }
