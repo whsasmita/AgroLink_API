@@ -12,7 +12,7 @@ type ProductRepository interface {
 	FindAll() ([]models.Product, error)
 	FindAllByFarmerID(farmerID uuid.UUID) ([]models.Product, error) // <-- [BARU]
 	FindByID(id uuid.UUID) (*models.Product, error)
-	Update(product *models.Product) error
+	Update(tx *gorm.DB, product *models.Product) error
 	Delete(id uuid.UUID) error
 	UpdateStock(tx *gorm.DB, product *models.Product) error
 	FindByIDForUpdate(tx *gorm.DB, id uuid.UUID) (*models.Product, error)
@@ -47,8 +47,8 @@ func (r *productRepository) FindByID(id uuid.UUID) (*models.Product, error) {
 	return &product, err
 }
 
-func (r *productRepository) Update(product *models.Product) error {
-	return r.db.Save(product).Error
+func (r *productRepository) Update(tx *gorm.DB, product *models.Product) error {
+	return tx.Save(product).Error
 }
 
 func (r *productRepository) Delete(id uuid.UUID) error {
