@@ -21,8 +21,6 @@ type profileService struct {
 }
 
 type RoleDetailsInput struct {
-	// Gunakan json.RawMessage untuk menerima JSON apa adanya,
-	// lalu kita akan unmarshal sesuai peran.
 	Details json.RawMessage `json:"details" binding:"required"`
 }
 
@@ -47,11 +45,15 @@ type workerInput struct {
 }
 
 type driverInput struct {
-	Address       *string         `json:"company_address"`
-	PricingScheme json.RawMessage `json:"pricing_scheme"` // Terima sebagai JSON object
-	VehicleTypes  []string        `json:"vehicle_types"`  // Terima sebagai array
+	Address         *string         `json:"company_address"`
+	PricingScheme   json.RawMessage `json:"pricing_scheme"`
+	VehicleTypes    []string        `json:"vehicle_types"`
+	CurrentLat      *float64        `json:"current_lat"` // <-- Diubah dari string ke *float64
+	CurrentLng      *float64        `json:"current_lng"`
+	BankName        *string         `json:"bank_name"`
+	BankAccountNumber *string       `json:"bank_account_number"`
+	BankAccountHolder *string       `json:"bank_account_holder"`
 }
-
 func NewProfileService(userRepo repositories.UserRepository) ProfileService {
 	return &profileService{
 		UserRepo: userRepo,
@@ -133,21 +135,19 @@ func (s *profileService) UpdateRoleDetails(userID string, userRole string, input
 			CurrentLocationLat:   details.CurrentLocationLat,
 			CurrentLocationLng:   details.CurrentLocationLng,
 			NationalID:           details.NationalID,
-			BankName : details.BankName,
-			BankAccountNumber : details.BankAccountNumber,
-			BankAccountHolder : details.BankAccountHolder,
+			BankName:             details.BankName,
+			BankAccountNumber:    details.BankAccountNumber,
+			BankAccountHolder:    details.BankAccountHolder,
 		}
 		if err := s.UserRepo.CreateOrUpdateWorker(&workerModel); err != nil {
 			return nil, err
 		}
 
-	case "driver": // <-- Diperbaiki dari "Driver" menjadi "expedition"
+	case "driver":
 		var details driverInput
 		if err := json.Unmarshal(input.Details, &details); err != nil {
 			return nil, fmt.Errorf("invalid expedition details format: %w", err)
 		}
-
-		// Konversi array/object menjadi string JSON
 		pricingJSON, _ := json.Marshal(details.PricingScheme)
 		vehiclesJSON, _ := json.Marshal(details.VehicleTypes)
 
@@ -156,6 +156,8 @@ func (s *profileService) UpdateRoleDetails(userID string, userRole string, input
 			Address:       details.Address,
 			PricingScheme: string(pricingJSON),
 			VehicleTypes:  string(vehiclesJSON),
+			CurrentLat:        details.CurrentLat,  
+			CurrentLng:        details.CurrentLng, 
 		}
 		if err := s.UserRepo.CreateOrUpdateDriver(&driverModel); err != nil {
 			return nil, err
