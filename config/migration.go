@@ -47,7 +47,7 @@ var migrationModels = []interface{}{
 	&models.Cart{},
 	&models.Order{},
 	&models.OrderItem{},
-	&models.PaymentMidtrans{},
+	&models.ECommercePayment{},
 }
 
 // =====================================================================

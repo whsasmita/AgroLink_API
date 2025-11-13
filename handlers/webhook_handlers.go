@@ -21,20 +21,19 @@ import (
 
 type WebhookHandler struct {
 	paymentService services.PaymentService
+	ecommPaymentService services.ECommercePaymentService
 	webhookLogRepo repositories.WebhookLogRepository
+	invoiceRepo      repositories.InvoiceRepository
+	ecommPaymentRepo repositories.ECommercePaymentRepository
 }
 
-func NewWebhookHandler(service services.PaymentService, logRepo repositories.WebhookLogRepository) *WebhookHandler {
-	return &WebhookHandler{paymentService: service, webhookLogRepo: logRepo}
+func NewWebhookHandler(service services.PaymentService, logRepo repositories.WebhookLogRepository, ecommerceService services.ECommercePaymentService, invoiceRepo repositories.InvoiceRepository, ecommercePaymentRepo repositories.ECommercePaymentRepository ) *WebhookHandler {
+	return &WebhookHandler{paymentService: service, webhookLogRepo: logRepo, ecommPaymentService: ecommerceService, invoiceRepo: invoiceRepo, ecommPaymentRepo: ecommercePaymentRepo}
 }
 
 func (h *WebhookHandler) HandleMidtransNotification(c *gin.Context) {
 	ctx := context.Background()
-	reqIDAny, _ := c.Get("req_id")
-	reqID, _ := reqIDAny.(string)
-	if reqID == "" {
-		reqID = uuid.NewString()
-	}
+	reqID := uuid.NewString()
 
 	// 1) Read raw body
 	bodyBytes, err := io.ReadAll(c.Request.Body)
@@ -43,28 +42,18 @@ func (h *WebhookHandler) HandleMidtransNotification(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot read request body"})
 		return
 	}
-	c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes)) // Penting untuk re-buffering
 
 	log.Printf("[WEBHOOK %s] >>> NEW MIDTRANS NOTIFICATION", reqID)
-	log.Printf("[WEBHOOK %s] method=%s path=%s host=%s clientIP=%s xff=%q ua=%q",
-		reqID, c.Request.Method, c.Request.URL.Path, c.Request.Host, c.ClientIP(),
-		c.Request.Header.Get("X-Forwarded-For"), c.Request.UserAgent(),
-	)
-
-	// 2) Snapshot headers
-	headersMap := map[string][]string(c.Request.Header)
-	log.Printf("[WEBHOOK %s] headers=%v", reqID, headersMap)
-
-	// 3) Parse payload (best-effort)
+	
+	// 2) Parse payload
 	var payload map[string]interface{}
 	if err := json.Unmarshal(bodyBytes, &payload); err != nil {
 		log.Printf("[WEBHOOK %s] WARN cannot parse JSON: %v", reqID, err)
 	}
-
-	// Tambahkan req_id ke payload agar service bisa ikut log
 	payload["_req_id"] = reqID
 
-	// 4) Validasi signature (handler-level)
+	// 3) Validasi signature (handler-level)
 	orderID := getString(payload, "order_id")
 	statusCode := getString(payload, "status_code")
 	grossAmount := getString(payload, "gross_amount")
@@ -76,13 +65,9 @@ func (h *WebhookHandler) HandleMidtransNotification(c *gin.Context) {
 		calc := sha512.Sum512([]byte(orderID + statusCode + grossAmount + serverKey))
 		calcHex := fmt.Sprintf("%x", calc[:])
 		sigValid = (calcHex == sig)
-		log.Printf("[WEBHOOK %s] signature check: order_id=%s status_code=%s gross_amount=%s valid=%v",
-			reqID, orderID, statusCode, grossAmount, sigValid)
-	} else {
-		log.Printf("[WEBHOOK %s] signature fields missing (serverKey or payload fields empty)", reqID)
 	}
-
-	// 5) Create log entry
+	
+	// 4) Create log entry
 	logEntry := &models.WebhookLog{
 		ID:                uuid.New(),
 		Provider:          "midtrans",
@@ -96,7 +81,7 @@ func (h *WebhookHandler) HandleMidtransNotification(c *gin.Context) {
 		SignatureKey:      sig,
 		SignatureValid:    sigValid,
 		Processed:         false,
-		Headers:           datatypes.JSON([]byte(mustJSON(headersMap))),
+		Headers:           datatypes.JSON([]byte(mustJSON(c.Request.Header))),
 		RawBody:           datatypes.JSON(bodyBytes),
 		ParsedBody:        datatypes.JSON([]byte(mustJSON(payload))),
 	}
@@ -104,12 +89,40 @@ func (h *WebhookHandler) HandleMidtransNotification(c *gin.Context) {
 		log.Printf("[WEBHOOK %s] WARNING persist log failed: %v", reqID, err)
 	}
 
-	// 6) Call service
-	log.Printf("[WEBHOOK %s] delegating to service.HandleWebhookNotification ...", reqID)
-	if err := h.paymentService.HandleWebhookNotification(payload); err != nil {
-		log.Printf("[WEBHOOK %s] SERVICE ERROR: %v", reqID, err)
-		_ = h.webhookLogRepo.AttachError(ctx, logEntry.ID.String(), err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	// 5) [ROUTING LOGIC] Panggil service yang tepat
+	var serviceErr error
+	routed := false
+
+	// Cek 1: Apakah ini Invoice (Proyek/Delivery)?
+	_, errInvoice := h.invoiceRepo.FindByID(orderID)
+	if errInvoice == nil {
+		log.Printf("[WEBHOOK %s] Routing to Core PaymentService", reqID)
+		serviceErr = h.paymentService.HandleWebhookNotification(payload)
+		routed = true
+	}
+
+	// Cek 2: Jika bukan, apakah ini ECommercePayment?
+	if !routed {
+		_, errEcomm := h.ecommPaymentRepo.FindByID(orderID)
+		if errEcomm == nil {
+			log.Printf("[WEBHOOK %s] Routing to E-Commerce PaymentService", reqID)
+			serviceErr = h.ecommPaymentService.HandleWebhook(payload)
+			routed = true
+		}
+	}
+
+	// 6) Handle hasil
+	if !routed {
+		log.Printf("[WEBHOOK %s] SERVICE ERROR: OrderID %s not found in any service", reqID, orderID)
+		_ = h.webhookLogRepo.AttachError(ctx, logEntry.ID.String(), "OrderID not found")
+		c.JSON(http.StatusNotFound, gin.H{"error": "Order ID not found"})
+		return
+	}
+
+	if serviceErr != nil {
+		log.Printf("[WEBHOOK %s] SERVICE ERROR: %v", reqID, serviceErr)
+		_ = h.webhookLogRepo.AttachError(ctx, logEntry.ID.String(), serviceErr.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": serviceErr.Error()})
 		return
 	}
 
@@ -120,7 +133,7 @@ func (h *WebhookHandler) HandleMidtransNotification(c *gin.Context) {
 }
 
 
-// helpers
+// --- Helpers ---
 func getString(m map[string]interface{}, key string) string {
 	if v, ok := m[key]; ok && v != nil {
 		if s, ok := v.(string); ok {
