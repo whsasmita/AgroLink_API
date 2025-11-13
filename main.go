@@ -31,7 +31,7 @@ func main() {
 	db := config.ConnectDatabase()
 
 	// Run migration
-	// config.RunMigrationWithReset()
+	config.RunMigrationWithReset()
 	// config.AutoMigrate()
 	// config.CreateIndexes()
 
@@ -86,11 +86,15 @@ func main() {
 	transactionRepo := repositories.NewTransactionRepository(db)
 	payoutRepo := repositories.NewPayoutRepository(db)
 	assignRepo := repositories.NewAssignmentRepository(db)
-	projectRepo := repositories.NewProjectRepository(db) // Perlu diinisialisasi di sini
+	projectRepo := repositories.NewProjectRepository(db)
 	webhookRepo := repositories.NewWebhookLogRepository(db)
 	deliveryRepo := repositories.NewDeliveryRepository(db)
-
-	// Inisialisasi PaymentService dengan SEMUA dependensi yang dibutuhkan
+	orderRepo := repositories.NewOrderRepository(db)
+	productRepo := repositories.NewProductRepository(db)
+	ecommPaymentRepo := repositories.NewECommercePaymentRepository(db)
+	eCommercePaymentService := services.NewECommercePaymentService(
+		ecommPaymentRepo, orderRepo, userRepo,productRepo, db,
+	)
 	paymentService := services.NewPaymentService(
 		invoiceRepo,
 		transactionRepo,
@@ -101,31 +105,23 @@ func main() {
 		deliveryRepo,
 		db,
 	)
-
-	webhookHandler := handlers.NewWebhookHandler(paymentService, webhookRepo)
+	webhookHandler := handlers.NewWebhookHandler(
+		paymentService,
+		webhookRepo,
+		eCommercePaymentService,
+		invoiceRepo,
+		ecommPaymentRepo,
+	)
 	chatHandler := handlers.NewChatHandler(chatHub)
-
-	// Buat grup API level atas
 	api := r.Group("/api")
 	{
-		// --- RUTE PUBLIK KHUSUS (WEBHOOK) ---
-		// Daftarkan webhook di sini, langsung di bawah /api
-		// Path akhir: POST /api/webhooks/midtrans-notification
 		api.POST("/webhooks/midtrans-notification", webhookHandler.HandleMidtransNotification)
-
-		// --- RUTE APLIKASI ANDA (TETAP DI DALAM /v1) ---
 		v1 := api.Group("/v1")
 		{
 			v1Public := v1.Group("/public")
 			{
-				// routes.PublicRoutes menerima *gin.RouterGroup, jadi pass v1Public
 				routes.PublicRoutes(v1Public, db)
 			}
-			// Grup untuk rute publik (Login, Register)
-			// publicRoutes := v1.Group("/")
-			// routes.PublicRoutes(publicRoutes, db)
-
-			// Grup untuk rute yang dilindungi otentikasi
 			protectedGroup := v1.Group("/")
 			protectedGroup.Use(middleware.AuthMiddleware(userRepo))
 			{
@@ -134,15 +130,12 @@ func main() {
 			}
 		}
 	}
-
-	// Get port from configuration
 	port := cfg.App.Port
 
 	log.Printf("🚀 Server starting on port %s", port)
 	log.Printf("📍 Health check: http://localhost:%s/health", port)
 	log.Printf("📖 API docs: http://localhost:%s/api/v1", port)
 	log.Printf("🗄️  Database: %s@%s:%s/%s", cfg.Database.User, cfg.Database.Host, cfg.Database.Port, cfg.Database.Name)
-
 	// Start server
 	if err := r.Run(":" + port); err != nil {
 		log.Fatal("Failed to start server:", err)

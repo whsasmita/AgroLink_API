@@ -36,6 +36,8 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 	driverRepo := repositories.NewDriverRepository(db)
 	productRepo := repositories.NewProductRepository(db)
 	cartRepo := repositories.NewCartRepository(db)
+	orderRepo := repositories.NewOrderRepository(db)
+	ecommPaymentRepo := repositories.NewECommercePaymentRepository(db)
 	
 	
 
@@ -57,6 +59,12 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 	trackingService := services.NewTrackingService(locationTrackRepo, deliveryRepo)
 	productService := services.NewProductService(productRepo, db)
 	cartService := services.NewCartService(cartRepo, productRepo, db)
+	eCommercePaymentService := services.NewECommercePaymentService(
+		ecommPaymentRepo, orderRepo, userRepo,productRepo, db,
+	)
+	checkoutService := services.NewCheckoutService(
+		cartRepo, productRepo, orderRepo, eCommercePaymentService, db,
+	)
 	
 
 	notifHandler := handlers.NewNotificationHandler(notifRepo)
@@ -74,6 +82,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 	deliveryHandler := handlers.NewDeliveryHandler(deliveryService)
 	productHandler := handlers.NewProductHandler(productService)
 	cartHandler := handlers.NewCartHandler(cartService)
+	checkoutHandler := handlers.NewCheckoutHandler(checkoutService)
 
 	// deliveryRepo sudah diinisialisasi sebelumnya
 
@@ -184,5 +193,9 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
         cart.PUT("/:productId", cartHandler.UpdateCartItem)
         cart.DELETE("/:productId", cartHandler.RemoveFromCart)
     }
+	checkout := router.Group("/checkout") 
+	{
+		checkout.POST("/", checkoutHandler.CreateOrders)
+	}
 
 }
