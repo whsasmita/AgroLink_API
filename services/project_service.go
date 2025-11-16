@@ -22,21 +22,20 @@ type ProjectService interface {
 }
 
 type projectService struct {
-	projectRepo  repositories.ProjectRepository
-	assignRepo   repositories.AssignmentRepository
-	invoiceRepo  repositories.InvoiceRepository
+	projectRepo repositories.ProjectRepository
+	assignRepo  repositories.AssignmentRepository
+	invoiceRepo repositories.InvoiceRepository
 }
 
-// [PERBAIKAN] Konstruktor sekarang menerima semua dependensi yang dibutuhkan
 func NewProjectService(
 	projectRepo repositories.ProjectRepository,
 	assignRepo repositories.AssignmentRepository,
 	invoiceRepo repositories.InvoiceRepository,
 ) ProjectService {
 	return &projectService{
-		projectRepo:  projectRepo,
-		assignRepo:   assignRepo,
-		invoiceRepo:  invoiceRepo,
+		projectRepo: projectRepo,
+		assignRepo:  assignRepo,
+		invoiceRepo: invoiceRepo,
 	}
 }
 
@@ -58,7 +57,7 @@ func (s *projectService) CreateProject(request dto.CreateProjectRequest, farmerI
 		WorkersNeeded: request.WorkersNeeded,
 		StartDate:     startDate,
 		EndDate:       endDate,
-		PaymentType:   "per_day", // Menggunakan nilai tetap
+		PaymentType:   "per_day",
 		PaymentRate:   &request.PaymentRate,
 		Status:        "open",
 	}
@@ -76,21 +75,15 @@ func (s *projectService) FindAll(pagination dto.PaginationRequest) (*[]models.Pr
 }
 
 func (s *projectService) FindByID(id string) (*dto.ProjectDetailResponse, error) {
-	// Langkah 1: Ambil data mentah dari repository
-	project, err := s.projectRepo.FindByID(id) // Asumsi repo mengambil data dengan relasi (Farmer.User)
+	project, err := s.projectRepo.FindByID(id)
 	if err != nil {
 		return nil, errors.New("project not found")
 	}
-
-	// Langkah 2: Lakukan logika bisnis tambahan (menghitung pekerja)
 	currentWorkers, err := s.projectRepo.CountActiveContracts(id)
 	if err != nil {
-		// Tangani error, misalnya dengan log dan set nilai default
 		log.Printf("Warning: could not count active contracts for project %s: %v", id, err)
 		currentWorkers = 0
 	}
-
-	// Langkah 3: Transformasi data dari model ke DTO
 	response := &dto.ProjectDetailResponse{
 		ID:             project.ID,
 		Title:          project.Title,
@@ -106,12 +99,11 @@ func (s *projectService) FindByID(id string) (*dto.ProjectDetailResponse, error)
 			ID:   project.Farmer.UserID,
 			Name: project.Farmer.User.Name,
 		},
-		CreatedAt:      project.CreatedAt,
+		CreatedAt: project.CreatedAt,
 	}
 
 	return response, nil
 }
-
 
 func (s *projectService) FindMyProjects(farmerID uuid.UUID) ([]dto.MyProjectResponse, error) {
 	projects, err := s.projectRepo.FindAllByFarmerID(farmerID)
@@ -123,15 +115,14 @@ func (s *projectService) FindMyProjects(farmerID uuid.UUID) ([]dto.MyProjectResp
 	for _, p := range projects {
 		currentWorkers, err := s.projectRepo.CountActiveContracts(p.ID.String())
 		if err != nil {
-			// Jika ada error, anggap 0 untuk sementara agar tidak menggagalkan seluruh list
 			currentWorkers = 0
 		}
 		dto := dto.MyProjectResponse{
-			ProjectID:     p.ID,
-			ProjectTitle:  p.Title,
-			ProjectStatus: p.Status,
+			ProjectID:      p.ID,
+			ProjectTitle:   p.Title,
+			ProjectStatus:  p.Status,
 			CurrentWorkers: int(currentWorkers),
-			WorkerNeeed:   p.WorkersNeeded,
+			WorkerNeeed:    p.WorkersNeeded,
 		}
 		if p.Invoice.ID != uuid.Nil {
 			dto.InvoiceID = &p.Invoice.ID
@@ -146,11 +137,9 @@ func (s *projectService) CheckAndFinalizeProject(projectID uuid.UUID) error {
 	if err != nil {
 		return err
 	}
-
 	if project.Status != "open" {
-		return nil // Proyek sudah diproses atau tidak lagi terbuka
+		return nil
 	}
-
 	assignments, err := s.assignRepo.FindAllByProjectID(projectID.String())
 	if err != nil {
 		return err
@@ -159,13 +148,11 @@ func (s *projectService) CheckAndFinalizeProject(projectID uuid.UUID) error {
 	if len(assignments) >= project.WorkersNeeded {
 		var baseAmount float64
 		durationDays := project.EndDate.Sub(project.StartDate).Hours()/24 + 1
-
 		if project.PaymentType == "per_day" && project.PaymentRate != nil {
 			baseAmount = *project.PaymentRate * durationDays * float64(project.WorkersNeeded)
 		} else if project.PaymentType == "lump_sum" && project.PaymentRate != nil {
 			baseAmount = *project.PaymentRate * float64(project.WorkersNeeded)
 		}
-
 		if baseAmount <= 0 {
 			return fmt.Errorf("calculated base amount is zero or negative for project %s", projectID)
 		}
@@ -182,16 +169,14 @@ func (s *projectService) CheckAndFinalizeProject(projectID uuid.UUID) error {
 			Status:      "pending",
 			DueDate:     time.Now().Add(48 * time.Hour),
 		}
-
-		if err := s.invoiceRepo.Create(nil, invoice); err != nil { // Menggunakan 'nil'
+		if err := s.invoiceRepo.Create(nil, invoice); err != nil {
 			return fmt.Errorf("failed to create invoice: %w", err)
 		}
-
-		return s.projectRepo.UpdateStatus( project.ID.String(), "waiting_payment") // Menggunakan 'nil'
+		return s.projectRepo.UpdateStatus(project.ID.String(), "waiting_payment") 
 	}
 	return nil
 }
 
-func (s *projectService) UpdateStatus( projectID string, status string) error {
-	return s.projectRepo.UpdateStatus( projectID, status)
+func (s *projectService) UpdateStatus(projectID string, status string) error {
+	return s.projectRepo.UpdateStatus(projectID, status)
 }

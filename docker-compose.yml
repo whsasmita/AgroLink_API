@@ -10,10 +10,11 @@ services:
       - "127.0.0.1:8090:8080"
     env_file:
       - .env
-    # [TAMBAHAN] Memberitahu service ini untuk menunggu database siap terlebih dahulu
     depends_on:
       mysql-db:
         condition: service_healthy
+    networks: # [PERUBAHAN]
+      - agrolink-net
 
   # --- Layanan Database MySQL ---
   mysql-db:
@@ -36,8 +37,14 @@ services:
     volumes:
       # Menyimpan data MySQL secara permanen di volume Docker
       - db-data:/var/lib/mysql
+    networks: # [PERUBAHAN]
+      - agrolink-net
 
 # --- Volume untuk persistensi data ---
 # Mendefinisikan volume yang akan digunakan oleh layanan di atas
 volumes:
   db-data:
+
+networks:
+  agrolink-net:
+    external: true

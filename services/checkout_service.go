@@ -14,6 +14,12 @@ import (
 
 type CheckoutService interface {
 	CreateOrdersFromCart(userID uuid.UUID) (*dto.PaymentInitiationResponse, error)
+	CreateDirectCheckout(userID uuid.UUID, input DirectCheckoutInput) (*dto.PaymentInitiationResponse, error)
+}
+
+type DirectCheckoutInput struct {
+	ProductID uuid.UUID `json:"product_id" binding:"required"`
+	Quantity  int       `json:"quantity" binding:"required,gt=0"`
 }
 
 type checkoutService struct {
@@ -82,8 +88,8 @@ func (s *checkoutService) CreateOrdersFromCart(userID uuid.UUID) (*dto.PaymentIn
 			}
 
 			newOrder := models.Order{
-				FarmerID: farmerID,
-				UserID:      userID,
+				FarmerID:      farmerID,
+				UserID:        userID,
 				InvoiceNumber: fmt.Sprintf("ORD-%d", time.Now().UnixNano()),
 				TotalAmount:   orderTotal,
 			}
@@ -97,6 +103,68 @@ func (s *checkoutService) CreateOrdersFromCart(userID uuid.UUID) (*dto.PaymentIn
 		if err := s.cartRepo.ClearCart(tx, userID); err != nil {
 			return err
 		}
+		paymentResponse, err := s.paymentService.InitiatePayment(tx, userID, createdOrders, grandTotal)
+		if err != nil {
+			return err
+		}
+
+		snapResponse = paymentResponse
+		return nil // Commit
+	})
+
+	return snapResponse, err
+}
+
+func (s *checkoutService) CreateDirectCheckout(userID uuid.UUID, input DirectCheckoutInput) (*dto.PaymentInitiationResponse, error) {
+	var snapResponse *dto.PaymentInitiationResponse
+
+	err := s.db.Transaction(func(tx *gorm.DB) error {
+		// 1. Ambil & Kunci Produk
+		product, err := s.productRepo.FindByIDForUpdate(tx, input.ProductID)
+		if err != nil {
+			return errors.New("product not found")
+		}
+
+		// 2. Validasi Stok
+		availableStock := product.Stock - product.ReservedStock
+		if availableStock < input.Quantity {
+			return errors.New("insufficient stock")
+		}
+
+		// 3. Buat SATU Order (karena hanya 1 produk, 1 petani)
+		grandTotal := float64(input.Quantity) * product.Price
+		newOrder := models.Order{
+			UserID:        userID,
+			FarmerID:      product.FarmerID, // Langsung dari produk
+			InvoiceNumber: fmt.Sprintf("ORD-%d", time.Now().UnixNano()),
+			TotalAmount:   grandTotal,
+		}
+		// Buat record Order
+		if err := tx.Create(&newOrder).Error; err != nil {
+			return err
+		}
+
+		// 4. Buat SATU OrderItem
+		orderItem := models.OrderItem{
+			ID:              uuid.New(),
+			OrderID:         newOrder.ID,
+			ProductID:       input.ProductID,
+			Quantity:        input.Quantity,
+			PriceAtPurchase: product.Price,
+		}
+		if err := tx.Create(&orderItem).Error; err != nil {
+			return err
+		}
+
+		// 5. [PENTING] Reservasi Stok
+		// Kita harus "memesan" stok ini agar tidak diambil orang lain
+		product.ReservedStock += input.Quantity
+		if err := s.productRepo.UpdateStock(tx, product); err != nil {
+			return err
+		}
+
+		// 6. Buat Pembayaran Induk
+		createdOrders := []models.Order{newOrder}
 		paymentResponse, err := s.paymentService.InitiatePayment(tx, userID, createdOrders, grandTotal)
 		if err != nil {
 			return err
