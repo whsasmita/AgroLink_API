@@ -38,8 +38,6 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 	cartRepo := repositories.NewCartRepository(db)
 	orderRepo := repositories.NewOrderRepository(db)
 	ecommPaymentRepo := repositories.NewECommercePaymentRepository(db)
-	
-	
 
 	// workerRepo dan projectRepo sudah ada
 
@@ -60,12 +58,11 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 	productService := services.NewProductService(productRepo, db)
 	cartService := services.NewCartService(cartRepo, productRepo, db)
 	eCommercePaymentService := services.NewECommercePaymentService(
-		ecommPaymentRepo, orderRepo, userRepo,productRepo, db,
+		ecommPaymentRepo, orderRepo, userRepo, productRepo, db,
 	)
 	checkoutService := services.NewCheckoutService(
 		cartRepo, productRepo, orderRepo, eCommercePaymentService, db,
 	)
-	
 
 	notifHandler := handlers.NewNotificationHandler(notifRepo)
 
@@ -172,30 +169,31 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 		deliveries.POST("/:id/location", middleware.RoleMiddleware("driver"), trackingHandler.UpdateLocation)
 		deliveries.POST("/:id/release-payment", middleware.RoleMiddleware("farmer"), paymentHandler.ReleaseDeliveryPayment)
 	}
-	 products := router.Group("/products")
-    {
-        // [RUTE BARU] Pastikan ini didaftarkan SEBELUM rute /:id
-        products.GET("/my", middleware.RoleMiddleware("farmer"), productHandler.GetMyProducts)
-        // Rute lain untuk farmer
-        products.Use(middleware.RoleMiddleware("farmer"))
-        {
-            products.POST("/", productHandler.CreateProduct)
+	products := router.Group("/products")
+	{
+		// [RUTE BARU] Pastikan ini didaftarkan SEBELUM rute /:id
+		products.GET("/my", middleware.RoleMiddleware("farmer"), productHandler.GetMyProducts)
+		// Rute lain untuk farmer
+		products.Use(middleware.RoleMiddleware("farmer"))
+		{
+			products.POST("/", productHandler.CreateProduct)
 			products.POST("/upload-image", productHandler.UploadImage)
-            products.PUT("/:id", productHandler.UpdateProduct)
-            products.DELETE("/:id", productHandler.DeleteProduct)
-        }
-    }
+			products.PUT("/:id", productHandler.UpdateProduct)
+			products.DELETE("/:id", productHandler.DeleteProduct)
+		}
+	}
 
 	cart := router.Group("/cart")
-    {
-        cart.GET("/", cartHandler.GetCart)
-        cart.POST("/", cartHandler.AddToCart)
-        cart.PUT("/:productId", cartHandler.UpdateCartItem)
-        cart.DELETE("/:productId", cartHandler.RemoveFromCart)
-    }
-	checkout := router.Group("/checkout") 
+	{
+		cart.GET("/", cartHandler.GetCart)
+		cart.POST("/", cartHandler.AddToCart)
+		cart.PUT("/:productId", cartHandler.UpdateCartItem)
+		cart.DELETE("/:productId", cartHandler.RemoveFromCart)
+	}
+	checkout := router.Group("/checkout")
 	{
 		checkout.POST("/", checkoutHandler.CreateOrders)
+		checkout.POST("/direct", checkoutHandler.DirectCheckout)
 	}
 
 }

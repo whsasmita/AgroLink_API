@@ -40,3 +40,18 @@ func (h *CheckoutHandler) CreateOrders(c *gin.Context) {
 	// 3. Kembalikan snap_token ke frontend
 	utils.SuccessResponse(c, http.StatusCreated, "Checkout successful, please proceed to payment", paymentResponse)
 }
+
+func (h *CheckoutHandler) DirectCheckout(c *gin.Context) {
+	var input services.DirectCheckoutInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid input: product_id and quantity are required", err)
+		return
+	}
+	currentUser := c.MustGet("user").(*models.User)
+	paymentResponse, err := h.checkoutService.CreateDirectCheckout(currentUser.ID, input)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusConflict, err.Error(), nil)
+		return
+	}
+	utils.SuccessResponse(c, http.StatusCreated, "Direct checkout successful, please proceed to payment", paymentResponse)
+}

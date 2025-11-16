@@ -18,7 +18,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\" : \"general@gmail.com\",\r\n    \"password\" : \"password123\",\r\n    \"role\" : \"general\",\r\n    \"name\" : \"Beni\",\r\n    \"phone_number\" : \"085497809093\"\r\n}",
+							"raw": "{\r\n    \"email\" : \"general@gmail.com\",\r\n    \"password\" : \"password\",\r\n    \"role\" : \"general\",\r\n    \"name\" : \"Darma\",\r\n    \"phone_number\" : \"085844788930\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -92,7 +92,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\" : \"worker1@agrolink.com\",\r\n    \"password\" : \"password123\"\r\n}",
+							"raw": "{\r\n    \"email\" : \"drover@gmail.com\",\r\n    \"password\" : \"password123\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -303,7 +303,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\" : \"Bunga Update\",\r\n    \"phone_number\" : \"909090990900\",\r\n    \"profile_picture\" : \"url_profile_picture\"\r\n}",
+							"raw": "{\r\n    \"name\" : \"Bunga Update\",\r\n    \"phone_number\" : \"909090990900\",\r\n    \"profile_picture\" : \"url_profile_picture\",\r\n    \"current_lat\" : 90909009,\r\n    \"current_lng\" : 988989\r\n\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -415,7 +415,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{token_worker}}",
+									"value": "{{token_farmer}}",
 									"type": "string"
 								}
 							]
@@ -424,7 +424,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "\t{\r\n    \"details\": {\r\n        \"skills\": [\"Memanen Kopi\", \"Pemupukan Organik\", \"Mengoperasikan Traktor Tangan\"],\r\n        \"hourly_rate\": 25000.00,\r\n        \"daily_rate\": 150000.00,\r\n        \"address\": \"Banjar Dinas Asah, Desa Gobleg, Buleleng, Bali\",\r\n        \"availability_schedule\": {\r\n            \"monday\": \"08:00-16:00\",\r\n            \"tuesday\": \"08:00-16:00\",\r\n            \"saturday\": \"08:00-12:00\"\r\n        },\r\n        \"current_location_lat\": -8.2415,\r\n        \"current_location_lng\": 115.0884,\r\n        \"national_id\" : \"2234566779\",\r\n        \"bank_name\" : \"BNI\",\r\n        \"bank_account_number\" : \"23456788\",\r\n        \"bank_account_holder\" : \"pak Yanto\"\r\n    }\r\n} ",
+							"raw": "{\r\n    \"details\": {\r\n        \"address\": \"Jl. Raya Candi Kuning, Desa Baturiti, Tabanan, Bali\",\r\n        \"additional_info\": \"Anggota kelompok tani 'Subak Abian Jaya'. Fokus pada penanaman kopi arabika Kintamani.\"\r\n    }\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -530,7 +530,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "\t{\r\n    \"details\": {\r\n        \"company_address\": \"Jl. Cargo Permai No. 8, Denpasar, Bali\",\r\n        \"pricing_scheme\": {\r\n            \"base_fee\": 50000,\r\n            \"per_km\": 2500,\r\n            \"extra_handling\": 15000\r\n        },\r\n        \"vehicle_types\": [\"Pick-up L300\", \"Truk Engkel Bak Terbuka\"]\r\n    }\r\n}",
+									"raw": "\t{\r\n    \"details\": {\r\n        \"company_address\": \"Jl. Cargo Permai No. 8, Denpasar, Bali\",\r\n        \"pricing_scheme\": {\r\n            \"base_fee\": 50000,\r\n            \"per_km\": 2500,\r\n            \"extra_handling\": 15000\r\n        },\r\n        \"vehicle_types\": [\"Pick-up L300\", \"Truk Engkel Bak Terbuka\"],\r\n        \"current_lat\" : 90909009,\r\n        \"current_lng\" : 988989\r\n    }\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -2012,7 +2012,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"title\": \"Kopi Arabika Gayo Grade 4\",\r\n    \"description\": \"Biji kopi pilihan dari dataran tinggi Gayo, diproses secara natural.\",\r\n    \"price\": 250000,\r\n    \"stock\": 10,\r\n    \"category\": \"Kopi\",\r\n    \"location\": \"Takengon, Aceh\",\r\n    \"image_urls\": [\r\n        \"https://example.com/images/stroberi1.jpg\",\r\n        \"https://example.com/images/stroberi2.jpg\"\r\n    ]\r\n}",
+							"raw": "{\r\n    \"title\": \"Salak Bali\",\r\n    \"description\": \"Buah Salah Asli Bali\",\r\n    \"price\": 35000,\r\n    \"stock\": 20,\r\n    \"category\": \"Buah-Buahan\",\r\n    \"location\": \"Kintamani, Bali\",\r\n    \"image_urls\": [\"http://example.com/kopi.jpg\"]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2085,7 +2085,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"price\": 200000,\r\n    \"stock\": 14\r\n}",
+							"raw": "{\r\n    \"price\": 200000,\r\n    \"stock\": 16\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2093,13 +2093,51 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/products/62287324-ace7-4c51-ab53-acd9a94d9197",
+							"raw": "{{base_url}}/products/{{product_id}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"products",
-								"62287324-ace7-4c51-ab53-acd9a94d9197"
+								"{{product_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Product Image",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_farmer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": "postman-cloud:///1ee9f07a-f1f5-4e00-9948-c473acf0bd06"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/products/upload-image",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"products",
+								"upload-image"
 							]
 						}
 					},
@@ -2118,7 +2156,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{token_worker}}",
+									"value": "{{token_general}}",
 									"type": "string"
 								}
 							]
@@ -2127,7 +2165,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"product_id\": \"{{product_id}}\",\r\n    \"quantity\": 10\r\n}",
+							"raw": "{\r\n    \"product_id\": \"{{product_id}}\",\r\n    \"quantity\": 2\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2252,6 +2290,42 @@
 			]
 		},
 		{
+			"name": "Checkout",
+			"item": [
+				{
+					"name": "Checkout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_general}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/checkout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"checkout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "health",
 			"request": {
 				"method": "GET",
@@ -2270,6 +2344,14 @@
 						"health"
 					]
 				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": []
 			},
 			"response": []
 		}
