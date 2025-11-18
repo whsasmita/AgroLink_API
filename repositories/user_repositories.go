@@ -20,6 +20,7 @@ type UserRepository interface {
 	CreateOrUpdateDriver(driver *models.Driver) error
 	CountNewUsers(since time.Time) (int64, error)
     GetDailyUserTrend(since time.Time) ([]dto.DailyDataPoint, error)
+	FindAllUsers(page, limit int, search string, roleFilter string) ([]models.User, int64, error)
 }
 
 type userRepository struct {
@@ -109,4 +110,36 @@ func (r *userRepository) GetDailyUserTrend(since time.Time) ([]dto.DailyDataPoin
 		Scan(&results).Error // Scan hasil query ke struct DTO
 
 	return results, err
+}
+
+func (r *userRepository) FindAllUsers(page, limit int, search string, roleFilter string) ([]models.User, int64, error) {
+	var users []models.User
+	var total int64
+	offset := (page - 1) * limit
+
+	// Mulai query: Ambil semua user KECUALI admin
+	query := r.db.Model(&models.User{}).Where("role != ?", "admin")
+
+	// Terapkan filter pencarian (Nama atau Email)
+	if search != "" {
+		searchTerm := "%" + search + "%"
+		query = query.Where("name LIKE ? OR email LIKE ?", searchTerm, searchTerm)
+	}
+
+	// Terapkan filter role jika ada (misal: hanya ingin lihat 'farmer')
+	if roleFilter != "" {
+		query = query.Where("role = ?", roleFilter)
+	}
+
+	// Hitung total data (untuk pagination)
+	if err := query.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// Ambil data dengan limit dan offset
+	err := query.Order("created_at DESC").
+		Offset(offset).Limit(limit).
+		Find(&users).Error
+
+	return users, total, err
 }

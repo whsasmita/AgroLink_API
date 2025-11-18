@@ -16,6 +16,7 @@ type ECommercePayment struct {
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
 	// [PERBAIKAN] Relasi Many-to-Many ke Order
+	User *User `gorm:"foreignKey:UserID"`
 	Orders []Order `gorm:"many2many:ecommerce_payment_orders;"`
 }
 

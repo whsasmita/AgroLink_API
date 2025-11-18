@@ -1,14 +1,18 @@
 package services
 
 import (
+	"bytes"
 	"errors"
+	"fmt"
 	"log"
+	"sort"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/whsasmita/AgroLink_API/dto"
 	"github.com/whsasmita/AgroLink_API/models"
 	"github.com/whsasmita/AgroLink_API/repositories"
+	"github.com/xuri/excelize/v2"
 	"gorm.io/gorm"
 )
 
@@ -21,6 +25,10 @@ type AdminService interface {
 	MarkPayoutAsCompleted(payoutID string, adminID uuid.UUID, transferProofURL string) error
 	GetPendingVerifications() ([]models.UserVerification, error)
 	ReviewVerification(verificationID uuid.UUID, input dto.ReviewVerificationInput, adminID uuid.UUID) error
+	GetCombinedTransactions(page, limit int) (*dto.AdminPaginationResponse, error)
+	GetAllUsers(page, limit int, search string, roleFilter string) (*dto.AdminPaginationResponse, error)
+	GetRevenueAnalytics(startDate, endDate time.Time) (*dto.RevenueAnalyticsResponse, error)
+	ExportTransactionsToExcel() (*bytes.Buffer, error)
 }
 
 // adminService sekarang menampung repo yang dibutuhkan untuk Dashboard & Payout
@@ -30,6 +38,7 @@ type adminService struct {
 	userVerificationRepo repositories.UserVerificationRepository
 	transactionRepo      repositories.TransactionRepository
 	projectRepo          repositories.ProjectRepository
+	ecommPaymentRepo repositories.ECommercePaymentRepository
 	deliveryRepo         repositories.DeliveryRepository
 	orderRepo            repositories.OrderRepository
 	db                   *gorm.DB
@@ -43,6 +52,7 @@ func NewAdminService(
 	transactionRepo repositories.TransactionRepository,
 	projectRepo repositories.ProjectRepository,
 	deliveryRepo repositories.DeliveryRepository,
+	ecommPaymentRepo repositories.ECommercePaymentRepository,
 	orderRepo repositories.OrderRepository,
 	db *gorm.DB,
 ) AdminService {
@@ -52,6 +62,7 @@ func NewAdminService(
 		userVerificationRepo: userVerificationRepo,
 		transactionRepo:      transactionRepo,
 		projectRepo:          projectRepo,
+		ecommPaymentRepo: ecommPaymentRepo,
 		deliveryRepo:         deliveryRepo,
 		orderRepo:            orderRepo,
 		db:                   db,
@@ -218,4 +229,269 @@ func (s *adminService) ReviewVerification(verificationID uuid.UUID, input dto.Re
 	// status di tabel 'users' jika perlu.
 
 	return tx.Commit().Error
+}
+
+
+func (s *adminService) GetCombinedTransactions(page, limit int) (*dto.AdminPaginationResponse, error) {
+	// 1. Ambil Transaksi Jasa (Project/Delivery)
+	serviceTransactions, totalService, err := s.transactionRepo.GetAllTransactions(page, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	// 2. Ambil Transaksi Produk (E-commerce)
+	productPayments, totalProduct, err := s.ecommPaymentRepo.GetAllPayments(page, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	var combinedList []dto.TransactionDetailResponse
+
+	// 3. Mapping Transaksi Jasa ke DTO
+	for _, t := range serviceTransactions {
+		detail := dto.TransactionDetailResponse{
+			TransactionID:   t.ID.String(),
+			TransactionDate: t.TransactionDate, // Asumsi field ini ada di model Transaction
+			AmountPaid:      t.AmountPaid,
+			TransactionType: "Jasa",
+		}
+		
+		// Handling pointer nil untuk PaymentMethod
+		if t.PaymentMethod != nil {
+			detail.PaymentMethod = *t.PaymentMethod
+		}
+
+		// Isi Nama Payer & Context
+		if t.Invoice.FarmerID != uuid.Nil {
+             // Note: Pastikan repository mem-preload Invoice.Farmer.User
+             // Jika Farmer nil, cek logika preload di repo
+             if t.Invoice.Farmer != nil {
+                  detail.PayerName = t.Invoice.Farmer.User.Name
+             }
+		}
+
+		if t.Invoice.ProjectID != nil && t.Invoice.Project != nil {
+			detail.ContextInfo = "Proyek: " + t.Invoice.Project.Title
+		} else if t.Invoice.DeliveryID != nil && t.Invoice.Delivery != nil {
+			detail.ContextInfo = "Pengiriman: " + t.Invoice.Delivery.ItemDescription
+		}
+
+		combinedList = append(combinedList, detail)
+	}
+
+	// 4. Mapping Transaksi Produk ke DTO
+	for _, p := range productPayments {
+		detail := dto.TransactionDetailResponse{
+			TransactionID:   p.ID.String(),
+			TransactionDate: p.CreatedAt, // Gunakan CreatedAt sebagai tanggal transaksi
+			AmountPaid:      p.GrandTotal,
+			PaymentMethod:   "midtrans", // Default atau ambil dari response midtrans jika disimpan
+			TransactionType: "Produk",
+			PayerName:       p.User.Name,
+			ContextInfo:     "Pesanan E-commerce", // Bisa diperdetail jika perlu
+		}
+		combinedList = append(combinedList, detail)
+	}
+
+	// 5. Sorting Gabungan (Terbaru di atas)
+	sort.Slice(combinedList, func(i, j int) bool {
+		return combinedList[i].TransactionDate.After(combinedList[j].TransactionDate)
+	})
+
+	// Hitung total gabungan
+	totalCombined := totalService + totalProduct
+	
+	// Hitung total pages (perkiraan kasar karena kita merge 2 limit)
+	// Agar pagination UI tidak bingung, kita gunakan total item gabungan
+	// dibagi limit yang diminta.
+	totalPages := int(totalCombined) / limit
+	if int(totalCombined)%limit != 0 {
+		totalPages++
+	}
+
+	return &dto.AdminPaginationResponse{
+		Data:       combinedList,
+		TotalItems: totalCombined,
+		TotalPages: totalPages,
+		CurrentPage: page,
+	}, nil
+}
+
+func (s *adminService) GetAllUsers(page, limit int, search string, roleFilter string) (*dto.AdminPaginationResponse, error) {
+	users, total, err := s.userRepo.FindAllUsers(page, limit, search, roleFilter)
+	if err != nil {
+		return nil, err
+	}
+
+	var userResponses []dto.UserDetailResponse
+	for _, u := range users {
+		userResponses = append(userResponses, dto.UserDetailResponse{
+			ID:            u.ID,
+			Name:          u.Name,
+			Email:         u.Email,
+			PhoneNumber:   u.PhoneNumber,
+			Role:          u.Role,
+			IsActive:      u.IsActive,
+			EmailVerified: u.EmailVerified,
+			CreatedAt:     u.CreatedAt,
+		})
+	}
+
+	// Hitung total halaman
+	totalPages := int(total) / limit
+	if int(total)%limit != 0 {
+		totalPages++
+	}
+
+	return &dto.AdminPaginationResponse{
+		Data:        userResponses,
+		TotalItems:  total,
+		TotalPages:  totalPages,
+		CurrentPage: page,
+	}, nil
+}
+
+func (s *adminService) GetRevenueAnalytics(startDate, endDate time.Time) (*dto.RevenueAnalyticsResponse, error) {
+	// 1. Ambil Data Jasa
+	svcTotal, svcTrend, err := s.transactionRepo.GetRevenueStats(startDate, endDate)
+	if err != nil { return nil, err }
+
+	// 2. Ambil Data Produk
+	prodTotal, prodTrend, err := s.ecommPaymentRepo.GetRevenueStats(startDate, endDate)
+	if err != nil { return nil, err }
+
+	// 3. Gabungkan Tren Harian (Merging logic)
+	// Gunakan map untuk menjumlahkan value pada tanggal yang sama
+	trendMap := make(map[string]float64)
+
+	for _, t := range svcTrend {
+		// Asumsi format date dari DB adalah "YYYY-MM-DD" atau time.Time string
+		// Kita ambil substring 10 karakter pertama (YYYY-MM-DD) untuk aman
+		dateStr := t.Date
+		if len(dateStr) > 10 { dateStr = dateStr[:10] }
+		trendMap[dateStr] += t.Value
+	}
+	for _, t := range prodTrend {
+		dateStr := t.Date
+		if len(dateStr) > 10 { dateStr = dateStr[:10] }
+		trendMap[dateStr] += t.Value
+	}
+
+	// Konversi map kembali ke slice untuk response
+	var combinedTrend []dto.DailyDataPoint
+	for date, value := range trendMap {
+		combinedTrend = append(combinedTrend, dto.DailyDataPoint{
+			Date:  date,
+			Value: value,
+		})
+	}
+
+	// Urutkan berdasarkan tanggal (karena map mengacak urutan)
+	// (Anda perlu import "sort")
+	sort.Slice(combinedTrend, func(i, j int) bool {
+		return combinedTrend[i].Date < combinedTrend[j].Date
+	})
+
+	return &dto.RevenueAnalyticsResponse{
+		TotalRevenue:     svcTotal + prodTotal,
+		RevenueByService: svcTotal,
+		RevenueByProduct: prodTotal,
+		DailyTrend:       combinedTrend,
+	}, nil
+}
+
+func (s *adminService) ExportTransactionsToExcel() (*bytes.Buffer, error) {
+    // 1. Ambil SEMUA data dari kedua sumber
+    svcTrx, err := s.transactionRepo.GetAllTransactionsNoPaging()
+    if err != nil { return nil, err }
+    
+    prodTrx, err := s.ecommPaymentRepo.GetAllPaymentsNoPaging()
+    if err != nil { return nil, err }
+
+    // 2. Gabungkan Data (Logic sama seperti GetCombinedTransactions tapi tanpa paginasi)
+    var combinedList []dto.TransactionDetailResponse
+
+	// Mapping Jasa
+	for _, t := range svcTrx {
+		item := dto.TransactionDetailResponse{
+			TransactionID:   t.ID.String(),
+			TransactionDate: t.TransactionDate,
+			AmountPaid:      t.AmountPaid,
+			TransactionType: "Jasa",
+		}
+		if t.PaymentMethod != nil { item.PaymentMethod = *t.PaymentMethod }
+		if t.Invoice.Farmer != nil { item.PayerName = t.Invoice.Farmer.User.Name }
+		
+		if t.Invoice.ProjectID != nil && t.Invoice.Project != nil {
+			item.ContextInfo = "Proyek: " + t.Invoice.Project.Title
+		} else if t.Invoice.DeliveryID != nil && t.Invoice.Delivery != nil {
+			item.ContextInfo = "Pengiriman: " + t.Invoice.Delivery.ItemDescription
+		}
+		combinedList = append(combinedList, item)
+	}
+
+    // Mapping Produk
+    for _, p := range prodTrx {
+        item := dto.TransactionDetailResponse{
+            TransactionID:   p.ID.String(),
+            TransactionDate: p.CreatedAt,
+            AmountPaid:      p.GrandTotal,
+            TransactionType: "Produk",
+            PaymentMethod:   "Midtrans",
+            PayerName:       p.User.Name,
+            ContextInfo:     "Pesanan E-commerce",
+        }
+        combinedList = append(combinedList, item)
+    }
+
+    // Sorting (Terbaru di atas)
+    sort.Slice(combinedList, func(i, j int) bool {
+        return combinedList[i].TransactionDate.After(combinedList[j].TransactionDate)
+    })
+
+    // 3. BUAT FILE EXCEL
+    f := excelize.NewFile()
+    sheetName := "Transactions"
+    index, _ := f.NewSheet(sheetName)
+    f.SetActiveSheet(index)
+    f.DeleteSheet("Sheet1") // Hapus sheet default
+
+    // Header Style
+    style, _ := f.NewStyle(&excelize.Style{
+        Font: &excelize.Font{Bold: true},
+        Fill: excelize.Fill{Type: "pattern", Color: []string{"#E0E0E0"}, Pattern: 1},
+    })
+
+    // Tulis Header
+    headers := []string{"Tanggal", "ID Transaksi", "Tipe", "Konteks", "Pembayar", "Metode", "Jumlah (Rp)", "Status"}
+    for i, header := range headers {
+        cell := fmt.Sprintf("%c1", 'A'+i) // A1, B1, C1...
+        f.SetCellValue(sheetName, cell, header)
+        f.SetCellStyle(sheetName, cell, cell, style)
+    }
+
+    // Tulis Data
+    for i, row := range combinedList {
+        rowNum := i + 2
+        f.SetCellValue(sheetName, fmt.Sprintf("A%d", rowNum), row.TransactionDate.Format("2006-01-02 15:04"))
+        f.SetCellValue(sheetName, fmt.Sprintf("B%d", rowNum), row.TransactionID)
+        f.SetCellValue(sheetName, fmt.Sprintf("C%d", rowNum), row.TransactionType)
+        f.SetCellValue(sheetName, fmt.Sprintf("D%d", rowNum), row.ContextInfo)
+        f.SetCellValue(sheetName, fmt.Sprintf("E%d", rowNum), row.PayerName)
+        f.SetCellValue(sheetName, fmt.Sprintf("F%d", rowNum), row.PaymentMethod)
+        f.SetCellValue(sheetName, fmt.Sprintf("G%d", rowNum), row.AmountPaid)
+    }
+
+    // Atur lebar kolom otomatis (opsional, manual lebih aman)
+    f.SetColWidth(sheetName, "A", "A", 20)
+    f.SetColWidth(sheetName, "B", "B", 36) // UUID panjang
+    f.SetColWidth(sheetName, "D", "D", 30)
+
+    // Tulis ke Buffer
+    buffer, err := f.WriteToBuffer()
+    if err != nil {
+        return nil, err
+    }
+
+    return buffer, nil
 }

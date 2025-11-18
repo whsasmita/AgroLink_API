@@ -31,8 +31,8 @@ func main() {
 	db := config.ConnectDatabase()
 
 	// Run migration 
-	config.RunMigrationWithReset(db)
-	// config.AutoMigrate()
+	// config.RunMigrationWithReset(db)
+	config.AutoMigrate(db)
 	// config.CreateIndexes()
 
 	// Graceful shutdown 

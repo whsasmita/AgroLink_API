@@ -72,6 +72,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 		transactionRepo,
 		projectRepo,
 		deliveryRepo,
+		ecommPaymentRepo,
 		orderRepo,
 		db,
 	)
@@ -217,11 +218,16 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 		// Dashboard
 		admin.GET("/dashboard-stats", adminHandler.GetDashboardStats)
 
+		admin.GET("/users", adminHandler.GetAllUsers)
+
 		// Payout
 		admin.GET("/payouts/pending", adminHandler.GetPendingPayouts)
 		admin.POST("/payouts/:id/complete", adminHandler.MarkPayoutAsCompleted)
+		admin.GET("/revenue/analytics", adminHandler.GetRevenueAnalytics)
 
 		admin.GET("/verifications/pending", adminHandler.GetPendingVerifications)
 		admin.POST("/verifications/:id/review", adminHandler.ReviewVerification)
+		admin.GET("/transactions", adminHandler.GetTransactions)
+		admin.GET("/transactions/export", adminHandler.ExportTransactions)
 	}
 }

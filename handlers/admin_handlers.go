@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -129,4 +130,77 @@ func (h *AdminHandler) ReviewVerification(c *gin.Context) {
 	}
 	
 	utils.SuccessResponse(c, http.StatusOK, "Verification reviewed successfully", nil)
+}
+
+func (h *AdminHandler) GetTransactions(c *gin.Context) {
+    page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+    limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+
+    response, err := h.adminService.GetCombinedTransactions(page, limit)
+    if err != nil {
+        utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to get transactions", err)
+        return
+    }
+    
+    utils.SuccessResponse(c, http.StatusOK, "Transactions retrieved", response)
+}
+
+func (h *AdminHandler) GetAllUsers(c *gin.Context) {
+	// Ambil query params dengan nilai default
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+	search := c.Query("search")
+	roleFilter := c.Query("role") // filter opsional: farmer, worker, driver, general
+
+	response, err := h.adminService.GetAllUsers(page, limit, search, roleFilter)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to fetch users", err)
+		return
+	}
+
+	utils.SuccessResponse(c, http.StatusOK, "Users retrieved successfully", response)
+}
+
+func (h *AdminHandler) GetRevenueAnalytics(c *gin.Context) {
+	// Default: 30 hari terakhir
+	endDate := time.Now()
+	startDate := endDate.AddDate(0, 0, -30)
+
+	// Parse query params jika ada (format YYYY-MM-DD)
+	if startStr := c.Query("start_date"); startStr != "" {
+		if parsed, err := time.Parse("2006-01-02", startStr); err == nil {
+			startDate = parsed
+		}
+	}
+	if endStr := c.Query("end_date"); endStr != "" {
+		if parsed, err := time.Parse("2006-01-02", endStr); err == nil {
+			// Set ke akhir hari tersebut (23:59:59)
+			endDate = parsed.Add(23*time.Hour + 59*time.Minute + 59*time.Second)
+		}
+	}
+
+	stats, err := h.adminService.GetRevenueAnalytics(startDate, endDate)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to get revenue analytics", err)
+		return
+	}
+
+	utils.SuccessResponse(c, http.StatusOK, "Revenue analytics retrieved", stats)
+}
+
+func (h *AdminHandler) ExportTransactions(c *gin.Context) {
+    buffer, err := h.adminService.ExportTransactionsToExcel()
+    if err != nil {
+        utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to generate excel", err)
+        return
+    }
+
+    // Set Headers untuk download file
+    filename := fmt.Sprintf("transaksi_agrolink_%s.xlsx", time.Now().Format("20060102"))
+    c.Header("Content-Disposition", "attachment; filename="+filename)
+    c.Header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    c.Header("Content-Length", fmt.Sprintf("%d", buffer.Len()))
+
+    // Tulis buffer ke response body
+    c.Data(http.StatusOK, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", buffer.Bytes())
 }
