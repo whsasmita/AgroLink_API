@@ -14,6 +14,9 @@ type TransactionRepository interface {
 	FindByInvoiceID(invoiceID string) (*models.Transaction, error)
 	GetTotalRevenue(since time.Time) (float64, error)
 	GetDailyRevenueTrend(since time.Time) ([]dto.DailyDataPoint, error)
+	GetAllTransactions(page, limit int) ([]models.Transaction, int64, error)
+	GetRevenueStats(startDate, endDate time.Time) (total float64, trend []dto.DailyDataPoint, err error)
+	GetAllTransactionsNoPaging() ([]models.Transaction, error)
 }
 
 type transactionRepository struct{ db *gorm.DB }
@@ -52,4 +55,60 @@ func (r *transactionRepository) GetDailyRevenueTrend(since time.Time) ([]dto.Dai
 		Order("date ASC").
 		Scan(&results).Error
 	return results, err
+}
+
+func (r *transactionRepository) GetAllTransactions(page, limit int) ([]models.Transaction, int64, error) {
+    var transactions []models.Transaction
+    var total int64
+    offset := (page - 1) * limit
+
+    // Ambil data dengan Preload
+    err := r.db.Preload("Invoice.Farmer.User"). // Untuk nama pembayar (Petani)
+        Preload("Invoice.Project").
+        Preload("Invoice.Delivery").
+        Order("transaction_date DESC").
+        Offset(offset).Limit(limit).
+        Find(&transactions).Error
+    if err != nil {
+        return nil, 0, err
+    }
+    // Hitung total item (tanpa offset/limit)
+    r.db.Model(&models.Transaction{}).Count(&total)
+    
+    return transactions, total, nil
+}
+
+func (r *transactionRepository) GetRevenueStats(startDate, endDate time.Time) (float64, []dto.DailyDataPoint, error) {
+	// 1. Hitung Total
+	var total float64
+	err := r.db.Model(&models.Transaction{}).
+		Where("transaction_date BETWEEN ? AND ?", startDate, endDate).
+		Select("COALESCE(SUM(amount_paid), 0)").
+		Scan(&total).Error
+	if err != nil {
+		return 0, nil, err
+	}
+
+	// 2. Hitung Tren Harian
+	var trend []dto.DailyDataPoint
+	err = r.db.Model(&models.Transaction{}).
+		Select("DATE(transaction_date) as date, SUM(amount_paid) as value").
+		Where("transaction_date BETWEEN ? AND ?", startDate, endDate).
+		Group("DATE(transaction_date)").
+		Order("date ASC").
+		Scan(&trend).Error
+
+	return total, trend, err
+}
+
+func (r *transactionRepository) GetAllTransactionsNoPaging() ([]models.Transaction, error) {
+	var transactions []models.Transaction
+	// Preload sama seperti sebelumnya
+	err := r.db.
+		Preload("Invoice.Project").
+		Preload("Invoice.Delivery").
+		Preload("Invoice.Farmer.User").
+		Order("transaction_date DESC").
+		Find(&transactions).Error
+	return transactions, err
 }

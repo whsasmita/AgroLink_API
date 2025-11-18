@@ -21,6 +21,7 @@ type Invoice struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 
+	Farmer   *Farmer   `gorm:"foreignKey:FarmerID"`
 	Project  *Project  `gorm:"foreignKey:ProjectID"`
 	Delivery *Delivery `gorm:"foreignKey:DeliveryID"`
 }
