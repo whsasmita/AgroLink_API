@@ -38,12 +38,14 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 	cartRepo := repositories.NewCartRepository(db)
 	orderRepo := repositories.NewOrderRepository(db)
 	ecommPaymentRepo := repositories.NewECommercePaymentRepository(db)
+	userVerificationRepo := repositories.NewUserVerificationRepository(db)
+	
 
 	// workerRepo dan projectRepo sudah ada
 
 	// 2. Inisialisasi Services
 	authService := services.NewAuthService(userRepo)
-	profileService := services.NewProfileService(userRepo)
+	profileService := services.NewProfileService(userRepo, userVerificationRepo)
 	farmService := services.NewFarmService(farmRepo)
 	projectService := services.NewProjectService(projectRepo, assignRepo, invoiceRepo)
 	contractService := services.NewContractService(contractRepo, projectService, invoiceRepo, deliveryRepo, db)
@@ -63,6 +65,16 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 	checkoutService := services.NewCheckoutService(
 		cartRepo, productRepo, orderRepo, eCommercePaymentService, db,
 	)
+	adminService := services.NewAdminService(
+		payoutRepo,
+		userRepo,
+		userVerificationRepo,
+		transactionRepo,
+		projectRepo,
+		deliveryRepo,
+		orderRepo,
+		db,
+	)
 
 	notifHandler := handlers.NewNotificationHandler(notifRepo)
 
@@ -80,6 +92,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 	productHandler := handlers.NewProductHandler(productService)
 	cartHandler := handlers.NewCartHandler(cartService)
 	checkoutHandler := handlers.NewCheckoutHandler(checkoutService)
+	adminHandler := handlers.NewAdminHandler(adminService)
 
 	// deliveryRepo sudah diinisialisasi sebelumnya
 
@@ -96,6 +109,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 	router.PUT("/profile", profileHandler.UpdateProfile)
 	router.POST("/profile/details", profileHandler.UpdateRoleDetails)
 	router.POST("/profile/upload-photo", profileHandler.UploadProfilePhoto)
+	router.POST("/profile/upload-document", profileHandler.UploadVerificationDocument)
 	// ... (rute profil lainnya)
 
 	// Farm Routes (Hanya untuk Petani)
@@ -196,4 +210,18 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 		checkout.POST("/direct", checkoutHandler.DirectCheckout)
 	}
 
+
+	admin := router.Group("/admin")
+	admin.Use(middleware.RoleMiddleware("admin")) // <-- Hanya admin yang bisa akses
+	{
+		// Dashboard
+		admin.GET("/dashboard-stats", adminHandler.GetDashboardStats)
+
+		// Payout
+		admin.GET("/payouts/pending", adminHandler.GetPendingPayouts)
+		admin.POST("/payouts/:id/complete", adminHandler.MarkPayoutAsCompleted)
+
+		admin.GET("/verifications/pending", adminHandler.GetPendingVerifications)
+		admin.POST("/verifications/:id/review", adminHandler.ReviewVerification)
+	}
 }

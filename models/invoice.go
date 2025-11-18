@@ -20,6 +20,9 @@ type Invoice struct {
 	DueDate   time.Time
 	CreatedAt time.Time
 	UpdatedAt time.Time
+
+	Project  *Project  `gorm:"foreignKey:ProjectID"`
+	Delivery *Delivery `gorm:"foreignKey:DeliveryID"`
 }
 
 func (i *Invoice) BeforeCreate(tx *gorm.DB) (err error) {

@@ -16,6 +16,7 @@ type ProjectRepository interface {
 	IsWorkerOnActiveProject(workerID string) (bool, error)
 	UpdateStatus( projectID string, status string) error
 	CountActiveContracts(projectID string) (int64, error)
+	CountActiveProjects() (int64, error)
 }
 
 type projectRepository struct {
@@ -114,6 +115,14 @@ func (r *projectRepository) CountActiveContracts(projectID string) (int64, error
 	var count int64
 	err := r.db.Model(&models.Contract{}).
 		Where("project_id = ? AND status = ?", projectID, "active").
+		Count(&count).Error
+	return count, err
+}
+
+func (r *projectRepository) CountActiveProjects() (int64, error) {
+	var count int64
+	err := r.db.Model(&models.Project{}).
+		Where("status = ?", "in_progress").
 		Count(&count).Error
 	return count, err
 }

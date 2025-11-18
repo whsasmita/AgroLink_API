@@ -2,7 +2,9 @@ package repositories
 
 import (
 	"errors"
+	"time"
 
+	"github.com/whsasmita/AgroLink_API/dto"
 	"github.com/whsasmita/AgroLink_API/models"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -16,6 +18,8 @@ type UserRepository interface {
     CreateOrUpdateFarmer(farmer *models.Farmer) error
 	CreateOrUpdateWorker(worker *models.Worker) error
 	CreateOrUpdateDriver(driver *models.Driver) error
+	CountNewUsers(since time.Time) (int64, error)
+    GetDailyUserTrend(since time.Time) ([]dto.DailyDataPoint, error)
 }
 
 type userRepository struct {
@@ -82,4 +86,27 @@ func (r *userRepository) CreateOrUpdateDriver(driver *models.Driver) error {
 	return r.db.Clauses(clause.OnConflict{
 		UpdateAll: true,
 	}).Create(driver).Error
+}
+
+func (r *userRepository) CountNewUsers(since time.Time) (int64, error) {
+	var count int64
+	err := r.db.Model(&models.User{}).
+		Where("created_at > ?", since).
+		Count(&count).Error
+	return count, err
+}
+
+// [FUNGSI BARU]
+// GetDailyUserTrend menghitung jumlah pengguna baru per hari untuk data grafik.
+func (r *userRepository) GetDailyUserTrend(since time.Time) ([]dto.DailyDataPoint, error) {
+	var results []dto.DailyDataPoint
+	
+	err := r.db.Model(&models.User{}).
+		Select("DATE(created_at) as date, COUNT(*) as value"). // Mengelompokkan berdasarkan tanggal
+		Where("created_at > ?", since).
+		Group("DATE(created_at)").
+		Order("date ASC"). // Penting untuk urutan grafik
+		Scan(&results).Error // Scan hasil query ke struct DTO
+
+	return results, err
 }

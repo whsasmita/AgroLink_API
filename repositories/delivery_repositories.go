@@ -13,6 +13,7 @@ type DeliveryRepository interface {
 	Update(tx *gorm.DB, delivery *models.Delivery) error
 	FindByContractID(contractID string) (*models.Delivery, error)
 	FindAllByUserID(userID uuid.UUID, role string) ([]models.Delivery, error)
+	CountActiveDeliveries() (int64, error)
 
 }
 
@@ -58,4 +59,12 @@ func (r *deliveryRepository) FindAllByUserID(userID uuid.UUID, role string) ([]m
 
 	err := query.Order("created_at DESC").Find(&deliveries).Error
 	return deliveries, err
+}
+
+func (r *deliveryRepository) CountActiveDeliveries() (int64, error) {
+	var count int64
+	err := r.db.Model(&models.Delivery{}).
+		Where("status = ?", "in_transit").
+		Count(&count).Error
+	return count, err
 }

@@ -26,6 +26,7 @@ type ProfileHandler interface {
 	UpdateProfile(c *gin.Context)
 	UploadProfilePhoto(c *gin.Context)
 	UpdateRoleDetails(c *gin.Context)
+	UploadVerificationDocument(c *gin.Context)
 }
 
 type profileHandler struct {
@@ -160,4 +161,39 @@ func (h *profileHandler) UpdateRoleDetails(c *gin.Context) {
 	}
 
 	utils.SuccessResponse(c, http.StatusOK, "Role details updated successfully", updatedUser)
+}
+
+func (h *profileHandler) UploadVerificationDocument(c *gin.Context) {
+	currentUser := c.MustGet("user").(*models.User)
+
+	docType := c.PostForm("document_type")
+	if docType == "" {
+		utils.ErrorResponse(c, http.StatusBadRequest, "Form field 'document_type' is required", nil)
+		return
+	}
+	
+	file, err := c.FormFile("document_file")
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "File 'document_file' not provided", err)
+		return
+	}
+	
+	// Simpan file (logika sama seperti upload foto profil)
+	filename := fmt.Sprintf("verify-%s-%s", currentUser.ID, uuid.NewString())
+	savePath := filepath.Join("public", "uploads", "verifications", filename)
+	// TODO ubah agar menggunakan app_url
+	publicURL := fmt.Sprintf("http://localhost:8080/static/uploads/verifications/%s", filename) // Ganti dgn domain
+	
+	if err := c.SaveUploadedFile(file, savePath); err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to save file", err)
+		return
+	}
+	// Simpan record ke database
+	_, err = h.service.SubmitVerificationDocument(currentUser.ID, docType, publicURL)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to save verification data", err)
+		return
+	}
+
+	utils.SuccessResponse(c, http.StatusOK, "Document uploaded, waiting for review", gin.H{"url": publicURL})
 }

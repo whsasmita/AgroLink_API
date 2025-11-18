@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/whsasmita/AgroLink_API/models"
 	"gorm.io/gorm"
@@ -13,6 +15,7 @@ type OrderRepository interface {
 	FindByID(id uuid.UUID) (*models.Order, error)
 	FindAllByUserID(userID uuid.UUID) ([]models.Order, error)
 	FindOrdersByPaymentID(tx *gorm.DB, paymentID uuid.UUID) ([]models.Order, error)
+	CountNewOrders(since time.Time) (int64, error)
 }
 
 type orderRepository struct{ db *gorm.DB }
@@ -92,4 +95,13 @@ func (r *orderRepository) FindOrdersByPaymentID(tx *gorm.DB, paymentID uuid.UUID
 	// produk yang dibeli untuk mengurangi stok.
 	err := tx.Preload("Items").Where("id IN ?", orderIDs).Find(&orders).Error
 	return orders, err
+}
+
+func (r *orderRepository) CountNewOrders(since time.Time) (int64, error) {
+	var count int64
+	// Kita hitung pesanan yang 'paid' dan dibuat dalam 30 hari terakhir
+	err := r.db.Model(&models.Order{}).
+		Where("status = ? AND created_at > ?", "paid", since).
+		Count(&count).Error
+	return count, err
 }
