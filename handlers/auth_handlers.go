@@ -71,13 +71,13 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	token, err := h.AuthService.Login(req.Email, req.Password)
+	newUser,token, err := h.AuthService.Login(req.Email, req.Password)
 	if err != nil {
 		utils.ErrorResponse(c, http.StatusUnauthorized, "Invalid credentials", err)
 		return
 	}
 
-	utils.SuccessResponse(c, http.StatusOK, "Login successful", gin.H{"token": token})
+	utils.SuccessResponse(c, http.StatusOK, "Login successful", gin.H{"token": token, "role" : newUser.Role })
 }
 
 // Di dalam file handlers/auth_handlers.go

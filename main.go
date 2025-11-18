@@ -22,7 +22,7 @@ import (
 
 func main() {
 	// Load environment variables
-	if err := godotenv.Load(); err != nil {
+	if err := godotenv.Load(".env"); err != nil {
 		log.Println("No .env file found, using system environment variables")
 	}
 	cfg := config.LoadConfig()
@@ -31,7 +31,7 @@ func main() {
 	db := config.ConnectDatabase()
 
 	// Run migration 
-	// config.RunMigrationWithReset()
+	// config.RunMigrationWithReset(db)
 	// config.AutoMigrate()
 	// config.CreateIndexes()
 
@@ -63,7 +63,7 @@ func main() {
 
 	// Configure CORS
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:8080", "http://localhost:5173", "https://goagrolink.com"},
+		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:8080", "http://localhost:5173", "https://goagrolink.com", "https://admin.goagrolink.com"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},

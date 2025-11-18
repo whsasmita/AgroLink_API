@@ -13,7 +13,7 @@ import (
 
 type AuthService interface {
 	Register(email, password, role, name, phoneNumber string) (*models.User, string, error)
-	Login(email, password string) (string, error)
+	Login(email, password string) (*models.User, string, error)
 	GetProfile(userID string) (*models.User, error)
 }
 
@@ -69,22 +69,22 @@ func (s *authService) Register(email, password, role, name, phoneNumber string) 
 	return newUser, token, nil
 }
 
-func (s *authService) Login(email, password string) (string, error) {
+func (s *authService) Login(email, password string) (*models.User, string, error) {
 	user, err := s.UserRepo.FindByEmail(email)
 	if err != nil || user == nil {
-		return "", errors.New("invalid email or password")
+		return user, "", errors.New("invalid email or password")
 	}
 
 	if !utils.CheckPasswordHash(password, user.Password) {
-		return "", errors.New("invalid email or password")
+		return user, "", errors.New("invalid email or password")
 	}
 
 	token, err := config.GenerateToken(user.ID.String(), user.Email, user.Role)
 	if err != nil {
-		return "", err
+		return user, "", err
 	}
 
-	return token, nil
+	return user,token, nil
 }
 
 func (s *authService) GetProfile(userID string) (*models.User, error) {

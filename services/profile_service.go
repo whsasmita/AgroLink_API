@@ -14,10 +14,21 @@ import (
 type ProfileService interface {
 	UpdateProfile(id, name, phoneNumber, profilePicture string) (*models.User, error)
 	UpdateRoleDetails(userID string, userRole string, input RoleDetailsInput) (*models.User, error)
+	SubmitVerificationDocument(userID uuid.UUID, docType string, filePath string) (*models.UserVerification, error)
+	CheckVerificationStatus(userID uuid.UUID, role string) (bool, []string, error)
 }
 
 type profileService struct {
-	UserRepo repositories.UserRepository
+	UserRepo             repositories.UserRepository
+	UserVerificationRepo repositories.UserVerificationRepository
+}
+
+// [PERBAIKI] Perbarui Constructor
+func NewProfileService(userRepo repositories.UserRepository, userVerificationRepo repositories.UserVerificationRepository) ProfileService {
+	return &profileService{
+		UserRepo:             userRepo,
+		UserVerificationRepo: userVerificationRepo,
+	}
 }
 
 type RoleDetailsInput struct {
@@ -53,11 +64,6 @@ type driverInput struct {
 	BankName        *string         `json:"bank_name"`
 	BankAccountNumber *string       `json:"bank_account_number"`
 	BankAccountHolder *string       `json:"bank_account_holder"`
-}
-func NewProfileService(userRepo repositories.UserRepository) ProfileService {
-	return &profileService{
-		UserRepo: userRepo,
-	}
 }
 
 // UpdateProfile mengurus logika bisnis untuk memperbarui profil pengguna.
@@ -177,4 +183,55 @@ func Ptr(s string) *string {
 		return nil
 	}
 	return &s
+}
+
+func (s *profileService) SubmitVerificationDocument(userID uuid.UUID, docType string, filePath string) (*models.UserVerification, error) {
+	verification := &models.UserVerification{
+		UserID:       userID,
+		DocumentType: docType,
+		FilePath:     filePath,
+		Status:       "pending",
+	}
+	err := s.UserVerificationRepo.Create(verification)
+	return verification, err
+}
+
+// [FUNGSI BARU]
+// CheckVerificationStatus memeriksa apakah pengguna sudah mengunggah semua dokumen wajib
+func (s *profileService) CheckVerificationStatus(userID uuid.UUID, role string) (bool, []string, error) {
+	// Definisikan dokumen wajib untuk setiap peran
+	var requiredDocs map[string][]string = map[string][]string{
+		"worker": {"KTP", "SELFIE_KTP"},
+		"driver": {"KTP", "SELFIE_KTP", "SIM", "STNK", "KIR"}, // KIR bisa ditambahkan
+		"farmer": {"KTP", "SKU"},
+	}
+
+	required, ok := requiredDocs[role]
+	if !ok {
+		return true, nil, nil // Tidak butuh verifikasi untuk peran ini (misal: general)
+	}
+
+	approved, err := s.UserVerificationRepo.GetApprovedDocumentsForUser(userID)
+	if err != nil {
+		return false, nil, err
+	}
+
+	// Buat map dari dokumen yang sudah disetujui untuk pencarian cepat
+	approvedMap := make(map[string]bool)
+	for _, doc := range approved {
+		approvedMap[doc] = true
+	}
+
+	var missingDocs []string
+	isFullyVerified := true
+
+	// Periksa apakah semua dokumen wajib sudah ada di map
+	for _, reqDoc := range required {
+		if !approvedMap[reqDoc] {
+			isFullyVerified = false
+			missingDocs = append(missingDocs, reqDoc)
+		}
+	}
+
+	return isFullyVerified, missingDocs, nil
 }
