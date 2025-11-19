@@ -32,7 +32,7 @@ func main() {
 
 	// Run migration 
 	// config.RunMigrationWithReset(db)
-	// config.AutoMigrate(db)
+	config.AutoMigrate(db)
 	// config.CreateIndexes()
 
 	// Graceful shutdown 
