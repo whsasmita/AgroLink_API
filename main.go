@@ -63,7 +63,7 @@ func main() {
 
 	// Configure CORS
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:8080", "http://localhost:5173", "https://goagrolink.com", "https://admin.goagrolink.com"},
+		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:8080", "http://localhost:5173", "https://goagrolink.com", "https://admin.goagrolink.com","http://localhost:5174",},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
