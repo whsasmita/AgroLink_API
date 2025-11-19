@@ -13,6 +13,11 @@ services:
     depends_on:
       mysql-db:
         condition: service_healthy
+    volumes:
+      # [BARU] Map volume persisten ke folder uploads
+      # Jalur ini harus sesuai dengan lokasi file 'public' di dalam image Docker Go Anda.
+      - uploads-data:/app/public/uploads
+    
 
   # --- Layanan Database MySQL ---
   mysql-db:
@@ -40,3 +45,4 @@ services:
 # Mendefinisikan volume yang akan digunakan oleh layanan di atas
 volumes:
   db-data:
+  uploads-data:

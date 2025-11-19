@@ -9,6 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/whsasmita/AgroLink_API/config"
 	"github.com/whsasmita/AgroLink_API/dto"
 	"github.com/whsasmita/AgroLink_API/models"
 	"github.com/whsasmita/AgroLink_API/services"
@@ -76,9 +77,11 @@ func (h *AdminHandler) MarkPayoutAsCompleted(c *gin.Context) {
 		return
 	}
 
+	 appUrl := config.AppConfig_.App.APP_URL
 	// Buat URL yang bisa diakses publik
 	// Ganti "http://localhost:8080" dengan domain asli Anda saat production
-	publicURL := fmt.Sprintf("http://localhost:8080/static/uploads/payouts/%s", newFileName)
+	publicURL := fmt.Sprintf("%s/static/uploads/payouts/%s", appUrl, newFileName)
+	// publicURL := fmt.Sprintf("http://localhost:8080/static/uploads/payouts/%s", newFileName)
 
 	// Panggil service dengan URL yang baru dibuat
 	err = h.adminService.MarkPayoutAsCompleted(payoutID, currentUser.ID, publicURL)
