@@ -32,7 +32,7 @@ func main() {
 
 	// Run migration 
 	// config.RunMigrationWithReset(db)
-	config.AutoMigrate(db)
+	// config.AutoMigrate(db)
 	// config.CreateIndexes()
 
 	// Graceful shutdown 
@@ -123,10 +123,18 @@ func main() {
 				routes.PublicRoutes(v1Public, db)
 			}
 			protectedGroup := v1.Group("/")
-			protectedGroup.Use(middleware.AuthMiddleware(userRepo))
+			protectedGroup.Use(func(c *gin.Context) {
+				if c.Request.Method == "OPTIONS" {
+					c.Next() // Izinkan CORS preflight langsung ke handler
+					return
+				}
+				// Terapkan AuthMiddleware hanya untuk non-OPTIONS requests
+				middleware.AuthMiddleware(userRepo)(c) 
+			})
 			{
-				routes.ProtectedRoutes(protectedGroup, db, chatHandler)
-				// routes.ProtectedRoutes(protectedGroup, db)
+				// [PENTING] Anda perlu menyesuaikan ProtectedRoutes di file routes.go
+				// untuk menerima semua handler yang diinisialisasi di sini.
+				routes.ProtectedRoutes(protectedGroup, db, chatHandler) 
 			}
 		}
 	}

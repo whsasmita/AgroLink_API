@@ -133,50 +133,48 @@ func (h *ProductHandler) UpdateProduct(c *gin.Context) {
 }
 
 func (h *ProductHandler) UploadImage(c *gin.Context) {
-	// Ambil pengguna saat ini untuk menamai file
-	currentUser := c.MustGet("user").(*models.User)
+    // Ambil pengguna saat ini untuk menamai file
+    currentUser := c.MustGet("user").(*models.User)
 
-	// Ambil file dari form-data dengan key "image"
-	file, err := c.FormFile("image")
-	if err != nil {
-		utils.ErrorResponse(c, http.StatusBadRequest, "Image file not provided", err)
-		return
-	}
+    // Ambil file dari form-data dengan key "image"
+    file, err := c.FormFile("image")
+    if err != nil {
+        utils.ErrorResponse(c, http.StatusBadRequest, "Image file not provided", err)
+        return
+    }
 
-	// === Validasi Sederhana ===
-	// 1. Validasi Ukuran (misal: maks 2MB)
-	if file.Size > 2*1024*1024 { // 2MB
-		utils.ErrorResponse(c, http.StatusRequestEntityTooLarge, "File size exceeds 2MB limit", nil)
-		return
-	}
-	// 2. Validasi Tipe File
-	ext := filepath.Ext(file.Filename)
-	if ext != ".jpg" && ext != ".jpeg" && ext != ".png" {
-		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid file type. Only JPG, JPEG, PNG are allowed.", nil)
-		return
-	}
+    // === Validasi ===
+    if file.Size > 2*1024*1024 { // 2MB
+        utils.ErrorResponse(c, http.StatusRequestEntityTooLarge, "File size exceeds 2MB limit", nil)
+        return
+    }
+    ext := filepath.Ext(file.Filename)
+    if ext != ".jpg" && ext != ".jpeg" && ext != ".png" {
+        utils.ErrorResponse(c, http.StatusBadRequest, "Invalid file type. Only JPG, JPEG, PNG are allowed.", nil)
+        return
+    }
 
-	// Buat nama file yang unik untuk menghindari konflik
-	newFileName := fmt.Sprintf("%s-%d%s", currentUser.ID, time.Now().UnixNano(), ext)
-	
-	// Tentukan path penyimpanan
-	// Pastikan folder ini sudah ada
-	savePath := filepath.Join("public", "uploads", "products", newFileName)
+    // Buat nama file yang unik untuk menghindari konflik
+    newFileName := fmt.Sprintf("%s-%d%s", currentUser.ID, time.Now().UnixNano(), ext)
+    
+    // Tentukan direktori penyimpanan: public/uploads/products/
+    uploadDir := filepath.Join("public", "uploads", "products")
+    savePath := filepath.Join(uploadDir, newFileName)
 
-	// Simpan file
-	if err := c.SaveUploadedFile(file, savePath); err != nil {
-		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to save file", err)
-		return
-	}
+    // Simpan file
+    if err := c.SaveUploadedFile(file, savePath); err != nil {
+        utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to save file", err)
+        return
+    }
 
-	// Buat URL yang bisa diakses publik
-	// Sesuaikan dengan konfigurasi Static Server dan base URL Anda
-	appUrl := config.AppConfig_.App.APP_URL
-	publicURL := fmt.Sprintf("%s/static/images/profiles/%s", appUrl, newFileName)
-
-	utils.SuccessResponse(c, http.StatusOK, "File uploaded successfully", gin.H{
-		"url": publicURL,
-	})
+    // [PERBAIKAN] Buat URL yang bisa diakses publik (Menggunakan /static/uploads/products/)
+    // Asumsi: Server Go melayani folder 'public' melalui rute '/static'
+    appUrl := config.AppConfig_.App.APP_URL
+    publicURL := fmt.Sprintf("%s/static/uploads/products/%s", appUrl, newFileName) // <-- Menggunakan path yang konsisten
+    
+    utils.SuccessResponse(c, http.StatusOK, "File uploaded successfully", gin.H{
+        "url": publicURL,
+    })
 }
 
 // DeleteProduct menangani penghapusan produk oleh petani pemilik.
