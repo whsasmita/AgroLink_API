@@ -32,8 +32,12 @@ WORKDIR /app
 COPY --from=builder /out/agrolink-api /app/agrolink-api
 COPY templates /app/templates
 
-RUN chown -R nonroot:nonroot /app
 
+RUN mkdir -p /app/public/uploads && \
+    chown -R nonroot:nonroot /app/public/uploads
+
+RUN chown -R nonroot:nonroot /app
+    
 ENV GIN_MODE=release
 EXPOSE 8080
 
