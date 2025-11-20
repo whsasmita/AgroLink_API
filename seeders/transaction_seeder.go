@@ -107,9 +107,12 @@ func seedSingleTransaksiUtama(db *gorm.DB, row SeedTransaksiUtamaRow) {
 		return
 	}
 
-	amount := *row.TotalDiterima // yang diterima pekerja/driver
+	// amount yang diterima worker/driver
+	amount := *row.TotalDiterima
+	// KeuntunganKotor dari Excel = gross profit platform
 	platformFee := *row.KeuntunganKotor
-	totalAmount := *row.TotalBayarPetani // yang dibayar petani (sesuai Excel)
+	// Total yang dibayar petani (amount + platformFee)
+	totalAmount := *row.TotalBayarPetani
 
 	// 3. Cari farmer dari nama pengirim (petani)
 	farmerID, err := findFarmerIDByName(db, row.PengirimPetani)
@@ -161,7 +164,7 @@ func seedSingleTransaksiUtama(db *gorm.DB, row SeedTransaksiUtamaRow) {
 
 	txn := models.Transaction{
 		InvoiceID:                 invoice.ID,
-		PaymentGateway:            "midtrans", // atau "manual", sesuaikan jika perlu
+		PaymentGateway:            "midtrans", // atau "manual", sesuaikan kalau perlu
 		PaymentGatewayReferenceID: refIDPtr,
 		AmountPaid:                totalAmount, // yang dibayar petani (Excel)
 		PaymentMethod:             paymentMethodPtr,
@@ -174,35 +177,31 @@ func seedSingleTransaksiUtama(db *gorm.DB, row SeedTransaksiUtamaRow) {
 	}
 
 	// ====== 7. Buat PlatformProfit (Platform Fee) ======
-	gross := platformFee // Keuntungan kotor platform
-	var netProfit float64
+	// Di sini kita PAKAI mentah-mentah data dari Excel,
+	// jangan dihitung ulang supaya tidak dobel.
+
+	gross := platformFee // Keuntungan kotor platform dari Excel
+
 	var gatewayFee float64
-
-	// pakai KeuntunganBersih dari Excel kalau ada
-	if row.KeuntunganBersih != nil {
-		netProfit = *row.KeuntunganBersih
-	} else {
-		// fallback: netProfit = gross - biaya gateway
-		netProfit = gross
-	}
-
-	// biaya gateway (BiayaMidtrans) jika ada
 	if row.BiayaMidtrans != nil {
+		// Langsung pakai kolom BiayaMidtrans dari Excel
 		gatewayFee = *row.BiayaMidtrans
 	} else {
-		// kalau tidak ada, dan KeuntunganBersih tersedia:
-		if row.KeuntunganBersih != nil {
-			gatewayFee = gross - netProfit
-			if gatewayFee < 0 {
-				gatewayFee = 0
-			}
-		} else {
-			gatewayFee = 0
-		}
+		gatewayFee = 0
+	}
+
+	var netProfit float64
+	if row.KeuntunganBersih != nil {
+		// Langsung pakai KeuntunganBersih dari Excel
+		netProfit = *row.KeuntunganBersih
+	} else {
+		// Fallback: jika Excel tidak punya kolom net, hitung manual
+		// net = gross - gatewayFee
+		netProfit = gross - gatewayFee
 	}
 
 	profit := models.PlatformProfit{
-		TransactionID: &txn.ID,
+		TransactionID: &txn.ID,   // atau txn.ID kalau di model bukan pointer
 		SourceType:    "utama",
 		GrossProfit:   gross,
 		GatewayFee:    gatewayFee,
@@ -214,6 +213,7 @@ func seedSingleTransaksiUtama(db *gorm.DB, row SeedTransaksiUtamaRow) {
 		log.Printf("Failed to create platform profit for utama txn %s: %v", row.IDTransaksi, err)
 	}
 }
+
 
 func SeedEcommerceTransactions(db *gorm.DB) {
 	log.Println("Seeding invoices & transactions (E-Commerce) from JSON...")
