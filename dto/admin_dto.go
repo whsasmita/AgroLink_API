@@ -31,6 +31,7 @@ type AdminPaginationResponse struct {
 	TotalItems int64       `json:"total_items"`
 	TotalPages int         `json:"total_pages"`
 	CurrentPage int        `json:"current_page"`
+	Stats       *UserRoleStatsResponse `json:"stats,omitempty"`
 }
 
 type UserDetailResponse struct {
@@ -49,4 +50,11 @@ type RevenueAnalyticsResponse struct {
 	RevenueByService  float64          `json:"revenue_by_service"` // Dari Project/Delivery
 	RevenueByProduct  float64          `json:"revenue_by_product"` // Dari E-commerce
 	DailyTrend        []DailyDataPoint `json:"daily_trend"`        // Gabungan untuk grafik
+}
+
+type UserRoleStatsResponse struct {
+	TotalUsers   int64 `json:"total_users"`   // semua user non-admin
+	TotalGeneral int64 `json:"total_general"` // role = 'general'
+	TotalFarmer  int64 `json:"total_farmer"`  // role = 'farmer'
+	TotalWorker  int64 `json:"total_worker"`  // role = 'worker'
 }

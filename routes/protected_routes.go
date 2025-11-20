@@ -39,6 +39,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 	orderRepo := repositories.NewOrderRepository(db)
 	ecommPaymentRepo := repositories.NewECommercePaymentRepository(db)
 	userVerificationRepo := repositories.NewUserVerificationRepository(db)
+	profitRepo := repositories.NewProfitRepository(db)
 	
 
 	// workerRepo dan projectRepo sudah ada
@@ -76,6 +77,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 		orderRepo,
 		db,
 	)
+	profitService := services.NewProfitService(profitRepo)
 
 	notifHandler := handlers.NewNotificationHandler(notifRepo)
 
@@ -94,6 +96,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 	cartHandler := handlers.NewCartHandler(cartService)
 	checkoutHandler := handlers.NewCheckoutHandler(checkoutService)
 	adminHandler := handlers.NewAdminHandler(adminService)
+	profitHandler := handlers.NewProfitHandler(profitService)
 
 	// deliveryRepo sudah diinisialisasi sebelumnya
 
@@ -229,5 +232,6 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 		admin.POST("/verifications/:id/review", adminHandler.ReviewVerification)
 		admin.GET("/transactions", adminHandler.GetTransactions)
 		admin.GET("/transactions/export", adminHandler.ExportTransactions)
+		admin.GET("/reports/profit", profitHandler.GetPlatformProfitReport)
 	}
 }

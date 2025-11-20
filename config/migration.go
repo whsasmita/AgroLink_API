@@ -57,6 +57,7 @@ var migrationModels = []interface{}{
 	&models.Order{},
 	&models.OrderItem{},
 	&models.ECommercePayment{},
+	&models.PlatformProfit{},
 }
 
 // =====================================================================
@@ -211,7 +212,7 @@ func seedUsers(db *gorm.DB) {
 
 			worker := &models.Worker{
 				Address:           addressPtr,
-				Skills:            skillsJSON, // string JSON, sesuai contoh awalmu
+				Skills:            skillsJSON, // string JSON, sesuai model
 				NationalID:        StringPtr(row.NationalID),
 				BankName:          StringPtr(row.BankName),
 				BankAccountNumber: StringPtr(row.BankAccountNumber),
@@ -247,7 +248,7 @@ func seedUsers(db *gorm.DB) {
 
 			driver := &models.Driver{
 				Address:           addressPtr,
-				PricingScheme:     pricingJSON,      // string JSON, sesuai contoh awalmu
+				PricingScheme:     pricingJSON,      // string JSON
 				VehicleTypes:      vehicleTypesJSON, // string JSON
 				BankName:          StringPtr(row.BankName),
 				BankAccountNumber: StringPtr(row.BankAccountNumber),
@@ -267,13 +268,20 @@ func seedUsers(db *gorm.DB) {
 		case "admin":
 			// Admin tidak punya relasi khusus, cukup user saja.
 
+		case "general":
+			// General user juga tidak punya relasi khusus,
+			// cukup simpan di tabel users dengan role = "general".
+
 		default:
+			// Role lain yang belum didukung akan dilewati
 			log.Printf("Unknown role '%s' for email %s, skipping.", role, email)
 			continue
 		}
+
+		// 7. Set CreatedAt acak (September–sekarang)
 		user.CreatedAt = randomBetween(startDate, endDate)
 
-		// 7. Simpan user (beserta relasinya)
+		// 8. Simpan user (beserta relasinya)
 		if err := db.Create(&user).Error; err != nil {
 			log.Printf("Failed to create user %s: %v", email, err)
 		}
@@ -281,6 +289,7 @@ func seedUsers(db *gorm.DB) {
 
 	log.Println("User seeding from JSON completed.")
 }
+
 
 func CreateIndexes(db *gorm.DB) {
 	log.Println("🔄 Creating database indexes...")
