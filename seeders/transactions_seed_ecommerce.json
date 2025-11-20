@@ -1,0 +1,123 @@
+[
+  {
+    "IDTransaksi": "INV/20251019/002",
+    "Tanggal": "2025-10-19",
+    "Pembeli": "PUTU OVI INDRIYANI",
+    "Produk": "Kopi Arabica",
+    "Harga": 145000.0,
+    "Ongkir": null,
+    "KeuntunganKotor": 11600.0,
+    "Penjual": "Kadek Andre Pradipta Darmawan",
+    "TotalDiterimaPenjual": 133400.0
+  },
+  {
+    "IDTransaksi": "INV/20251019/003",
+    "Tanggal": "2025-10-19",
+    "Pembeli": "Putu Restu Diana",
+    "Produk": "Jeruk",
+    "Harga": 30000.0,
+    "Ongkir": null,
+    "KeuntunganKotor": 2400.0,
+    "Penjual": "Kadek Krisna",
+    "TotalDiterimaPenjual": 27600.0
+  },
+  {
+    "IDTransaksi": "INV/20251022/004",
+    "Tanggal": "2025-10-22",
+    "Pembeli": "Ketut Andi Ardiawan",
+    "Produk": "Salak Gula Bali",
+    "Harga": 30000.0,
+    "Ongkir": null,
+    "KeuntunganKotor": 2400.0,
+    "Penjual": "Kadek Krisna",
+    "TotalDiterimaPenjual": 27600.0
+  },
+  {
+    "IDTransaksi": "INV/20251026/005",
+    "Tanggal": "2025-10-26",
+    "Pembeli": "Alifsyah farahul amin",
+    "Produk": "Dodol",
+    "Harga": 29000.0,
+    "Ongkir": null,
+    "KeuntunganKotor": 2320.0,
+    "Penjual": "NI KOMANG WIDIANI",
+    "TotalDiterimaPenjual": 26680.0
+  },
+  {
+    "IDTransaksi": "INV/20251031/006",
+    "Tanggal": "2025-10-31",
+    "Pembeli": "I Made Anugrah Gunung Merta",
+    "Produk": "Green Been (Natural)",
+    "Harga": 145000.0,
+    "Ongkir": null,
+    "KeuntunganKotor": 11600.0,
+    "Penjual": "NI KOMANG WIDIANI",
+    "TotalDiterimaPenjual": 133400.0
+  },
+  {
+    "IDTransaksi": "INV/20251031/007",
+    "Tanggal": "2025-10-31",
+    "Pembeli": "Raditya Putra Bachtiar",
+    "Produk": "Green Been (Natural)",
+    "Harga": 145000.0,
+    "Ongkir": null,
+    "KeuntunganKotor": 11600.0,
+    "Penjual": "NI KOMANG WIDIANI",
+    "TotalDiterimaPenjual": 133400.0
+  },
+  {
+    "IDTransaksi": "INV/20251102/008",
+    "Tanggal": "2025-11-02",
+    "Pembeli": "NI LUH PUTU SARIASIH",
+    "Produk": "Kopi Bubuk Luwak",
+    "Harga": 26000.0,
+    "Ongkir": null,
+    "KeuntunganKotor": 2080.0,
+    "Penjual": "Nia Nazmi",
+    "TotalDiterimaPenjual": 23920.0
+  },
+  {
+    "IDTransaksi": "INV/20251105/009",
+    "Tanggal": "2025-11-05",
+    "Pembeli": "Komang Ngurah Ageng Kurniawan Sena",
+    "Produk": "Kopi Bubuk Robusta",
+    "Harga": 15000.0,
+    "Ongkir": null,
+    "KeuntunganKotor": 1200.0,
+    "Penjual": "Nia Nazmi",
+    "TotalDiterimaPenjual": 13800.0
+  },
+  {
+    "IDTransaksi": "INV/20251106/010",
+    "Tanggal": "2025-11-06",
+    "Pembeli": "I Komang Agus Swantara",
+    "Produk": "Kopi Arabica",
+    "Harga": 145000.0,
+    "Ongkir": null,
+    "KeuntunganKotor": 11600.0,
+    "Penjual": "Kadek Andre Pradipta Darmawan",
+    "TotalDiterimaPenjual": 133400.0
+  },
+  {
+    "IDTransaksi": "INV/20251110/011",
+    "Tanggal": "2025-11-10",
+    "Pembeli": "Kadek Andre Pradipta Darmawan",
+    "Produk": "Kopi Arabica",
+    "Harga": 145000.0,
+    "Ongkir": null,
+    "KeuntunganKotor": 11600.0,
+    "Penjual": "Kadek Andre Pradipta Darmawan",
+    "TotalDiterimaPenjual": 133400.0
+  },
+  {
+    "IDTransaksi": "INV/20251110/012",
+    "Tanggal": "2025-11-10",
+    "Pembeli": "KOMANG SUTAMI SRI LESTARI",
+    "Produk": "Kopi Luwak",
+    "Harga": 26000.0,
+    "Ongkir": null,
+    "KeuntunganKotor": 2080.0,
+    "Penjual": "Kadek Andre Pradipta Darmawan",
+    "TotalDiterimaPenjual": 23920.0
+  }
+]

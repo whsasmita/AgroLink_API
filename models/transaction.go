@@ -25,6 +25,9 @@ func (t *Transaction) BeforeCreate(tx *gorm.DB) (err error) {
 	if t.ID == uuid.Nil {
 		t.ID = uuid.New()
 	}
-	t.TransactionDate = time.Now()
+	if t.TransactionDate.IsZero() {
+		t.TransactionDate = time.Now()
+	}
+	// t.TransactionDate = time.Now()
 	return
 }

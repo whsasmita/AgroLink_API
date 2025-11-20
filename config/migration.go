@@ -1,14 +1,22 @@
 package config
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/whsasmita/AgroLink_API/models"
+	"github.com/whsasmita/AgroLink_API/seeders"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
+
+const seedUserJSONPath = "seeders/users_seed.json"
+
 
 // List semua model untuk migrasi.
 var migrationModels = []interface{}{
@@ -36,7 +44,7 @@ var migrationModels = []interface{}{
 	// 5. Model-model pendukung yang memiliki banyak relasi
 	&models.ProjectApplication{},
 	&models.ProjectAssignment{},
-	
+
 	&models.Review{},
 	&models.WorkerAvailability{},
 	&models.LocationTrack{},
@@ -116,84 +124,162 @@ func SeedDefaultData(db *gorm.DB) {
 	// seedSystemSettings(db)
 	seedUsers(db)
 	// seedContractTemplates(db)
-	seedCompletedProjectScenario(db)
-	seedInProgressDeliveryScenario(db)
+	// seedCompletedProjectScenario(db)
+	// seedInProgressDeliveryScenario(db)
+	seeders.SeedTransactionsAndInvoices(db)
+	seeders.SeedEcommerceTransactionsAndInvoices(db)
 	log.Println("✅ Default data seeded successfully")
 }
 
 // seedUsers membuat data dummy untuk pengguna (Admin, Farmer, Worker).
 func seedUsers(db *gorm.DB) {
-	log.Println("Creating seed users...")
-	usersToSeed := []struct {
-		User     models.User
-		Farmer   *models.Farmer
-		Worker   *models.Worker
-		Driver   *models.Driver
-		Password string
-	}{
-		{
-			User:     models.User{Name: "Admin User", Email: "admin@agrolink.com", Role: "admin", EmailVerified: true},
-			Password: "password123",
-		},
-		{
-			User:     models.User{Name: "Budi Petani", Email: "farmer1@agrolink.com", Role: "farmer", EmailVerified: true, PhoneNumber: StringPtr("081082083099")},
-			Farmer:   &models.Farmer{Address: StringPtr("Desa Sukamaju No. 10")},
-			Password: "password123",
-		},
-		{
-			User: models.User{
-				Name:  "Joko Pekerja", Email: "worker1@agrolink.com", Role: "worker",
-				EmailVerified: true, PhoneNumber: StringPtr("081234567890"),
-			},
-			Worker: &models.Worker{
-				Skills:            `["menanam","menyiram","panen"]`,
-				DailyRate:         Float64Ptr(120000),
-				Address:           StringPtr("Jalan Tani No. 15, Desa Makmur"),
-				NationalID:        StringPtr("3501234567890001"),
-				BankName:          StringPtr("BCA"),
-				BankAccountNumber: StringPtr("1234567890"),
-				BankAccountHolder: StringPtr("JOKO PEKERJA"),
-			},
-			Password: "password123",
-		},
-		{
-			User: models.User{
-				Name:  "Eka Supir", Email: "driver1@agrolink.com", Role: "driver",
-				EmailVerified: true, PhoneNumber: StringPtr("085678901234"),
-			},
-			Driver: &models.Driver{
-				Address:           StringPtr("Jalan Logistik No. 1, Denpasar"),
-				PricingScheme:     `{"per_km": 5000, "base_fare": 20000}`,
-				VehicleTypes:      `["pickup", "truk engkel"]`,
-				CurrentLat:        Float64Ptr(-8.65),
-				CurrentLng:        Float64Ptr(115.21),
-				BankName:          StringPtr("BRI"),
-				BankAccountNumber: StringPtr("0987654321"),
-				BankAccountHolder: StringPtr("EKA SUPIR"),
-			},
-			Password: "password123",
-		},
+	log.Println("Seeding users from JSON...")
+	rand.Seed(time.Now().UnixNano())
+	startDate := time.Date(2024, 9, 1, 0, 0, 0, 0, time.Local)
+	endDate := time.Now()
+
+	// 1. Baca file JSON
+	data, err := os.ReadFile(seedUserJSONPath)
+	if err != nil {
+		log.Printf("Failed to open seed file %s: %v", seedUserJSONPath, err)
+		return
 	}
 
-	for _, data := range usersToSeed {
-		var existingUser models.User
-		if err := db.Where("email = ?", data.User.Email).First(&existingUser).Error; err == nil {
-			log.Printf("User with email %s already exists, skipping seed.", data.User.Email)
+	// 2. Parse JSON ke slice struct
+	var rows []seeders.SeedUserRow
+	if err := json.Unmarshal(data, &rows); err != nil {
+		log.Printf("Failed to parse seed JSON: %v", err)
+		return
+	}
+
+	for _, row := range rows {
+		email := strings.TrimSpace(row.Email)
+		if email == "" {
+			log.Printf("Skipping row without email: %+v", row)
 			continue
 		}
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(data.Password), bcrypt.DefaultCost)
+
+		// 3. Cek apakah user sudah ada
+		var existing models.User
+		if err := db.Where("email = ?", email).First(&existing).Error; err == nil {
+			log.Printf("User with email %s already exists, skipping seed.", email)
+			continue
+		}
+
+		// 4. Tentukan password
+		password := strings.TrimSpace(row.Password)
+		if password == "" {
+			password = "password123"
+		}
+
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		if err != nil {
-			log.Printf("Failed to hash password for %s: %v", data.User.Email, err)
+			log.Printf("Failed to hash password for %s: %v", email, err)
 			continue
 		}
-		data.User.Password = string(hashedPassword)
-		if data.Farmer != nil { data.User.Farmer = data.Farmer }
-		if data.Worker != nil { data.User.Worker = data.Worker }
-		if data.Driver != nil { data.User.Driver = data.Driver }
-		if err := db.Create(&data.User).Error; err != nil {
-			log.Printf("Failed to create user %s: %v", data.User.Email, err)
+
+		role := strings.ToLower(strings.TrimSpace(row.Role))
+		addressPtr := StringPtr(row.Alamat)
+
+		// 5. Bentuk object User dasar
+		user := models.User{
+			Name:          strings.TrimSpace(row.Nama),
+			Email:         email,
+			Password:      string(hashedPassword),
+			Role:          role,
+			EmailVerified: true,
+			PhoneNumber:   StringPtr(normalizePhone(row.NoHP)),
+		}
+
+		// 6. Mapping role ke relasi
+		switch role {
+		case "farmer":
+			user.Farmer = &models.Farmer{
+				Address: addressPtr,
+			}
+
+		case "worker":
+			// Skills: []string → string JSON
+			var skillsJSON string
+			if len(row.Skills) > 0 {
+				if b, err := json.Marshal(row.Skills); err != nil {
+					log.Printf("Failed to marshal skills for %s: %v", email, err)
+				} else {
+					skillsJSON = string(b)
+				}
+			}
+
+			worker := &models.Worker{
+				Address:           addressPtr,
+				Skills:            skillsJSON, // string JSON, sesuai contoh awalmu
+				NationalID:        StringPtr(row.NationalID),
+				BankName:          StringPtr(row.BankName),
+				BankAccountNumber: StringPtr(row.BankAccountNumber),
+				BankAccountHolder: StringPtr(row.BankAccountHolder),
+			}
+
+			if row.DailyRate != nil {
+				worker.DailyRate = row.DailyRate // type *float64, cocok dengan model
+			}
+
+			user.Worker = worker
+
+		case "driver":
+			// PricingScheme: map → string JSON
+			var pricingJSON string
+			if row.PricingScheme != nil {
+				if b, err := json.Marshal(row.PricingScheme); err != nil {
+					log.Printf("Failed to marshal pricing scheme for %s: %v", email, err)
+				} else {
+					pricingJSON = string(b)
+				}
+			}
+
+			// VehicleTypes: []string → string JSON
+			var vehicleTypesJSON string
+			if len(row.VehicleTypes) > 0 {
+				if b, err := json.Marshal(row.VehicleTypes); err != nil {
+					log.Printf("Failed to marshal vehicle types for %s: %v", email, err)
+				} else {
+					vehicleTypesJSON = string(b)
+				}
+			}
+
+			driver := &models.Driver{
+				Address:           addressPtr,
+				PricingScheme:     pricingJSON,      // string JSON, sesuai contoh awalmu
+				VehicleTypes:      vehicleTypesJSON, // string JSON
+				BankName:          StringPtr(row.BankName),
+				BankAccountNumber: StringPtr(row.BankAccountNumber),
+				BankAccountHolder: StringPtr(row.BankAccountHolder),
+			}
+
+			// CurrentLat/CurrentLng: *float64 → *float64
+			if row.CurrentLat != nil {
+				driver.CurrentLat = row.CurrentLat
+			}
+			if row.CurrentLng != nil {
+				driver.CurrentLng = row.CurrentLng
+			}
+
+			user.Driver = driver
+
+		case "admin":
+			// Admin tidak punya relasi khusus, cukup user saja.
+
+		default:
+			log.Printf("Unknown role '%s' for email %s, skipping.", role, email)
+			continue
+		}
+		user.CreatedAt = randomBetween(startDate, endDate)
+
+		// 7. Simpan user (beserta relasinya)
+		if err := db.Create(&user).Error; err != nil {
+			log.Printf("Failed to create user %s: %v", email, err)
 		}
 	}
+
+	log.Println("User seeding from JSON completed.")
 }
 
 func CreateIndexes(db *gorm.DB) {
@@ -221,43 +307,53 @@ func seedCompletedProjectScenario(db *gorm.DB) {
 		}
 
 		project := models.Project{
-			FarmerID:    farmerUser.Farmer.UserID,
-			Title:       "Proyek Panen Jagung (Selesai)",
-			Description: "Proyek ini sudah selesai dan siap untuk di-review oleh petani.",
-			Location:    "Sawah Seeder, Bali",
+			FarmerID:      farmerUser.Farmer.UserID,
+			Title:         "Proyek Panen Jagung (Selesai)",
+			Description:   "Proyek ini sudah selesai dan siap untuk di-review oleh petani.",
+			Location:      "Sawah Seeder, Bali",
 			WorkersNeeded: 1,
-			StartDate:   time.Now().AddDate(0, 0, -10),
-			EndDate:     time.Now().AddDate(0, 0, -1),
-			PaymentRate: Float64Ptr(125000),
-			PaymentType: "per_day",
-			Status:      "completed",
+			StartDate:     time.Now().AddDate(0, 0, -10),
+			EndDate:       time.Now().AddDate(0, 0, -1),
+			PaymentRate:   Float64Ptr(125000),
+			PaymentType:   "per_day",
+			Status:        "completed",
 		}
-		if err := tx.Create(&project).Error; err != nil { return err }
+		if err := tx.Create(&project).Error; err != nil {
+			return err
+		}
 
 		contract := models.Contract{
-			ProjectID:       &project.ID, FarmerID: farmerUser.Farmer.UserID,
-			WorkerID:        &workerUser.Worker.UserID,
-			ContractType:    "work", Status: "completed",
+			ProjectID: &project.ID, FarmerID: farmerUser.Farmer.UserID,
+			WorkerID:     &workerUser.Worker.UserID,
+			ContractType: "work", Status: "completed",
 		}
-		if err := tx.Create(&contract).Error; err != nil { return err }
-		
+		if err := tx.Create(&contract).Error; err != nil {
+			return err
+		}
+
 		assignment := models.ProjectAssignment{
 			ProjectID: project.ID, WorkerID: workerUser.Worker.UserID,
 			ContractID: contract.ID, AgreedRate: *project.PaymentRate, Status: "completed",
 		}
-		if err := tx.Create(&assignment).Error; err != nil { return err }
+		if err := tx.Create(&assignment).Error; err != nil {
+			return err
+		}
 
 		invoice := models.Invoice{
 			ProjectID: &project.ID, FarmerID: farmerUser.Farmer.UserID,
 			Amount: 120000, PlatformFee: 5000, TotalAmount: 125000,
 			Status: "paid", DueDate: time.Now(),
 		}
-		if err := tx.Create(&invoice).Error; err != nil { return err }
+		if err := tx.Create(&invoice).Error; err != nil {
+			return err
+		}
 
 		transaction := models.Transaction{
 			InvoiceID: invoice.ID, AmountPaid: invoice.TotalAmount,
 		}
-		if err := tx.Create(&transaction).Error; err != nil { return err }
+		if err := tx.Create(&transaction).Error; err != nil {
+			return err
+		}
 
 		payoutWorker := models.Payout{
 			TransactionID: transaction.ID,
@@ -266,7 +362,9 @@ func seedCompletedProjectScenario(db *gorm.DB) {
 			Amount:        invoice.Amount,
 			Status:        "pending_disbursement",
 		}
-		if err := tx.Create(&payoutWorker).Error; err != nil { return err }
+		if err := tx.Create(&payoutWorker).Error; err != nil {
+			return err
+		}
 
 		return nil
 	})
@@ -274,6 +372,9 @@ func seedCompletedProjectScenario(db *gorm.DB) {
 		log.Fatalf("Failed to seed completed project scenario: %v", err)
 	}
 }
+
+
+
 
 func seedInProgressDeliveryScenario(db *gorm.DB) {
 	log.Println("Creating a COMPLETED delivery scenario for payout test...")
@@ -290,26 +391,34 @@ func seedInProgressDeliveryScenario(db *gorm.DB) {
 			ContractType: "delivery", FarmerID: farmerUser.Farmer.UserID,
 			DriverID: &driverUser.Driver.UserID, Status: "completed",
 		}
-		if err := tx.Create(&contract).Error; err != nil { return err }
+		if err := tx.Create(&contract).Error; err != nil {
+			return err
+		}
 
 		delivery := models.Delivery{
 			FarmerID: farmerUser.Farmer.UserID, DriverID: &driverUser.Driver.UserID,
 			ContractID: &contract.ID, ItemDescription: "100kg Stroberi Segar",
 			Status: "delivered",
 		}
-		if err := tx.Create(&delivery).Error; err != nil { return err }
+		if err := tx.Create(&delivery).Error; err != nil {
+			return err
+		}
 
 		invoice := models.Invoice{
 			DeliveryID: &delivery.ID, FarmerID: farmerUser.Farmer.UserID,
 			Amount: 200000, PlatformFee: 10000, TotalAmount: 210000,
 			Status: "paid", DueDate: time.Now(),
 		}
-		if err := tx.Create(&invoice).Error; err != nil { return err }
+		if err := tx.Create(&invoice).Error; err != nil {
+			return err
+		}
 
 		transaction := models.Transaction{
 			InvoiceID: invoice.ID, AmountPaid: invoice.TotalAmount,
 		}
-		if err := tx.Create(&transaction).Error; err != nil { return err }
+		if err := tx.Create(&transaction).Error; err != nil {
+			return err
+		}
 
 		payoutDriver := models.Payout{
 			TransactionID: transaction.ID,
@@ -318,8 +427,10 @@ func seedInProgressDeliveryScenario(db *gorm.DB) {
 			Amount:        invoice.Amount,
 			Status:        "pending_disbursement",
 		}
-		if err := tx.Create(&payoutDriver).Error; err != nil { return err }
-		
+		if err := tx.Create(&payoutDriver).Error; err != nil {
+			return err
+		}
+
 		return nil
 	})
 	if err != nil {
@@ -336,9 +447,37 @@ func seedSystemSettings(db *gorm.DB) {
 // =====================================================================
 
 func StringPtr(s string) *string {
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return nil
+	}
 	return &s
 }
 
 func Float64Ptr(f float64) *float64 {
 	return &f
+}
+
+func normalizePhone(raw string) string {
+	raw = strings.TrimSpace(raw)
+	if raw == "" {
+		return ""
+	}
+	// kalau sudah mulai dengan 0, biarkan
+	if strings.HasPrefix(raw, "0") {
+		return raw
+	}
+	// data dari Excel kita kebanyakan tanpa 0 di depan (contoh: 8214...)
+	return "0" + raw
+}
+
+func randomBetween(start, end time.Time) time.Time {
+	// buat interval dalam detik
+	delta := end.Unix() - start.Unix()
+	if delta <= 0 {
+		return start
+	}
+	// angka acak dalam range delta
+	sec := rand.Int63n(delta)
+	return time.Unix(start.Unix()+sec, 0)
 }
