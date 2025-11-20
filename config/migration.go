@@ -129,6 +129,7 @@ func SeedDefaultData(db *gorm.DB) {
 	// seedInProgressDeliveryScenario(db)
 	seeders.SeedTransactionsAndInvoices(db)
 	seeders.SeedEcommerceTransactionsAndInvoices(db)
+	seeders.SeedProducts(db)
 	log.Println("✅ Default data seeded successfully")
 }
 
