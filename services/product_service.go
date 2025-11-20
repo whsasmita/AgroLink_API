@@ -47,6 +47,7 @@ func toPublicProductResponse(product models.Product) dto.ProductResponse {
 		FarmerName:     product.Farmer.User.Name,
 		Title:          product.Title,
 		Description:    product.Description,
+		Rating:         product.Rating,
 		Price:          product.Price,
 		AvailableStock: &availableStock, // Hanya tampilkan stok tersedia
 		Category:       product.Category,
@@ -74,14 +75,13 @@ func toFarmerProductResponse(product models.Product) dto.ProductResponse {
 		Description:    product.Description,
 		Price:          product.Price,
 		AvailableStock: &availableStock,
-		Stock:          &product.Stock,          // Tampilkan stok total
+		Stock:          &product.Stock,         // Tampilkan stok total
 		ReservedStock:  &product.ReservedStock, // Tampilkan stok direservasi
 		Category:       product.Category,
 		Location:       product.Location,
 		ImageURLs:      imageURLs,
 	}
 }
-
 
 func (s *productService) GetMyProducts(farmerID uuid.UUID) ([]dto.ProductResponse, error) {
 	products, err := s.productRepo.FindAllByFarmerID(farmerID)
@@ -146,7 +146,7 @@ func (s *productService) GetProductByID(productID uuid.UUID) (*dto.ProductRespon
 
 func (s *productService) UpdateProduct(productID uuid.UUID, input dto.UpdateProductInput, farmerID uuid.UUID) (*dto.ProductResponse, error) {
 	var updatedProduct *models.Product
-	
+
 	err := s.db.Transaction(func(tx *gorm.DB) error {
 		// 1. Ambil & Kunci baris produk di dalam transaksi
 		product, err := s.productRepo.FindByIDForUpdate(tx, productID)

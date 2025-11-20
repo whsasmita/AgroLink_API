@@ -28,6 +28,7 @@ type ProductResponse struct {
 	FarmerName     string    `json:"farmer_name"`
 	Title          string    `json:"title"`
 	Description    string    `json:"description"`
+	Rating         *float64  `json:"rating"`
 	Price          float64   `json:"price"`
 	AvailableStock *int      `json:"available_stock,omitempty"` // Untuk pembeli
 	Stock          *int      `json:"stock,omitempty"`           // Stok total untuk petani
