@@ -2,7 +2,6 @@ package config
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"math/rand"
 	"os"
@@ -122,13 +121,9 @@ func dropAllTables(db *gorm.DB) error {
 // SeedDefaultData adalah fungsi utama untuk memanggil semua seeder.
 func SeedDefaultData(db *gorm.DB) {
 	log.Println("🌱 Seeding default data...")
-	// seedSystemSettings(db)
 	seedUsers(db)
-	// seedContractTemplates(db)
-	// seedCompletedProjectScenario(db)
-	// seedInProgressDeliveryScenario(db)
 	seeders.SeedTransactionsAndInvoices(db)
-	seeders.SeedEcommerceTransactionsAndInvoices(db)
+	seeders.SeedEcommerceTransactions(db)
 	seeders.SeedProducts(db)
 	log.Println("✅ Default data seeded successfully")
 }
@@ -305,152 +300,6 @@ func CreateIndexes(db *gorm.DB) {
 	log.Println("✅ Database indexes created successfully")
 }
 
-func seedCompletedProjectScenario(db *gorm.DB) {
-	log.Println("Creating a completed project scenario for payout test...")
-	err := db.Transaction(func(tx *gorm.DB) error {
-		var farmerUser, workerUser models.User
-		if err := tx.Preload("Farmer").Where("email = ?", "farmer1@agrolink.com").First(&farmerUser).Error; err != nil {
-			return fmt.Errorf("seeder failed: could not find farmer1@agrolink.com")
-		}
-		if err := tx.Preload("Worker").Where("email = ?", "worker1@agrolink.com").First(&workerUser).Error; err != nil {
-			return fmt.Errorf("seeder failed: could not find worker1@agrolink.com")
-		}
-
-		project := models.Project{
-			FarmerID:      farmerUser.Farmer.UserID,
-			Title:         "Proyek Panen Jagung (Selesai)",
-			Description:   "Proyek ini sudah selesai dan siap untuk di-review oleh petani.",
-			Location:      "Sawah Seeder, Bali",
-			WorkersNeeded: 1,
-			StartDate:     time.Now().AddDate(0, 0, -10),
-			EndDate:       time.Now().AddDate(0, 0, -1),
-			PaymentRate:   Float64Ptr(125000),
-			PaymentType:   "per_day",
-			Status:        "completed",
-		}
-		if err := tx.Create(&project).Error; err != nil {
-			return err
-		}
-
-		contract := models.Contract{
-			ProjectID: &project.ID, FarmerID: farmerUser.Farmer.UserID,
-			WorkerID:     &workerUser.Worker.UserID,
-			ContractType: "work", Status: "completed",
-		}
-		if err := tx.Create(&contract).Error; err != nil {
-			return err
-		}
-
-		assignment := models.ProjectAssignment{
-			ProjectID: project.ID, WorkerID: workerUser.Worker.UserID,
-			ContractID: contract.ID, AgreedRate: *project.PaymentRate, Status: "completed",
-		}
-		if err := tx.Create(&assignment).Error; err != nil {
-			return err
-		}
-
-		invoice := models.Invoice{
-			ProjectID: &project.ID, FarmerID: farmerUser.Farmer.UserID,
-			Amount: 120000, PlatformFee: 5000, TotalAmount: 125000,
-			Status: "paid", DueDate: time.Now(),
-		}
-		if err := tx.Create(&invoice).Error; err != nil {
-			return err
-		}
-
-		transaction := models.Transaction{
-			InvoiceID: invoice.ID, AmountPaid: invoice.TotalAmount,
-		}
-		if err := tx.Create(&transaction).Error; err != nil {
-			return err
-		}
-
-		payoutWorker := models.Payout{
-			TransactionID: transaction.ID,
-			PayeeID:       workerUser.Worker.UserID,
-			PayeeType:     "worker",
-			Amount:        invoice.Amount,
-			Status:        "pending_disbursement",
-		}
-		if err := tx.Create(&payoutWorker).Error; err != nil {
-			return err
-		}
-
-		return nil
-	})
-	if err != nil {
-		log.Fatalf("Failed to seed completed project scenario: %v", err)
-	}
-}
-
-
-
-
-func seedInProgressDeliveryScenario(db *gorm.DB) {
-	log.Println("Creating a COMPLETED delivery scenario for payout test...")
-	err := db.Transaction(func(tx *gorm.DB) error {
-		var farmerUser, driverUser models.User
-		if err := tx.Preload("Farmer").Where("email = ?", "farmer1@agrolink.com").First(&farmerUser).Error; err != nil {
-			return fmt.Errorf("seeder failed: could not find farmer")
-		}
-		if err := tx.Preload("Driver").Where("email = ?", "driver1@agrolink.com").First(&driverUser).Error; err != nil {
-			return fmt.Errorf("seeder failed: could not find driver")
-		}
-
-		contract := models.Contract{
-			ContractType: "delivery", FarmerID: farmerUser.Farmer.UserID,
-			DriverID: &driverUser.Driver.UserID, Status: "completed",
-		}
-		if err := tx.Create(&contract).Error; err != nil {
-			return err
-		}
-
-		delivery := models.Delivery{
-			FarmerID: farmerUser.Farmer.UserID, DriverID: &driverUser.Driver.UserID,
-			ContractID: &contract.ID, ItemDescription: "100kg Stroberi Segar",
-			Status: "delivered",
-		}
-		if err := tx.Create(&delivery).Error; err != nil {
-			return err
-		}
-
-		invoice := models.Invoice{
-			DeliveryID: &delivery.ID, FarmerID: farmerUser.Farmer.UserID,
-			Amount: 200000, PlatformFee: 10000, TotalAmount: 210000,
-			Status: "paid", DueDate: time.Now(),
-		}
-		if err := tx.Create(&invoice).Error; err != nil {
-			return err
-		}
-
-		transaction := models.Transaction{
-			InvoiceID: invoice.ID, AmountPaid: invoice.TotalAmount,
-		}
-		if err := tx.Create(&transaction).Error; err != nil {
-			return err
-		}
-
-		payoutDriver := models.Payout{
-			TransactionID: transaction.ID,
-			PayeeID:       driverUser.Driver.UserID,
-			PayeeType:     "driver",
-			Amount:        invoice.Amount,
-			Status:        "pending_disbursement",
-		}
-		if err := tx.Create(&payoutDriver).Error; err != nil {
-			return err
-		}
-
-		return nil
-	})
-	if err != nil {
-		log.Fatalf("Failed to seed in-progress delivery scenario: %v", err)
-	}
-}
-
-func seedSystemSettings(db *gorm.DB) {
-	// ... (implementasi Anda)
-}
 
 // =====================================================================
 // HELPER FUNCTIONS

@@ -78,28 +78,56 @@ func (r *transactionRepository) GetAllTransactions(page, limit int) ([]models.Tr
     return transactions, total, nil
 }
 
-func (r *transactionRepository) GetRevenueStats(startDate, endDate time.Time) (float64, []dto.DailyDataPoint, error) {
-	// 1. Hitung Total
-	var total float64
-	err := r.db.Model(&models.Transaction{}).
-		Where("transaction_date BETWEEN ? AND ?", startDate, endDate).
-		Select("COALESCE(SUM(amount_paid), 0)").
-		Scan(&total).Error
-	if err != nil {
-		return 0, nil, err
-	}
+func (r *transactionRepository) GetRevenueStats(
+    start, end time.Time,
+) (float64, []dto.DailyDataPoint, error) {
 
-	// 2. Hitung Tren Harian
-	var trend []dto.DailyDataPoint
-	err = r.db.Model(&models.Transaction{}).
-		Select("DATE(transaction_date) as date, SUM(amount_paid) as value").
-		Where("transaction_date BETWEEN ? AND ?", startDate, endDate).
-		Group("DATE(transaction_date)").
-		Order("date ASC").
-		Scan(&trend).Error
+    var total float64
+    var rows []struct {
+        Date  time.Time
+        Value float64
+    }
 
-	return total, trend, err
+    // TOTAL OMZET JASA (service)
+    // Jika mau pastikan hanya transaksi utama, join ke platform_profits + source_type='utama'
+    if err := r.db.
+        Model(&models.Transaction{}).
+        Joins("JOIN platform_profits pp ON pp.transaction_id = transactions.id").
+        Where("pp.source_type = ?", "utama").
+        Where("transactions.transaction_date BETWEEN ? AND ?", start, end).
+        Select("COALESCE(SUM(transactions.amount_paid), 0)").
+        Scan(&total).Error; err != nil {
+        return 0, nil, err
+    }
+
+    // TREND HARIAN
+    if err := r.db.
+        Model(&models.Transaction{}).
+        Joins("JOIN platform_profits pp ON pp.transaction_id = transactions.id").
+        Where("pp.source_type = ?", "utama").
+        Where("transactions.transaction_date BETWEEN ? AND ?", start, end).
+        Select(`
+            DATE(transactions.transaction_date) AS date,
+            COALESCE(SUM(transactions.amount_paid), 0) AS value`,
+        ).
+        Group("DATE(transactions.transaction_date)").
+        Order("DATE(transactions.transaction_date)").
+        Scan(&rows).Error; err != nil {
+        return 0, nil, err
+    }
+
+    trend := make([]dto.DailyDataPoint, 0, len(rows))
+    for _, r := range rows {
+        trend = append(trend, dto.DailyDataPoint{
+            Date:  r.Date.Format("2006-01-02"),
+            Value: r.Value,
+        })
+    }
+
+    return total, trend, nil
 }
+
+
 
 func (r *transactionRepository) GetAllTransactionsNoPaging() ([]models.Transaction, error) {
 	var transactions []models.Transaction
