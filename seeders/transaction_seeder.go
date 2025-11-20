@@ -14,6 +14,7 @@ import (
 
 const ecommerceSeedJSONPath = "seeders/transactions_seed_ecommerce.json"
 const transactionSeedJSONPath = "seeders/transactions_seed_utama.json"
+
 type SeedTransaksiUtamaRow struct {
 	IDTransaksi      string   `json:"IDTransaksi"`
 	Tanggal          string   `json:"Tanggal"`
@@ -39,8 +40,6 @@ type SeedEcommerceRow struct {
 	Penjual              string   `json:"Penjual"`
 	TotalDiterimaPenjual *float64 `json:"TotalDiterimaPenjual"`
 }
-
-
 
 func findFarmerIDByName(db *gorm.DB, name string) (uuid.UUID, error) {
 	name = strings.TrimSpace(name)
@@ -87,31 +86,31 @@ func SeedTransactionsAndInvoices(db *gorm.DB) {
 }
 
 func seedSingleTransaksiUtama(db *gorm.DB, row SeedTransaksiUtamaRow) {
-	// validasi basic
+	// Validasi angka penting
 	if row.TotalDiterima == nil || row.KeuntunganKotor == nil || row.TotalBayarPetani == nil {
-		log.Printf("Skipping transaction %s because amounts are incomplete", row.IDTransaksi)
+		log.Printf("Skipping utama transaction %s because amounts are incomplete", row.IDTransaksi)
 		return
 	}
 
-	// parse tanggal
+	// Parse tanggal transaksi
 	txnDate, err := parseDateYMD(row.Tanggal)
 	if err != nil || txnDate.IsZero() {
-		log.Printf("Invalid date for transaction %s: %v", row.IDTransaksi, err)
+		log.Printf("Invalid date for utama transaction %s: %v", row.IDTransaksi, err)
 		return
 	}
 
 	amount := *row.TotalDiterima      // yang diterima pekerja/driver
 	platformFee := *row.KeuntunganKotor
-	totalAmount := *row.TotalBayarPetani // yang dibayar petani (harus = amount + platformFee)
+	totalAmount := *row.TotalBayarPetani // yang dibayar petani (amount + platformFee)
 
-	// cari farmer dari nama pengirim
+	// Cari farmer dari nama pengirim (petani)
 	farmerID, err := findFarmerIDByName(db, row.PengirimPetani)
 	if err != nil || farmerID == uuid.Nil {
-		log.Printf("Farmer not found for '%s' in transaction %s, skipping", row.PengirimPetani, row.IDTransaksi)
+		log.Printf("Farmer not found for '%s' in utama transaction %s, skipping", row.PengirimPetani, row.IDTransaksi)
 		return
 	}
 
-	// buat invoice
+	// ====== Buat Invoice ======
 	invoice := models.Invoice{
 		FarmerID:    farmerID,
 		Amount:      amount,
@@ -119,16 +118,16 @@ func seedSingleTransaksiUtama(db *gorm.DB, row SeedTransaksiUtamaRow) {
 		TotalAmount: totalAmount,
 		Status:      "paid",
 		DueDate:     txnDate,
-		CreatedAt:   txnDate.AddDate(0, 0, -1),
+		CreatedAt:   txnDate.AddDate(0, 0, -1), // 1 hari sebelum transaksi
 		UpdatedAt:   txnDate,
 	}
 
 	if err := db.Create(&invoice).Error; err != nil {
-		log.Printf("Failed to create invoice for transaction %s: %v", row.IDTransaksi, err)
+		log.Printf("Failed to create invoice for utama transaction %s: %v", row.IDTransaksi, err)
 		return
 	}
 
-	// Payment method & ref
+	// ====== Buat Transaction ======
 	paymentMethod := strings.TrimSpace(row.MetodePembayaran)
 	var paymentMethodPtr *string
 	if paymentMethod != "" {
@@ -145,15 +144,38 @@ func seedSingleTransaksiUtama(db *gorm.DB, row SeedTransaksiUtamaRow) {
 		InvoiceID:                 invoice.ID,
 		PaymentGateway:            "midtrans",
 		PaymentGatewayReferenceID: refIDPtr,
-		AmountPaid:                totalAmount,
+		AmountPaid:                totalAmount,    // yang dibayar petani
 		PaymentMethod:             paymentMethodPtr,
 		TransactionDate:           txnDate,
 	}
 
 	if err := db.Create(&txn).Error; err != nil {
-		log.Printf("Failed to create transaction %s: %v", row.IDTransaksi, err)
+		log.Printf("Failed to create utama transaction %s: %v", row.IDTransaksi, err)
+		return
+	}
+
+	// ====== Buat PlatformProfit (Platform Fee) ======
+	gross := platformFee                    // Keuntungan kotor platform
+	gatewayFee := 0.0
+	if row.BiayaMidtrans != nil {
+		gatewayFee = *row.BiayaMidtrans    // biaya midtrans dari Excel
+	}
+	netProfit := gross - gatewayFee        // harus ≈ Keuntungan Bersih di Excel
+
+	profit := models.PlatformProfit{
+		TransactionID: txn.ID,
+		SourceType:    "utama",
+		GrossProfit:   gross,
+		GatewayFee:    gatewayFee,
+		NetProfit:     netProfit,
+		ProfitDate:    txn.TransactionDate,
+	}
+
+	if err := db.Create(&profit).Error; err != nil {
+		log.Printf("Failed to create platform profit for utama txn %s: %v", row.IDTransaksi, err)
 	}
 }
+
 
 func SeedEcommerceTransactionsAndInvoices(db *gorm.DB) {
 	log.Println("Seeding invoices & transactions (E-Commerce) from JSON...")
@@ -178,30 +200,31 @@ func SeedEcommerceTransactionsAndInvoices(db *gorm.DB) {
 }
 
 func seedSingleEcommerceTransaction(db *gorm.DB, row SeedEcommerceRow) {
-	// validasi angka
+	// Validasi angka penting
 	if row.TotalDiterimaPenjual == nil || row.KeuntunganKotor == nil {
 		log.Printf("Skipping ecommerce transaction %s because amounts are incomplete", row.IDTransaksi)
 		return
 	}
 
+	// Parse tanggal transaksi
 	txnDate, err := parseDateYMD(row.Tanggal)
 	if err != nil || txnDate.IsZero() {
 		log.Printf("Invalid date for ecommerce transaction %s: %v", row.IDTransaksi, err)
 		return
 	}
 
-	amount := *row.TotalDiterimaPenjual // uang yang diterima penjual/petani
+	amount := *row.TotalDiterimaPenjual // yang diterima penjual/petani
 	platformFee := *row.KeuntunganKotor
 	totalAmount := amount + platformFee // yang dibayar pembeli
 
-	// cari farmer/penjual dari nama di kolom Penjual
+	// Cari farmer/penjual dari nama di kolom Penjual
 	farmerID, err := findFarmerIDByName(db, row.Penjual)
 	if err != nil || farmerID == uuid.Nil {
 		log.Printf("Farmer (seller) not found for '%s' in ecommerce transaction %s, skipping", row.Penjual, row.IDTransaksi)
 		return
 	}
 
-	// buat invoice
+	// ====== Buat Invoice ======
 	invoice := models.Invoice{
 		FarmerID:    farmerID,
 		Amount:      amount,
@@ -218,7 +241,8 @@ func seedSingleEcommerceTransaction(db *gorm.DB, row SeedEcommerceRow) {
 		return
 	}
 
-	// metode pembayaran untuk ecommerce — kalau tidak ada, kita set default
+	// ====== Buat Transaction ======
+	// Metode pembayaran untuk ecommerce – bisa kamu ganti kalau punya detail spesifik
 	method := "ecommerce"
 	paymentMethodPtr := &method
 
@@ -239,5 +263,25 @@ func seedSingleEcommerceTransaction(db *gorm.DB, row SeedEcommerceRow) {
 
 	if err := db.Create(&txn).Error; err != nil {
 		log.Printf("Failed to create ecommerce transaction %s: %v", row.IDTransaksi, err)
+		return
+	}
+
+	// ====== Buat PlatformProfit (Platform Fee) ======
+	gross := platformFee // Keuntungan kotor platform
+	gatewayFee := 0.0    // kalau belum ada data fee khusus untuk ecommerce, set 0
+	netProfit := gross - gatewayFee
+
+	profit := models.PlatformProfit{
+		TransactionID: txn.ID,
+		SourceType:    "ecommerce",
+		GrossProfit:   gross,
+		GatewayFee:    gatewayFee,
+		NetProfit:     netProfit,
+		ProfitDate:    txn.TransactionDate,
+	}
+
+	if err := db.Create(&profit).Error; err != nil {
+		log.Printf("Failed to create platform profit for ecommerce txn %s: %v", row.IDTransaksi, err)
 	}
 }
+

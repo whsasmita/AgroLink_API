@@ -21,6 +21,7 @@ type UserRepository interface {
 	CountNewUsers(since time.Time) (int64, error)
     GetDailyUserTrend(since time.Time) ([]dto.DailyDataPoint, error)
 	FindAllUsers(page, limit int, search string, roleFilter string) ([]models.User, int64, error)
+	GetUserRoleStats() (*dto.UserRoleStatsResponse, error)
 }
 
 type userRepository struct {
@@ -142,4 +143,46 @@ func (r *userRepository) FindAllUsers(page, limit int, search string, roleFilter
 		Find(&users).Error
 
 	return users, total, err
+}
+
+func (r *userRepository) GetUserRoleStats() (*dto.UserRoleStatsResponse, error) {
+	var total int64
+	if err := r.db.
+		Model(&models.User{}).
+		Where("role != ?", "admin").
+		Count(&total).Error; err != nil {
+		return nil, err
+	}
+
+	// hitung masing-masing role
+	var totalGeneral int64
+	if err := r.db.
+		Model(&models.User{}).
+		Where("role = ?", "general").
+		Count(&totalGeneral).Error; err != nil {
+		return nil, err
+	}
+
+	var totalFarmer int64
+	if err := r.db.
+		Model(&models.User{}).
+		Where("role = ?", "farmer").
+		Count(&totalFarmer).Error; err != nil {
+		return nil, err
+	}
+
+	var totalWorker int64
+	if err := r.db.
+		Model(&models.User{}).
+		Where("role = ?", "worker").
+		Count(&totalWorker).Error; err != nil {
+		return nil, err
+	}
+
+	return &dto.UserRoleStatsResponse{
+		TotalUsers:   total,
+		TotalGeneral: totalGeneral,
+		TotalFarmer:  totalFarmer,
+		TotalWorker:  totalWorker,
+	}, nil
 }

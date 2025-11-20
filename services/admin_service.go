@@ -326,14 +326,14 @@ func (s *adminService) GetAllUsers(page, limit int, search string, roleFilter st
 	var userResponses []dto.UserDetailResponse
 	for _, u := range users {
 		userResponses = append(userResponses, dto.UserDetailResponse{
-			ID:            u.ID,
-			Name:          u.Name,
-			Email:         u.Email,
-			PhoneNumber:   u.PhoneNumber,
-			Role:          u.Role,
-			IsActive:      u.IsActive,
+			ID:           u.ID,
+			Name:         u.Name,
+			Email:        u.Email,
+			PhoneNumber:  u.PhoneNumber,
+			Role:         u.Role,
+			IsActive:     u.IsActive,
 			EmailVerified: u.EmailVerified,
-			CreatedAt:     u.CreatedAt,
+			CreatedAt:    u.CreatedAt,
 		})
 	}
 
@@ -343,13 +343,22 @@ func (s *adminService) GetAllUsers(page, limit int, search string, roleFilter st
 		totalPages++
 	}
 
+	// 🔹 Tambah: ambil statistik role
+	stats, err := s.userRepo.GetUserRoleStats()
+	if err != nil {
+		// kalau error stats, kamu bisa pilih: return error, atau log + lanjut tanpa stats
+		return nil, err
+	}
+
 	return &dto.AdminPaginationResponse{
 		Data:        userResponses,
 		TotalItems:  total,
 		TotalPages:  totalPages,
 		CurrentPage: page,
+		Stats:       stats,
 	}, nil
 }
+
 
 func (s *adminService) GetRevenueAnalytics(startDate, endDate time.Time) (*dto.RevenueAnalyticsResponse, error) {
 	// 1. Ambil Data Jasa
