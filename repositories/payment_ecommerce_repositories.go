@@ -69,28 +69,50 @@ func (r *eCommercePaymentRepository) GetAllPayments(page, limit int) ([]models.E
     return payments, total, nil
 }
 
-func (r *eCommercePaymentRepository) GetRevenueStats(startDate, endDate time.Time) (float64, []dto.DailyDataPoint, error) {
-	// 1. Hitung Total (Hanya yang PAID)
-	var total float64
-	err := r.db.Model(&models.ECommercePayment{}).
-		Where("status = ? AND created_at BETWEEN ? AND ?", "paid", startDate, endDate).
-		Select("COALESCE(SUM(grand_total), 0)").
-		Scan(&total).Error
-	if err != nil {
-		return 0, nil, err
-	}
+func (r *eCommercePaymentRepository) GetRevenueStats(
+    start, end time.Time,
+) (float64, []dto.DailyDataPoint, error) {
 
-	// 2. Hitung Tren Harian
-	var trend []dto.DailyDataPoint
-	err = r.db.Model(&models.ECommercePayment{}).
-		Select("DATE(created_at) as date, SUM(grand_total) as value").
-		Where("status = ? AND created_at BETWEEN ? AND ?", "paid", startDate, endDate).
-		Group("DATE(created_at)").
-		Order("date ASC").
-		Scan(&trend).Error
+    var total float64
+    var rows []struct {
+        Date  time.Time
+        Value float64
+    }
 
-	return total, trend, err
+    // TOTAL OMZET PRODUK (e-commerce) → dari GrandTotal
+    if err := r.db.
+        Model(&models.ECommercePayment{}).
+        Where("created_at BETWEEN ? AND ?", start, end).
+        Select("COALESCE(SUM(grand_total), 0)").
+        Scan(&total).Error; err != nil {
+        return 0, nil, err
+    }
+
+    // TREND HARIAN
+    if err := r.db.
+        Model(&models.ECommercePayment{}).
+        Where("created_at BETWEEN ? AND ?", start, end).
+        Select(`
+            DATE(created_at) AS date,
+            COALESCE(SUM(grand_total), 0) AS value`,
+        ).
+        Group("DATE(created_at)").
+        Order("DATE(created_at)").
+        Scan(&rows).Error; err != nil {
+        return 0, nil, err
+    }
+
+    trend := make([]dto.DailyDataPoint, 0, len(rows))
+    for _, r := range rows {
+        trend = append(trend, dto.DailyDataPoint{
+            Date:  r.Date.Format("2006-01-02"),
+            Value: r.Value,
+        })
+    }
+
+    return total, trend, nil
 }
+
 
 func (r *eCommercePaymentRepository) GetAllPaymentsNoPaging() ([]models.ECommercePayment, error) {
 	var payments []models.ECommercePayment

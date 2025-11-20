@@ -1,17 +1,16 @@
 package dto
 
-// Ringkasan per hari per sumber (utama/ecommerce)
-type PlatformProfitDailySummaryResponse struct {
-	Date            string  `json:"date"`              // format: 2006-01-02
-	SourceType      string  `json:"source_type"`       // "utama" / "ecommerce"
-	TotalGross      float64 `json:"total_gross_profit"`
-	TotalGatewayFee float64 `json:"total_gateway_fee"`
-	TotalNet        float64 `json:"total_net_profit"`
+type PlatformProfitTotalSummaryResponse struct {
+	TotalGrossProfit  float64 `json:"total_gross_profit"`
+	TotalGatewayFee   float64 `json:"total_gateway_fee"`
+	TotalNetProfit    float64 `json:"total_net_profit"`
+	TotalTransactions int64   `json:"total_transactions"`
 }
 
-// Ringkasan total seluruh transaksi di periode
-type PlatformProfitTotalSummaryResponse struct {
-	TotalGross      float64 `json:"total_gross_profit"`
-	TotalGatewayFee float64 `json:"total_gateway_fee"`
-	TotalNet        float64 `json:"total_net_profit"`
+type PlatformProfitDailySummaryResponse struct {
+	Date             string  `json:"date"` // "YYYY-MM-DD"
+	GrossProfit      float64 `json:"gross_profit"`
+	GatewayFee       float64 `json:"gateway_fee"`
+	NetProfit        float64 `json:"net_profit"`
+	TransactionCount int64   `json:"transaction_count"`
 }
