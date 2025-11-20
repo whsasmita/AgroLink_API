@@ -31,7 +31,7 @@ WORKDIR /app
 
 COPY --from=builder /out/agrolink-api /app/agrolink-api
 COPY templates /app/templates
-
+COPY seeders /app/seeders
 
 RUN mkdir -p /app/public/uploads && \
     chown -R nonroot:nonroot /app/public/uploads
