@@ -1,0 +1,2089 @@
+[
+  {
+    "Nama": "AGROLINK",
+    "No HP": "82147389276",
+    "Email": "agrolink@gmail.com",
+    "Alamat": "Singaraja, Bali",
+    "Role": "admin",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Putu Aristya Lestari",
+    "No HP": "85738807535",
+    "Email": "putuaristya.l@email.com",
+    "Alamat": "Jalan Raya Canggu No. 15, Badung, Bali",
+    "Role": "driver",
+    "Password": "password123",
+    "PricingScheme": {
+      "per_km": 5500,
+      "base_fare": 25000
+    },
+    "VehicleTypes": [
+      "pickup"
+    ],
+    "CurrentLat": -8.790000000000001,
+    "CurrentLng": 114.81,
+    "BankName": "BRI",
+    "BankAccountNumber": "0000001001",
+    "BankAccountHolder": "Putu Aristya Lestari"
+  },
+  {
+    "Nama": "Putu Yapta Adisiawan",
+    "No HP": "87855975081",
+    "Email": "putuyapta.a@email.com",
+    "Alamat": "Jalan Gatot Subroto Timur No. 40, Denpasar, Bali",
+    "Role": "driver",
+    "Password": "password123",
+    "PricingScheme": {
+      "per_km": 6000,
+      "base_fare": 30000
+    },
+    "VehicleTypes": [
+      "box",
+      "pickup"
+    ],
+    "CurrentLat": -8.780000000000001,
+    "CurrentLng": 114.82,
+    "BankName": "Mandiri",
+    "BankAccountNumber": "0000001002",
+    "BankAccountHolder": "Putu Yapta Adisiawan"
+  },
+  {
+    "Nama": "NI WAYAN ASVINA OKA",
+    "No HP": "82145797851",
+    "Email": "niwayan.oka@email.com",
+    "Alamat": "Jalan Sudirman No. 88, Singaraja, Bali",
+    "Role": "driver",
+    "Password": "password123",
+    "PricingScheme": {
+      "per_km": 6500,
+      "base_fare": 35000
+    },
+    "VehicleTypes": [
+      "truk engkel"
+    ],
+    "CurrentLat": -8.770000000000001,
+    "CurrentLng": 114.83,
+    "BankName": "BNI",
+    "BankAccountNumber": "0000001003",
+    "BankAccountHolder": "NI WAYAN ASVINA OKA"
+  },
+  {
+    "Nama": "KADEK SRI MARHAENI",
+    "No HP": "85739529829",
+    "Email": "kadeksri.m@email.com",
+    "Alamat": "Jalan Monkey Forest No. 22, Ubud, Gianyar, Bali",
+    "Role": "driver",
+    "Password": "password123",
+    "PricingScheme": {
+      "per_km": 7000,
+      "base_fare": 20000
+    },
+    "VehicleTypes": [
+      "pickup",
+      "truk engkel"
+    ],
+    "CurrentLat": -8.760000000000002,
+    "CurrentLng": 114.84,
+    "BankName": "BCA",
+    "BankAccountNumber": "0000001004",
+    "BankAccountHolder": "KADEK SRI MARHAENI"
+  },
+  {
+    "Nama": "Avera Novita Purnama Sari",
+    "No HP": "85220671036",
+    "Email": "avera.novita@email.com",
+    "Alamat": "Jalan Imam Bonjol No. 50, Kuta, Badung, Bali",
+    "Role": "driver",
+    "Password": "password123",
+    "PricingScheme": {
+      "per_km": 5000,
+      "base_fare": 25000
+    },
+    "VehicleTypes": [
+      "pickup"
+    ],
+    "CurrentLat": -8.75,
+    "CurrentLng": 114.85,
+    "BankName": "BRI",
+    "BankAccountNumber": "0000001005",
+    "BankAccountHolder": "Avera Novita Purnama Sari"
+  },
+  {
+    "Nama": "NI KADEK PIAN SIANI",
+    "No HP": "82146794812",
+    "Email": "nikadek.siani@email.com",
+    "Alamat": "Jalan Seririt No. 18, Singaraja, Bali",
+    "Role": "driver",
+    "Password": "password123",
+    "PricingScheme": {
+      "per_km": 5500,
+      "base_fare": 30000
+    },
+    "VehicleTypes": [
+      "box",
+      "pickup"
+    ],
+    "CurrentLat": -8.74,
+    "CurrentLng": 114.86,
+    "BankName": "Mandiri",
+    "BankAccountNumber": "0000001006",
+    "BankAccountHolder": "NI KADEK PIAN SIANI"
+  },
+  {
+    "Nama": "Kadek Suci Handayani",
+    "No HP": "87849370238",
+    "Email": "kadek.suci@email.com",
+    "Alamat": "Jalan By Pass Ngurah Rai No. 7, Sanur, Denpasar, Bali",
+    "Role": "driver",
+    "Password": "password123",
+    "PricingScheme": {
+      "per_km": 6000,
+      "base_fare": 35000
+    },
+    "VehicleTypes": [
+      "truk engkel"
+    ],
+    "CurrentLat": -8.73,
+    "CurrentLng": 114.86999999999999,
+    "BankName": "BNI",
+    "BankAccountNumber": "0000001007",
+    "BankAccountHolder": "Kadek Suci Handayani"
+  },
+  {
+    "Nama": "ANAK AGUNG AYU NANDITA ASDI PUTRI",
+    "No HP": "82359205138",
+    "Email": "aagnandita.a@email.com",
+    "Alamat": "Jalan Teuku Umar Barat No. 33, Denpasar, Bali",
+    "Role": "driver",
+    "Password": "password123",
+    "PricingScheme": {
+      "per_km": 6500,
+      "base_fare": 20000
+    },
+    "VehicleTypes": [
+      "pickup",
+      "truk engkel"
+    ],
+    "CurrentLat": -8.72,
+    "CurrentLng": 114.88,
+    "BankName": "BCA",
+    "BankAccountNumber": "0000001008",
+    "BankAccountHolder": "ANAK AGUNG AYU NANDITA ASDI PUTRI"
+  },
+  {
+    "Nama": "Luh Ariami",
+    "No HP": "87700940370",
+    "Email": "luh.ariami@email.com",
+    "Alamat": "Jalan Pantai Pererenan No. 10, Badung, Bali",
+    "Role": "driver",
+    "Password": "password123",
+    "PricingScheme": {
+      "per_km": 7000,
+      "base_fare": 25000
+    },
+    "VehicleTypes": [
+      "pickup"
+    ],
+    "CurrentLat": -8.71,
+    "CurrentLng": 114.89,
+    "BankName": "BRI",
+    "BankAccountNumber": "0000001009",
+    "BankAccountHolder": "Luh Ariami"
+  },
+  {
+    "Nama": "Gede Wahyu Mahotama Suara",
+    "No HP": "85333173249",
+    "Email": "gede.wahyu.m@email.com",
+    "Alamat": "Jalan Gunung Agung No. 5, Singaraja, Bali",
+    "Role": "driver",
+    "Password": "password123",
+    "PricingScheme": {
+      "per_km": 5000,
+      "base_fare": 30000
+    },
+    "VehicleTypes": [
+      "box",
+      "pickup"
+    ],
+    "CurrentLat": -8.700000000000001,
+    "CurrentLng": 114.89999999999999,
+    "BankName": "Mandiri",
+    "BankAccountNumber": "0000001010",
+    "BankAccountHolder": "Gede Wahyu Mahotama Suara"
+  },
+  {
+    "Nama": "I Made Suryawan Meranggi",
+    "No HP": "88236021495",
+    "Email": "i.made.s@email.com",
+    "Alamat": "Jalan Raya Seminyak No. 12, Badung, Bali",
+    "Role": "driver",
+    "Password": "password123",
+    "PricingScheme": {
+      "per_km": 5500,
+      "base_fare": 35000
+    },
+    "VehicleTypes": [
+      "truk engkel"
+    ],
+    "CurrentLat": -8.690000000000001,
+    "CurrentLng": 114.91,
+    "BankName": "BNI",
+    "BankAccountNumber": "0000001011",
+    "BankAccountHolder": "I Made Suryawan Meranggi"
+  },
+  {
+    "Nama": "Firda Virani Dewi",
+    "No HP": "85737280223",
+    "Email": "firda.v.dewi@email.com",
+    "Alamat": "Jalan Raya Kediri No. 9, Tabanan, Bali",
+    "Role": "driver",
+    "Password": "password123",
+    "PricingScheme": {
+      "per_km": 6000,
+      "base_fare": 20000
+    },
+    "VehicleTypes": [
+      "pickup",
+      "truk engkel"
+    ],
+    "CurrentLat": -8.680000000000001,
+    "CurrentLng": 114.92,
+    "BankName": "BCA",
+    "BankAccountNumber": "0000001012",
+    "BankAccountHolder": "Firda Virani Dewi"
+  },
+  {
+    "Nama": "GEDE AGUS VICKY PRATAMA",
+    "No HP": "83125646899",
+    "Email": "g.agus.vicky@email.com",
+    "Alamat": "Jalan Tukad Barito No. 25, Denpasar, Bali",
+    "Role": "driver",
+    "Password": "password123",
+    "PricingScheme": {
+      "per_km": 6500,
+      "base_fare": 25000
+    },
+    "VehicleTypes": [
+      "pickup"
+    ],
+    "CurrentLat": -8.67,
+    "CurrentLng": 114.92999999999999,
+    "BankName": "BRI",
+    "BankAccountNumber": "0000001013",
+    "BankAccountHolder": "GEDE AGUS VICKY PRATAMA"
+  },
+  {
+    "Nama": "PUTU OVI INDRIYANI",
+    "No HP": "85738111844",
+    "Email": "putuovi.i@email.com",
+    "Alamat": "Jalan Raya Batubulan No. 60, Gianyar, Bali",
+    "Role": "driver",
+    "Password": "password123",
+    "PricingScheme": {
+      "per_km": 7000,
+      "base_fare": 30000
+    },
+    "VehicleTypes": [
+      "box",
+      "pickup"
+    ],
+    "CurrentLat": -8.66,
+    "CurrentLng": 114.94,
+    "BankName": "Mandiri",
+    "BankAccountNumber": "0000001014",
+    "BankAccountHolder": "PUTU OVI INDRIYANI"
+  },
+  {
+    "Nama": "Putu Restu Diana",
+    "No HP": "85738888638",
+    "Email": "puturestu.d@email.com",
+    "Alamat": "Jalan Raya Uluwatu No. 18, Badung, Bali",
+    "Role": "driver",
+    "Password": "password123",
+    "PricingScheme": {
+      "per_km": 5000,
+      "base_fare": 35000
+    },
+    "VehicleTypes": [
+      "truk engkel"
+    ],
+    "CurrentLat": -8.65,
+    "CurrentLng": 114.95,
+    "BankName": "BNI",
+    "BankAccountNumber": "0000001015",
+    "BankAccountHolder": "Putu Restu Diana"
+  },
+  {
+    "Nama": "Ketut Andi Ardiawan",
+    "No HP": "81038026509",
+    "Email": "ketutandi.a@email.com",
+    "Alamat": "Jalan Buleleng No. 44, Singaraja, Bali",
+    "Role": "driver",
+    "Password": "password123",
+    "PricingScheme": {
+      "per_km": 5500,
+      "base_fare": 20000
+    },
+    "VehicleTypes": [
+      "pickup",
+      "truk engkel"
+    ],
+    "CurrentLat": -8.64,
+    "CurrentLng": 114.96,
+    "BankName": "BCA",
+    "BankAccountNumber": "0000001016",
+    "BankAccountHolder": "Ketut Andi Ardiawan"
+  },
+  {
+    "Nama": "Alifsyah farahul amin",
+    "No HP": "81339293536",
+    "Email": "alifsyah.amin@email.com",
+    "Alamat": "Jalan WR Supratman No. 20, Denpasar, Bali",
+    "Role": "driver",
+    "Password": "password123",
+    "PricingScheme": {
+      "per_km": 6000,
+      "base_fare": 25000
+    },
+    "VehicleTypes": [
+      "pickup"
+    ],
+    "CurrentLat": -8.63,
+    "CurrentLng": 114.97,
+    "BankName": "BRI",
+    "BankAccountNumber": "0000001017",
+    "BankAccountHolder": "Alifsyah farahul amin"
+  },
+  {
+    "Nama": "I Made Anugrah Gunung Merta",
+    "No HP": "85738988203",
+    "Email": "made.anugrah@email.com",
+    "Alamat": "Jalan Raya Pengosekan No. 30, Ubud, Bali",
+    "Role": "driver",
+    "Password": "password123",
+    "PricingScheme": {
+      "per_km": 6500,
+      "base_fare": 30000
+    },
+    "VehicleTypes": [
+      "box",
+      "pickup"
+    ],
+    "CurrentLat": -8.620000000000001,
+    "CurrentLng": 114.98,
+    "BankName": "Mandiri",
+    "BankAccountNumber": "0000001018",
+    "BankAccountHolder": "I Made Anugrah Gunung Merta"
+  },
+  {
+    "Nama": "Raditya Putra Bachtiar",
+    "No HP": "87885288162",
+    "Email": "raditya.p.b@email.com",
+    "Alamat": "Jalan Merdeka No. 1, Denpasar, Bali",
+    "Role": "driver",
+    "Password": "password123",
+    "PricingScheme": {
+      "per_km": 7000,
+      "base_fare": 35000
+    },
+    "VehicleTypes": [
+      "truk engkel"
+    ],
+    "CurrentLat": -8.610000000000001,
+    "CurrentLng": 114.99,
+    "BankName": "BNI",
+    "BankAccountNumber": "0000001019",
+    "BankAccountHolder": "Raditya Putra Bachtiar"
+  },
+  {
+    "Nama": "NI LUH PUTU SARIASIH",
+    "No HP": "81775213908",
+    "Email": "niluhputu.s@email.com",
+    "Alamat": "Jalan Raya Tanah Lot No. 5, Tabanan, Bali",
+    "Role": "driver",
+    "Password": "password123",
+    "PricingScheme": {
+      "per_km": 5000,
+      "base_fare": 20000
+    },
+    "VehicleTypes": [
+      "pickup",
+      "truk engkel"
+    ],
+    "CurrentLat": -8.600000000000001,
+    "CurrentLng": 115.0,
+    "BankName": "BCA",
+    "BankAccountNumber": "0000001020",
+    "BankAccountHolder": "NI LUH PUTU SARIASIH"
+  },
+  {
+    "Nama": "Komang Ngurah Ageng Kurniawan Sena",
+    "No HP": "87762506862",
+    "Email": "komang.sena@email.com",
+    "Alamat": "Jalan Raya Candidasa No. 11, Karangasem, Bali",
+    "Role": "driver",
+    "Password": "password123",
+    "PricingScheme": {
+      "per_km": 5500,
+      "base_fare": 25000
+    },
+    "VehicleTypes": [
+      "pickup"
+    ],
+    "CurrentLat": -8.59,
+    "CurrentLng": 115.00999999999999,
+    "BankName": "BRI",
+    "BankAccountNumber": "0000001021",
+    "BankAccountHolder": "Komang Ngurah Ageng Kurniawan Sena"
+  },
+  {
+    "Nama": "I Komang Agus Swantara",
+    "No HP": "81237224116",
+    "Email": "i.komang.a.s@email.com",
+    "Alamat": "Jalan Raya Legian No. 90, Badung, Bali",
+    "Role": "driver",
+    "Password": "password123",
+    "PricingScheme": {
+      "per_km": 6000,
+      "base_fare": 30000
+    },
+    "VehicleTypes": [
+      "box",
+      "pickup"
+    ],
+    "CurrentLat": -8.58,
+    "CurrentLng": 115.02,
+    "BankName": "Mandiri",
+    "BankAccountNumber": "0000001022",
+    "BankAccountHolder": "I Komang Agus Swantara"
+  },
+  {
+    "Nama": "Kadek Andre Pradipta Darmawan",
+    "No HP": "85792971599",
+    "Email": "kadek.andre.p@email.com",
+    "Alamat": "Jalan Kartika Plaza No. 100, Kuta, Bali",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "KOMANG SUTAMI SRI LESTARI",
+    "No HP": "85708765604",
+    "Email": "komang.sutami@email.com",
+    "Alamat": "Jalan Raya Kintamani No. 15, Bangli, Bali",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Ni Luh Sugi Ayu Antari",
+    "No HP": "85715904526",
+    "Email": "niluhsugi.a@email.com",
+    "Alamat": "Jalan Raya Besakih No. 50, Karangasem, Bali",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "NI KOMANG WIDIANI",
+    "No HP": "85739157960",
+    "Email": "ni.komang.w@email.com",
+    "Alamat": "Jalan Raya Lovina No. 7, Singaraja, Bali",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Resi Resmini",
+    "No HP": "83117951726",
+    "Email": "resminiresi631@gmail.com",
+    "Alamat": "Komplek Perumahan Griya Blok 23, Jalan Tukad Yeh Aya, Tabanan, Bali",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Siti Nur",
+    "No HP": "82144939002",
+    "Email": "siti_nur2011@gmail.com",
+    "Alamat": "Dusun Tengah Blok 82, Jalan Kebo Iwa, Tabanan, Bali",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Tris Juliartini",
+    "No HP": "89637131471",
+    "Email": "tj8622@gmail.com",
+    "Alamat": "Desa Adat Blok 31, Jalan Raya Semarapura, Badung, Bali",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Aristya Pradana",
+    "No HP": "881037147205",
+    "Email": "aristya_pradana2016@gmail.com",
+    "Alamat": "Banjar Adat Tegal Blok 86, Jalan Raya Sesetan, Klungkung, Bali",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Candra Kusuma",
+    "No HP": "85237786017",
+    "Email": "ck9761@gmail.com",
+    "Alamat": "Komplek Perumahan Griya No. 17, Jalan Pantai Batu Bolong, Bangli, Bali",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Kadek Krisna",
+    "No HP": "82144242574",
+    "Email": "kadek.krisna64@gmail.com",
+    "Alamat": "Komplek Perumahan Griya No. 85, Jalan Seririt-Singaraja, Klungkung, Bali",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Dewi Masutianingsih",
+    "No HP": "87866800884",
+    "Email": "masutianingsihdewi974@gmail.com",
+    "Alamat": "Dusun Tengah No. 14, Jalan Kebo Iwa, Badung, Bali",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Dina Apriyani",
+    "No HP": "881038236216",
+    "Email": "dina.apriyani31@gmail.com",
+    "Alamat": "Lingkungan No. 99, Jalan Kebo Iwa, Badung, Bali",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Kadek Ditha",
+    "No HP": "82231261883",
+    "Email": "kadek_ditha2010@gmail.com",
+    "Alamat": "Komplek Perumahan Griya No. 9, Jalan Seririt-Singaraja, Tabanan, Bali",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Vielsa Antonia",
+    "No HP": "81264020005",
+    "Email": "vielsa.antonia29@gmail.com",
+    "Alamat": "Desa Adat Blok 36, Jalan Sunset Road, Gianyar, Bali",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Fransisca Amelia",
+    "No HP": "895378359556",
+    "Email": "fransisca_amelia2006@gmail.com",
+    "Alamat": "Desa Adat No. 52, Jalan Raya Semarapura, Bangli, Bali",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Gek Ari",
+    "No HP": "82213399370",
+    "Email": "gek_ari2009@gmail.com",
+    "Alamat": "Desa Adat No. 54, Jalan Sunset Road, Buleleng, Bali",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Susaka Werthi",
+    "No HP": "81547586441",
+    "Email": "werthisusaka205@gmail.com",
+    "Alamat": "Dusun Tengah No. 21, Jalan Tukad Yeh Aya, Badung, Bali",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Krisna Widnyana",
+    "No HP": "82247619989",
+    "Email": "kw3917@gmail.com",
+    "Alamat": "Desa Adat No. 64, Jalan Raya Sesetan, Gianyar, Bali",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Andre Maichel",
+    "No HP": "89674397308",
+    "Email": "am7717@gmail.com",
+    "Alamat": "Banjar Adat Tegal No. 87, Jalan Seririt-Singaraja, Badung, Bali",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Miftahul Putri",
+    "No HP": "85731054255",
+    "Email": "miftahul.putri71@gmail.com",
+    "Alamat": "Komplek Perumahan Griya No. 22, Jalan Raya Sesetan, Buleleng, Bali",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Putu Aulia",
+    "No HP": "87863237414",
+    "Email": "putu.aulia78@gmail.com",
+    "Alamat": "Banjar Adat Tegal No. 92, Jalan Raya Sesetan, Denpasar, Bali",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Rangga Disastra",
+    "No HP": "81238424398",
+    "Email": "rd9097@gmail.com",
+    "Alamat": "Banjar Adat Tegal Blok 15, Jalan Sunset Road, Tabanan, Bali",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Wulan Sanra",
+    "No HP": "85829332422",
+    "Email": "ws4773@gmail.com",
+    "Alamat": "Komplek Perumahan Griya Blok 22, Jalan Raya Sesetan, Klungkung, Bali",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Suditha Atmaja",
+    "No HP": "89697172207",
+    "Email": "atmajasuditha459@gmail.com",
+    "Alamat": "Desa Adat No. 89, Jalan Kebo Iwa, Buleleng, Bali",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Tegar Juni",
+    "No HP": "81913888084",
+    "Email": "tj2073@gmail.com",
+    "Alamat": "Lingkungan No. 59, Jalan Legian, Denpasar, Bali",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Tiara Berlian",
+    "No HP": "895394618605",
+    "Email": "berliantiara415@gmail.com",
+    "Alamat": "Banjar Adat Tegal Blok 21, Jalan Raya Semarapura, Tabanan, Bali",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Ketut Widia",
+    "No HP": "881037180600",
+    "Email": "kw7080@gmail.com",
+    "Alamat": "Desa Adat No. 40, Jalan Pantai Batu Bolong, Karangasem, Bali",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "I Wayan Sudiarta",
+    "No HP": "81234567801",
+    "Email": "i.sudiarta45@gmail.com",
+    "Alamat": "Banjar Dinas Tegallalang, Gianyar",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Ni Luh Made Santi",
+    "No HP": "85789012302",
+    "Email": "n.madesanti2022@gmail.com",
+    "Alamat": "Jalan Tukad Batanghari No. 12, Denpasar",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Komang Ayu Wulandari",
+    "No HP": "87856789003",
+    "Email": "komang.ayu12@gmail.com",
+    "Alamat": "Dusun Tengah, Desa Bebetin, Buleleng",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Ketut Eka Prasetya",
+    "No HP": "82345678904",
+    "Email": "ketut.prasetya300@gmail.com",
+    "Alamat": "Gang Melati, Kecamatan Kuta Utara, Badung",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Gede Bagus Wirawan",
+    "No HP": "85212345605",
+    "Email": "g.b.wirawan77@gmail.com",
+    "Alamat": "Perumahan Griya Abianbase, Mengwi, Badung",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Putu Indah Permata",
+    "No HP": "89678901206",
+    "Email": "putu.indah.p2024@gmail.com",
+    "Alamat": "Jalan Raya Semarapura No. 44, Klungkung",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Nyoman Tri Adnyana",
+    "No HP": "81923456707",
+    "Email": "nyoman_tri_88@gmail.com",
+    "Alamat": "Desa Adat Batuan, Sukawati, Gianyar",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Anak Agung Raka Putra",
+    "No HP": "82134567808",
+    "Email": "aagrakaputra@gmail.com",
+    "Alamat": "Jalan Sunset Road Blok F, Denpasar Selatan",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Dewa Ayu Komala Sari",
+    "No HP": "85345678909",
+    "Email": "dewa.komalasari55@gmail.com",
+    "Alamat": "Banjar Dinas Lebah, Rendang, Karangasem",
+    "Role": "farmer",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Ida Bagus Oka Widanta",
+    "No HP": "87701234510",
+    "Email": "ibokawidanta2000@gmail.com",
+    "Alamat": "Jalan Dr. Ir. Soekarno No. 10, Tabanan",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Desak Putu Cahyani",
+    "No HP": "82212345611",
+    "Email": "dpcahyani456@gmail.com",
+    "Alamat": "Lingkungan Sambangan, Singaraja, Buleleng",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "I Gede Rama Wijaya",
+    "No HP": "85723456712",
+    "Email": "igederamawijaya@gmail.com",
+    "Alamat": "Komplek Permai, Nusa Dua, Badung",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Luh Kadek Melina",
+    "No HP": "89534567813",
+    "Email": "lkadek.melina89@gmail.com",
+    "Alamat": "Jalan Raya Puputan Renon No. 55, Denpasar",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Made Dwi Kurniawan",
+    "No HP": "81345678914",
+    "Email": "made.dwi.k2021@gmail.com",
+    "Alamat": "Desa Tegalmangkuk, Sidemen, Karangasem",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Wayan Ningsih",
+    "No HP": "85256789015",
+    "Email": "wayanningsih78@gmail.com",
+    "Alamat": "Banjar Kawan, Desa Pekutatan, Jembrana",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Gusti Ngurah Agung",
+    "No HP": "87867890116",
+    "Email": "ngurah.agung99@gmail.com",
+    "Alamat": "Jalan Raya Kampus Udayana, Jimbaran, Badung",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Ni Made Tania Putri",
+    "No HP": "82378901217",
+    "Email": "nmtaniaputri10@gmail.com",
+    "Alamat": "Jalan Gunung Agung Gang 3, Denpasar Barat",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Komang Adi Saputra",
+    "No HP": "85389012318",
+    "Email": "komang.adi.s1995@gmail.com",
+    "Alamat": "Desa Taro, Tegallalang, Gianyar",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Ketut Sri Dewi",
+    "No HP": "89601234519",
+    "Email": "ketutsridewi678@gmail.com",
+    "Alamat": "Jalan Seririt-Gilimanuk KM 12, Buleleng",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Putu Ari Sanjaya",
+    "No HP": "81912345620",
+    "Email": "putuarisanjaya55@gmail.com",
+    "Alamat": "Dusun Anyar, Kerambitan, Tabanan",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Nyoman Budiarsa",
+    "No HP": "85723456721",
+    "Email": "nyomanbudiarsa90@gmail.com",
+    "Alamat": "Banjar Dinas Penarungan, Badung",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Made Laksmi Dewi",
+    "No HP": "89534567822",
+    "Email": "made.laksmi.d2003@gmail.com",
+    "Alamat": "Jalan Raya Gianyar-Bangli No. 30, Bangli",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "I Wayan Gede Setiawan",
+    "No HP": "81356789023",
+    "Email": "iwayangstwn23@gmail.com",
+    "Alamat": "Komplek Perumahan Taman Griya, Jimbaran",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Ni Luh Putu Eka",
+    "No HP": "85267890124",
+    "Email": "niluhputueka11@gmail.com",
+    "Alamat": "Jalan Raya Canggu No. 18, Badung",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Komang Ratih Amelia",
+    "No HP": "87878901225",
+    "Email": "komang.ratih.a7@gmail.com",
+    "Alamat": "Desa Sidan, Gianyar",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Ketut Yoga Pratama",
+    "No HP": "82389012326",
+    "Email": "ketutyoga.p1998@gmail.com",
+    "Alamat": "Lingkungan Delod Rurung, Negara, Jembrana",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Gede Agus Mahardika",
+    "No HP": "85301234527",
+    "Email": "gdeagusm2019@gmail.com",
+    "Alamat": "Jalan Tukad Yeh Aya No. 7, Denpasar",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Putu Sintia Bella",
+    "No HP": "89612345628",
+    "Email": "putusintiabella@gmail.com",
+    "Alamat": "Banjar Dinas Getas, Mengwi, Badung",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Nyoman Juniarta",
+    "No HP": "81934567829",
+    "Email": "nyoman_juniarta345@gmail.com",
+    "Alamat": "Desa Sibetan, Karangasem",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Made Karina Sari",
+    "No HP": "85745678930",
+    "Email": "karinasarimade12@gmail.com",
+    "Alamat": "Jalan Muding Sari, Kerobokan, Badung",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Wayan Candra",
+    "No HP": "89556789031",
+    "Email": "wayan.candra2000@gmail.com",
+    "Alamat": "Dusun Tengah, Desa Belok Sidan, Badung",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Gusti Ayu Wiratni",
+    "No HP": "81367890132",
+    "Email": "gustiaw2022@gmail.com",
+    "Alamat": "Jalan Raya Celuk No. 5, Sukawati, Gianyar",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Ni Made Widiantari",
+    "No HP": "85278901233",
+    "Email": "nmwidiantari1@gmail.com",
+    "Alamat": "Lingkungan Kaliuntu, Singaraja, Buleleng",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Komang Satria",
+    "No HP": "87889012334",
+    "Email": "komangsatria44@gmail.com",
+    "Alamat": "Banjar Dinas Keliki, Ubud, Gianyar",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Ketut Diah Permana",
+    "No HP": "82301234535",
+    "Email": "k.diahpermana66@gmail.com",
+    "Alamat": "Jalan Tukad Pakerisan No. 60, Denpasar",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Putu Rizky Ananda",
+    "No HP": "85312345636",
+    "Email": "putu.rizky.a10@gmail.com",
+    "Alamat": "Desa Tembuku, Bangli",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Nyoman Bagus Sudewa",
+    "No HP": "89623456737",
+    "Email": "nyomanbagus789@gmail.com",
+    "Alamat": "Komplek Perumahan Dalung Permai, Badung",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Made Erika Putri",
+    "No HP": "81934567838",
+    "Email": "maderikaputri123@gmail.com",
+    "Alamat": "Jalan Teuku Umar Barat No. 88, Denpasar",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "I Wayan Cipta",
+    "No HP": "85745678939",
+    "Email": "iwayancipta555@gmail.com",
+    "Alamat": "Banjar Adat Seseh, Mengwi, Badung",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Ni Luh Ayu Lestari",
+    "No HP": "87856789040",
+    "Email": "niluh.ayu.lestari@gmail.com",
+    "Alamat": "Jalan Raya Candidasa KM 3, Karangasem",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Komang Hendra",
+    "No HP": "82367890141",
+    "Email": "komang.hendra.91@gmail.com",
+    "Alamat": "Dusun Kawan, Desa Pupuan, Tabanan",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Ketut Riska",
+    "No HP": "85378901242",
+    "Email": "kriska77@gmail.com",
+    "Alamat": "Lingkungan Abian Kapas, Denpasar Timur",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Gede Krisna Putra",
+    "No HP": "89689012343",
+    "Email": "gdekrisna2001@gmail.com",
+    "Alamat": "Jalan Raya Bedugul, Baturiti, Tabanan",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Putu Febriani",
+    "No HP": "81901234544",
+    "Email": "putufebriani2020@gmail.com",
+    "Alamat": "Banjar Dinas Kanginan, Kediri, Tabanan",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Nyoman Trisna Wati",
+    "No HP": "85712345645",
+    "Email": "nyoman.trisna.wati@gmail.com",
+    "Alamat": "Desa Pejeng Kawan, Gianyar",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Made Aris Setyawan",
+    "No HP": "87823456746",
+    "Email": "made_aris_stwn55@gmail.com",
+    "Alamat": "Jalan Pura Demak No. 15, Denpasar",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Wayan Dewi",
+    "No HP": "82334567847",
+    "Email": "wayan.dewi40@gmail.com",
+    "Alamat": "Dusun Adat Lebu, Manggis, Karangasem",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Gusti Putu Surya",
+    "No HP": "85345678948",
+    "Email": "gputusurya88@gmail.com",
+    "Alamat": "Lingkungan Tegal Harum, Denpasar",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Ni Made Dita Pradnya",
+    "No HP": "89656789049",
+    "Email": "nmditapradnya@gmail.com",
+    "Alamat": "Banjar Adat Kelod, Desa Semarapura Kauh, Klungkung",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Komang Wirawan",
+    "No HP": "81967890150",
+    "Email": "komang.wirawan5@gmail.com",
+    "Alamat": "Jalan Raya Sesetan No. 120, Denpasar Selatan",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Ketut Santi",
+    "No HP": "85778901251",
+    "Email": "ketutsanti123@gmail.com",
+    "Alamat": "Desa Penebel, Tabanan",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Putu Deva",
+    "No HP": "87889012352",
+    "Email": "putu_deva_999@gmail.com",
+    "Alamat": "Komplek Perumahan Patih Jelantik, Tuban, Badung",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Nyoman Wirya",
+    "No HP": "82301234553",
+    "Email": "nyomanwirya80@gmail.com",
+    "Alamat": "Jalan Raya Kerobokan No. 33, Badung",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Made Citra",
+    "No HP": "85312345654",
+    "Email": "made.citra2023@gmail.com",
+    "Alamat": "Dusun Tengah, Desa Munduk, Buleleng",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "I Wayan Astawa",
+    "No HP": "89623456755",
+    "Email": "iwayanastawa777@gmail.com",
+    "Alamat": "Banjar Dinas Jaba Pura, Tampaksiring, Gianyar",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Ni Luh Sari Dewi",
+    "No HP": "81934567856",
+    "Email": "niluhsaridewi56@gmail.com",
+    "Alamat": "Jalan Tukad Balian No. 20, Denpasar",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Komang Bagus",
+    "No HP": "85745678957",
+    "Email": "komang.bagus90@gmail.com",
+    "Alamat": "Desa Batur, Kintamani, Bangli",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Ketut Agus Setiawan",
+    "No HP": "87856789058",
+    "Email": "ketutagus.s@gmail.com",
+    "Alamat": "Lingkungan Loloan Barat, Negara, Jembrana",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Gede Putra",
+    "No HP": "82367890159",
+    "Email": "gede.putra100@gmail.com",
+    "Alamat": "Jalan Raya Sibang Kaja, Badung",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Putu Lisa Anggraini",
+    "No HP": "85378901260",
+    "Email": "putulisa.a2001@gmail.com",
+    "Alamat": "Banjar Dinas Tengah, Desa Yeh Sumbul, Jembrana",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Nyoman Pasek",
+    "No HP": "89689012361",
+    "Email": "nyomanpasek12@gmail.com",
+    "Alamat": "Jalan W.R. Supratman No. 40, Denpasar Timur",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Made Raka Adi",
+    "No HP": "81901234562",
+    "Email": "maderaka.adi@gmail.com",
+    "Alamat": "Komplek Permai, Pecatu, Uluwatu, Badung",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Wayan Ariani",
+    "No HP": "85712345663",
+    "Email": "wayanariani45@gmail.com",
+    "Alamat": "Dusun Adat Timbrah, Karangasem",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Gusti Ayu Candra",
+    "No HP": "87823456764",
+    "Email": "gusti.ayu.c1999@gmail.com",
+    "Alamat": "Jalan Raya Ubud No. 1, Gianyar",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Ni Made Anggreni",
+    "No HP": "82334567865",
+    "Email": "nmanggreni88@gmail.com",
+    "Alamat": "Lingkungan Liligundi, Singaraja, Buleleng",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Komang Juni",
+    "No HP": "85345678966",
+    "Email": "komang.juni.7@gmail.com",
+    "Alamat": "Banjar Adat Umabian, Marga, Tabanan",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Ketut Wirawan",
+    "No HP": "89656789067",
+    "Email": "ketut.wirawan2020@gmail.com",
+    "Alamat": "Jalan Raya Puputan No. 100, Denpasar",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Putu Sukma",
+    "No HP": "81967890168",
+    "Email": "putusukma765@gmail.com",
+    "Alamat": "Desa Trunyan, Kintamani, Bangli",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Nyoman Eka",
+    "No HP": "85778901269",
+    "Email": "nyomaneka55@gmail.com",
+    "Alamat": "Komplek Perumahan Griya Pesona, Badung",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Made Arini",
+    "No HP": "87889012370",
+    "Email": "made.arini2005@gmail.com",
+    "Alamat": "Jalan Raya Goa Gajah, Gianyar",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "I Wayan Sudarsana",
+    "No HP": "82301234571",
+    "Email": "iwayan.sudarsana@gmail.com",
+    "Alamat": "Banjar Dinas Anyar, Rendang, Karangasem",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Ni Luh Made Candra",
+    "No HP": "85312345672",
+    "Email": "nlmadecandra33@gmail.com",
+    "Alamat": "Dusun Tengah, Desa Candikuning, Tabanan",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Komang Surya",
+    "No HP": "89623456773",
+    "Email": "komangsurya909@gmail.com",
+    "Alamat": "Lingkungan Tegalsari, Jembrana",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Ketut Sani",
+    "No HP": "81934567874",
+    "Email": "ketut.sani1997@gmail.com",
+    "Alamat": "Jalan Raya Tanah Lot, Kediri, Tabanan",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Gede Dwi Putra",
+    "No HP": "85745678975",
+    "Email": "gdedwiputra55@gmail.com",
+    "Alamat": "Desa Adat Taro Kelod, Gianyar",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Putu Tania",
+    "No HP": "87856789076",
+    "Email": "pututania2024@gmail.com",
+    "Alamat": "Banjar Dinas Mertasari, Suwung, Denpasar Selatan",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Nyoman Widiastuti",
+    "No HP": "82367890177",
+    "Email": "nyoman.widiastuti@gmail.com",
+    "Alamat": "Jalan Raya Canggu Permai, Badung",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Made Putra Sanjaya",
+    "No HP": "85378901278",
+    "Email": "m.putrasanjaya@gmail.com",
+    "Alamat": "Komplek Perumahan Jimbaran Hijau, Badung",
+    "Role": "general",
+    "Password": "password123"
+  },
+  {
+    "Nama": "Wayan Melina",
+    "No HP": "89689012379",
+    "Email": "wayanmelina44@gmail.com",
+    "Alamat": "Dusun Kawan, Desa Mendoyo, Jembrana",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "menanam",
+      "menyiram",
+      "panen"
+    ],
+    "DailyRate": 110000,
+    "NationalID": "5100000000000128",
+    "BankName": "BCA",
+    "BankAccountNumber": "0000000129",
+    "BankAccountHolder": "Wayan Melina"
+  },
+  {
+    "Nama": "Gusti Ngurah Jaya",
+    "No HP": "81901234580",
+    "Email": "ngurah.jaya789@gmail.com",
+    "Alamat": "Jalan Ciung Wanara No. 5, Denpasar",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "mencangkul",
+      "memupuk",
+      "menyiram"
+    ],
+    "DailyRate": 120000,
+    "NationalID": "5100000000000129",
+    "BankName": "BRI",
+    "BankAccountNumber": "0000000130",
+    "BankAccountHolder": "Gusti Ngurah Jaya"
+  },
+  {
+    "Nama": "Ni Made Reni",
+    "No HP": "85712345681",
+    "Email": "nmadereni67@gmail.com",
+    "Alamat": "Banjar Dinas Kikian, Tegalalang, Gianyar",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "penyiangan",
+      "panen"
+    ],
+    "DailyRate": 130000,
+    "NationalID": "5100000000000130",
+    "BankName": "Mandiri",
+    "BankAccountNumber": "0000000131",
+    "BankAccountHolder": "Ni Made Reni"
+  },
+  {
+    "Nama": "Komang Wisnu",
+    "No HP": "87823456782",
+    "Email": "komang.wisnu33@gmail.com",
+    "Alamat": "Jalan Raya Uluwatu No. 15, Pecatu, Badung",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "menanam",
+      "memupuk"
+    ],
+    "DailyRate": 140000,
+    "NationalID": "5100000000000131",
+    "BankName": "BNI",
+    "BankAccountNumber": "0000000132",
+    "BankAccountHolder": "Komang Wisnu"
+  },
+  {
+    "Nama": "Ketut Wira",
+    "No HP": "82334567883",
+    "Email": "ketutwira2009@gmail.com",
+    "Alamat": "Desa Selat, Karangasem",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "menanam",
+      "menyiram",
+      "panen"
+    ],
+    "DailyRate": 150000,
+    "NationalID": "5100000000000132",
+    "BankName": "BCA",
+    "BankAccountNumber": "0000000133",
+    "BankAccountHolder": "Ketut Wira"
+  },
+  {
+    "Nama": "Putu Diana",
+    "No HP": "85345678984",
+    "Email": "putudiana.official@gmail.com",
+    "Alamat": "Lingkungan Banjar Jawa, Buleleng",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "mencangkul",
+      "memupuk",
+      "menyiram"
+    ],
+    "DailyRate": 90000,
+    "NationalID": "5100000000000133",
+    "BankName": "BRI",
+    "BankAccountNumber": "0000000134",
+    "BankAccountHolder": "Putu Diana"
+  },
+  {
+    "Nama": "Nyoman Raka",
+    "No HP": "89656789085",
+    "Email": "nyoman.raka.5@gmail.com",
+    "Alamat": "Komplek Perumahan Sunset Garden, Badung",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "penyiangan",
+      "panen"
+    ],
+    "DailyRate": 100000,
+    "NationalID": "5100000000000134",
+    "BankName": "Mandiri",
+    "BankAccountNumber": "0000000135",
+    "BankAccountHolder": "Nyoman Raka"
+  },
+  {
+    "Nama": "Made Ayu Sintia",
+    "No HP": "81967890186",
+    "Email": "made.ayu.sintia@gmail.com",
+    "Alamat": "Jalan Tukad Badung No. 22, Denpasar",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "menanam",
+      "memupuk"
+    ],
+    "DailyRate": 110000,
+    "NationalID": "5100000000000135",
+    "BankName": "BNI",
+    "BankAccountNumber": "0000000136",
+    "BankAccountHolder": "Made Ayu Sintia"
+  },
+  {
+    "Nama": "I Wayan Joni",
+    "No HP": "85778901287",
+    "Email": "iwayanjoni11@gmail.com",
+    "Alamat": "Banjar Adat Kedewatan, Ubud, Gianyar",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "menanam",
+      "menyiram",
+      "panen"
+    ],
+    "DailyRate": 120000,
+    "NationalID": "5100000000000136",
+    "BankName": "BCA",
+    "BankAccountNumber": "0000000137",
+    "BankAccountHolder": "I Wayan Joni"
+  },
+  {
+    "Nama": "Ni Luh Kadek Sari",
+    "No HP": "87889012388",
+    "Email": "nlksari2000@gmail.com",
+    "Alamat": "Dusun Tengah, Desa Antap, Tabanan",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "mencangkul",
+      "memupuk",
+      "menyiram"
+    ],
+    "DailyRate": 130000,
+    "NationalID": "5100000000000137",
+    "BankName": "BRI",
+    "BankAccountNumber": "0000000138",
+    "BankAccountHolder": "Ni Luh Kadek Sari"
+  },
+  {
+    "Nama": "Komang Eka Saputri",
+    "No HP": "82301234589",
+    "Email": "komangekas@gmail.com",
+    "Alamat": "Jalan Veteran No. 7, Singaraja, Buleleng",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "penyiangan",
+      "panen"
+    ],
+    "DailyRate": 140000,
+    "NationalID": "5100000000000138",
+    "BankName": "Mandiri",
+    "BankAccountNumber": "0000000139",
+    "BankAccountHolder": "Komang Eka Saputri"
+  },
+  {
+    "Nama": "Ketut Oka",
+    "No HP": "85312345690",
+    "Email": "ketutoka567@gmail.com",
+    "Alamat": "Desa Abang, Karangasem",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "menanam",
+      "memupuk"
+    ],
+    "DailyRate": 150000,
+    "NationalID": "5100000000000139",
+    "BankName": "BNI",
+    "BankAccountNumber": "0000000140",
+    "BankAccountHolder": "Ketut Oka"
+  },
+  {
+    "Nama": "Gede Widiarta",
+    "No HP": "89623456791",
+    "Email": "g.widiarta1990@gmail.com",
+    "Alamat": "Lingkungan Kaliabang, Negara, Jembrana",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "menanam",
+      "menyiram",
+      "panen"
+    ],
+    "DailyRate": 90000,
+    "NationalID": "5100000000000140",
+    "BankName": "BCA",
+    "BankAccountNumber": "0000000141",
+    "BankAccountHolder": "Gede Widiarta"
+  },
+  {
+    "Nama": "Putu Adelia",
+    "No HP": "81934567892",
+    "Email": "putu.adelia.99@gmail.com",
+    "Alamat": "Komplek Permai, Sanur, Denpasar",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "mencangkul",
+      "memupuk",
+      "menyiram"
+    ],
+    "DailyRate": 100000,
+    "NationalID": "5100000000000141",
+    "BankName": "BRI",
+    "BankAccountNumber": "0000000142",
+    "BankAccountHolder": "Putu Adelia"
+  },
+  {
+    "Nama": "Nyoman Widhi",
+    "No HP": "85745678993",
+    "Email": "nyomanwidhi2021@gmail.com",
+    "Alamat": "Banjar Dinas Tengah, Desa Buahan, Tabanan",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "penyiangan",
+      "panen"
+    ],
+    "DailyRate": 110000,
+    "NationalID": "5100000000000142",
+    "BankName": "Mandiri",
+    "BankAccountNumber": "0000000143",
+    "BankAccountHolder": "Nyoman Widhi"
+  },
+  {
+    "Nama": "Made Suci",
+    "No HP": "87856789094",
+    "Email": "made.suci.77@gmail.com",
+    "Alamat": "Jalan Sunset Road No. 80, Kuta, Badung",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "menanam",
+      "memupuk"
+    ],
+    "DailyRate": 120000,
+    "NationalID": "5100000000000143",
+    "BankName": "BNI",
+    "BankAccountNumber": "0000000144",
+    "BankAccountHolder": "Made Suci"
+  },
+  {
+    "Nama": "Wayan Nita",
+    "No HP": "82367890195",
+    "Email": "wayannita456@gmail.com",
+    "Alamat": "Dusun Kaja, Desa Manukaya, Gianyar",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "menanam",
+      "menyiram",
+      "panen"
+    ],
+    "DailyRate": 130000,
+    "NationalID": "5100000000000144",
+    "BankName": "BCA",
+    "BankAccountNumber": "0000000145",
+    "BankAccountHolder": "Wayan Nita"
+  },
+  {
+    "Nama": "Gusti Putu Eka",
+    "No HP": "85378901296",
+    "Email": "gputu.eka30@gmail.com",
+    "Alamat": "Lingkungan Pemedilan, Denpasar",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "mencangkul",
+      "memupuk",
+      "menyiram"
+    ],
+    "DailyRate": 140000,
+    "NationalID": "5100000000000145",
+    "BankName": "BRI",
+    "BankAccountNumber": "0000000146",
+    "BankAccountHolder": "Gusti Putu Eka"
+  },
+  {
+    "Nama": "Ni Made Tania",
+    "No HP": "89689012397",
+    "Email": "n.made.tania2003@gmail.com",
+    "Alamat": "Jalan Raya Gianyar No. 10, Gianyar",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "penyiangan",
+      "panen"
+    ],
+    "DailyRate": 150000,
+    "NationalID": "5100000000000146",
+    "BankName": "Mandiri",
+    "BankAccountNumber": "0000000147",
+    "BankAccountHolder": "Ni Made Tania"
+  },
+  {
+    "Nama": "Komang Riska Dewi",
+    "No HP": "81901234598",
+    "Email": "komang.riska.d@gmail.com",
+    "Alamat": "Banjar Adat Pering, Blahbatuh, Gianyar",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "menanam",
+      "memupuk"
+    ],
+    "DailyRate": 90000,
+    "NationalID": "5100000000000147",
+    "BankName": "BNI",
+    "BankAccountNumber": "0000000148",
+    "BankAccountHolder": "Komang Riska Dewi"
+  },
+  {
+    "Nama": "Ketut Putra Jaya",
+    "No HP": "85712345699",
+    "Email": "ketutputrajaya@gmail.com",
+    "Alamat": "Desa Les, Tejakula, Buleleng",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "menanam",
+      "menyiram",
+      "panen"
+    ],
+    "DailyRate": 100000,
+    "NationalID": "5100000000000148",
+    "BankName": "BCA",
+    "BankAccountNumber": "0000000149",
+    "BankAccountHolder": "Ketut Putra Jaya"
+  },
+  {
+    "Nama": "Putu Rian",
+    "No HP": "87823456700",
+    "Email": "puturian2020@gmail.com",
+    "Alamat": "Komplek Perumahan Taman Sari, Tabanan",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "mencangkul",
+      "memupuk",
+      "menyiram"
+    ],
+    "DailyRate": 110000,
+    "NationalID": "5100000000000149",
+    "BankName": "BRI",
+    "BankAccountNumber": "0000000150",
+    "BankAccountHolder": "Putu Rian"
+  },
+  {
+    "Nama": "I Gede Artawan",
+    "No HP": "82334567801",
+    "Email": "igedeartawan55@gmail.com",
+    "Alamat": "Jalan Raya Denpasar-Gilimanuk KM 50, Jembrana",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "penyiangan",
+      "panen"
+    ],
+    "DailyRate": 120000,
+    "NationalID": "5100000000000150",
+    "BankName": "Mandiri",
+    "BankAccountNumber": "0000000151",
+    "BankAccountHolder": "I Gede Artawan"
+  },
+  {
+    "Nama": "Ni Luh Sari",
+    "No HP": "85345678902",
+    "Email": "niluhsari33@gmail.com",
+    "Alamat": "Dusun Tengah, Desa Bungaya, Karangasem",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "menanam",
+      "memupuk"
+    ],
+    "DailyRate": 130000,
+    "NationalID": "5100000000000151",
+    "BankName": "BNI",
+    "BankAccountNumber": "0000000152",
+    "BankAccountHolder": "Ni Luh Sari"
+  },
+  {
+    "Nama": "Nyoman Suarjana",
+    "No HP": "89656789003",
+    "Email": "nyomansuarjana70@gmail.com",
+    "Alamat": "Lingkungan Kaliungu, Denpasar",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "menanam",
+      "menyiram",
+      "panen"
+    ],
+    "DailyRate": 140000,
+    "NationalID": "5100000000000152",
+    "BankName": "BCA",
+    "BankAccountNumber": "0000000153",
+    "BankAccountHolder": "Nyoman Suarjana"
+  },
+  {
+    "Nama": "Made Widya",
+    "No HP": "81967890104",
+    "Email": "made.widya.99@gmail.com",
+    "Alamat": "Banjar Dinas Kedisan, Kintamani, Bangli",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "mencangkul",
+      "memupuk",
+      "menyiram"
+    ],
+    "DailyRate": 150000,
+    "NationalID": "5100000000000153",
+    "BankName": "BRI",
+    "BankAccountNumber": "0000000154",
+    "BankAccountHolder": "Made Widya"
+  },
+  {
+    "Nama": "Wayan Febriana",
+    "No HP": "85778901205",
+    "Email": "wayanfebriana8@gmail.com",
+    "Alamat": "Jalan Raya Tampaksiring No. 20, Gianyar",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "penyiangan",
+      "panen"
+    ],
+    "DailyRate": 90000,
+    "NationalID": "5100000000000154",
+    "BankName": "Mandiri",
+    "BankAccountNumber": "0000000155",
+    "BankAccountHolder": "Wayan Febriana"
+  },
+  {
+    "Nama": "Gusti Ngurah Made",
+    "No HP": "87889012306",
+    "Email": "ngurah.made2015@gmail.com",
+    "Alamat": "Desa Adat Kedonganan, Kuta, Badung",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "menanam",
+      "memupuk"
+    ],
+    "DailyRate": 100000,
+    "NationalID": "5100000000000155",
+    "BankName": "BNI",
+    "BankAccountNumber": "0000000156",
+    "BankAccountHolder": "Gusti Ngurah Made"
+  },
+  {
+    "Nama": "Ni Made Astuti",
+    "No HP": "82301234507",
+    "Email": "nmastuti123@gmail.com",
+    "Alamat": "Jalan Raya Celuk Sukawati, Gianyar",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "menanam",
+      "menyiram",
+      "panen"
+    ],
+    "DailyRate": 110000,
+    "NationalID": "5100000000000156",
+    "BankName": "BCA",
+    "BankAccountNumber": "0000000157",
+    "BankAccountHolder": "Ni Made Astuti"
+  },
+  {
+    "Nama": "Komang Alit",
+    "No HP": "85312345608",
+    "Email": "komang.alit456@gmail.com",
+    "Alamat": "Banjar Dinas Bakas, Klungkung",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "mencangkul",
+      "memupuk",
+      "menyiram"
+    ],
+    "DailyRate": 120000,
+    "NationalID": "5100000000000157",
+    "BankName": "BRI",
+    "BankAccountNumber": "0000000158",
+    "BankAccountHolder": "Komang Alit"
+  },
+  {
+    "Nama": "Ketut Juli",
+    "No HP": "89623456709",
+    "Email": "ketutjuli.official@gmail.com",
+    "Alamat": "Dusun Tengah, Desa Bantas, Tabanan",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "penyiangan",
+      "panen"
+    ],
+    "DailyRate": 130000,
+    "NationalID": "5100000000000158",
+    "BankName": "Mandiri",
+    "BankAccountNumber": "0000000159",
+    "BankAccountHolder": "Ketut Juli"
+  },
+  {
+    "Nama": "Putu Hendra",
+    "No HP": "81934567810",
+    "Email": "putuhendra55@gmail.com",
+    "Alamat": "Lingkungan Karang Asem, Negara, Jembrana",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "menanam",
+      "memupuk"
+    ],
+    "DailyRate": 140000,
+    "NationalID": "5100000000000159",
+    "BankName": "BNI",
+    "BankAccountNumber": "0000000160",
+    "BankAccountHolder": "Putu Hendra"
+  },
+  {
+    "Nama": "Nyoman Arta",
+    "No HP": "85745678911",
+    "Email": "nyoman.arta33@gmail.com",
+    "Alamat": "Jalan Tukad Yeh Sungi, Denpasar Selatan",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "menanam",
+      "menyiram",
+      "panen"
+    ],
+    "DailyRate": 150000,
+    "NationalID": "5100000000000160",
+    "BankName": "BCA",
+    "BankAccountNumber": "0000000161",
+    "BankAccountHolder": "Nyoman Arta"
+  },
+  {
+    "Nama": "Made Wira",
+    "No HP": "87856789012",
+    "Email": "made.wira2022@gmail.com",
+    "Alamat": "Komplek Perumahan Graha Asri, Buleleng",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "mencangkul",
+      "memupuk",
+      "menyiram"
+    ],
+    "DailyRate": 90000,
+    "NationalID": "5100000000000161",
+    "BankName": "BRI",
+    "BankAccountNumber": "0000000162",
+    "BankAccountHolder": "Made Wira"
+  },
+  {
+    "Nama": "I Wayan Candra",
+    "No HP": "82367890113",
+    "Email": "iwayancandra99@gmail.com",
+    "Alamat": "Banjar Adat Tegal, Desa Mambal, Badung",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "penyiangan",
+      "panen"
+    ],
+    "DailyRate": 100000,
+    "NationalID": "5100000000000162",
+    "BankName": "Mandiri",
+    "BankAccountNumber": "0000000163",
+    "BankAccountHolder": "I Wayan Candra"
+  },
+  {
+    "Nama": "Ni Luh Putri",
+    "No HP": "85378901214",
+    "Email": "niluhputri500@gmail.com",
+    "Alamat": "Jalan Raya Sangeh No. 15, Badung",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "menanam",
+      "memupuk"
+    ],
+    "DailyRate": 110000,
+    "NationalID": "5100000000000163",
+    "BankName": "BNI",
+    "BankAccountNumber": "0000000164",
+    "BankAccountHolder": "Ni Luh Putri"
+  },
+  {
+    "Nama": "Komang Santi",
+    "No HP": "89689012315",
+    "Email": "komangsanti78@gmail.com",
+    "Alamat": "Dusun Kaja, Desa Baturiti, Tabanan",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "menanam",
+      "menyiram",
+      "panen"
+    ],
+    "DailyRate": 120000,
+    "NationalID": "5100000000000164",
+    "BankName": "BCA",
+    "BankAccountNumber": "0000000165",
+    "BankAccountHolder": "Komang Santi"
+  },
+  {
+    "Nama": "Ketut Dewi",
+    "No HP": "81901234516",
+    "Email": "ketut.dewi2001@gmail.com",
+    "Alamat": "Lingkungan Padangtegal, Ubud, Gianyar",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "mencangkul",
+      "memupuk",
+      "menyiram"
+    ],
+    "DailyRate": 130000,
+    "NationalID": "5100000000000165",
+    "BankName": "BRI",
+    "BankAccountNumber": "0000000166",
+    "BankAccountHolder": "Ketut Dewi"
+  },
+  {
+    "Nama": "Gede Agus Saputra",
+    "No HP": "85712345617",
+    "Email": "gdeagussaputra@gmail.com",
+    "Alamat": "Jalan Raya Batubulan No. 45, Gianyar",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "penyiangan",
+      "panen"
+    ],
+    "DailyRate": 140000,
+    "NationalID": "5100000000000166",
+    "BankName": "Mandiri",
+    "BankAccountNumber": "0000000167",
+    "BankAccountHolder": "Gede Agus Saputra"
+  },
+  {
+    "Nama": "Putu Eka",
+    "No HP": "87823456718",
+    "Email": "putu.eka.45@gmail.com",
+    "Alamat": "Banjar Dinas Dauh Tukad, Karangasem",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "menanam",
+      "memupuk"
+    ],
+    "DailyRate": 150000,
+    "NationalID": "5100000000000167",
+    "BankName": "BNI",
+    "BankAccountNumber": "0000000168",
+    "BankAccountHolder": "Putu Eka"
+  },
+  {
+    "Nama": "Nyoman Surya",
+    "No HP": "82334567819",
+    "Email": "nyomansurya123@gmail.com",
+    "Alamat": "Desa Adat Tihingan, Klungkung",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "menanam",
+      "menyiram",
+      "panen"
+    ],
+    "DailyRate": 90000,
+    "NationalID": "5100000000000168",
+    "BankName": "BCA",
+    "BankAccountNumber": "0000000169",
+    "BankAccountHolder": "Nyoman Surya"
+  },
+  {
+    "Nama": "Made Juniarta",
+    "No HP": "85345678920",
+    "Email": "madejuniarta55@gmail.com",
+    "Alamat": "Jalan Raya Batur No. 10, Kintamani, Bangli",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "mencangkul",
+      "memupuk",
+      "menyiram"
+    ],
+    "DailyRate": 100000,
+    "NationalID": "5100000000000169",
+    "BankName": "BRI",
+    "BankAccountNumber": "0000000170",
+    "BankAccountHolder": "Made Juniarta"
+  },
+  {
+    "Nama": "Wayan Widhi",
+    "No HP": "89656789021",
+    "Email": "wayan.widhi.1@gmail.com",
+    "Alamat": "Dusun Tengah, Desa Sudimara, Tabanan",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "penyiangan",
+      "panen"
+    ],
+    "DailyRate": 110000,
+    "NationalID": "5100000000000170",
+    "BankName": "Mandiri",
+    "BankAccountNumber": "0000000171",
+    "BankAccountHolder": "Wayan Widhi"
+  },
+  {
+    "Nama": "Gusti Ayu Putu",
+    "No HP": "81967890122",
+    "Email": "gusti.ayu.putu@gmail.com",
+    "Alamat": "Lingkungan Ketewel, Sukawati, Gianyar",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "menanam",
+      "memupuk"
+    ],
+    "DailyRate": 120000,
+    "NationalID": "5100000000000171",
+    "BankName": "BNI",
+    "BankAccountNumber": "0000000172",
+    "BankAccountHolder": "Gusti Ayu Putu"
+  },
+  {
+    "Nama": "Nia Nazmi",
+    "No HP": "83114755807",
+    "Email": "nazmi@gmail.com",
+    "Alamat": "Desa Banjar, Bali",
+    "Role": "worker",
+    "Password": "password123",
+    "Skills": [
+      "menanam",
+      "menyiram",
+      "panen"
+    ],
+    "DailyRate": 130000,
+    "NationalID": "5100000000000172",
+    "BankName": "BCA",
+    "BankAccountNumber": "0000000173",
+    "BankAccountHolder": "Nia Nazmi"
+  }
+]
