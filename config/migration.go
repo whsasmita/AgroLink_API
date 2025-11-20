@@ -51,12 +51,13 @@ var migrationModels = []interface{}{
 
 	// 6. Model tambahan dari ERD e-commerce
 	&models.Product{},
-	// &models.UserVerification{}, // Pastikan ini diaktifkan jika Anda menggunakannya
+	&models.UserVerification{}, // Pastikan ini diaktifkan jika Anda menggunakannya
 	&models.Cart{},
 	&models.Order{},
 	&models.OrderItem{},
 	&models.ECommercePayment{},
 	&models.PlatformProfit{},
+
 }
 
 // =====================================================================
