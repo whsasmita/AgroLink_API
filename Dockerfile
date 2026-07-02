@@ -37,7 +37,7 @@ RUN mkdir -p /app/public/uploads && \
     chown -R nonroot:nonroot /app/public/uploads
 
 RUN chown -R nonroot:nonroot /app
-    
+
 ENV GIN_MODE=release
 EXPOSE 8080
 
