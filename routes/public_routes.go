@@ -14,10 +14,13 @@ func PublicRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	// DEPENDENCY INJECTION (Inisialisasi semua komponen di sini)
 	// =================================================================
 	userRepo := repositories.NewUserRepository(db)
+	geminiRepo := repositories.NewGeminiChatRepository(db)
 
 	// Komponen untuk Autentikasi & Profil (Get)
 	authService := services.NewAuthService(userRepo)
 	authHandler := handlers.NewAuthHandler(authService)
+	geminiService := services.NewGeminiChatService(geminiRepo)
+	geminiHandler := handlers.NewGeminiChatHandler(geminiService)
 
 	// (Nantinya, inisialisasi untuk Project, dll. juga di sini)
 	projectRepo := repositories.NewProjectRepository(db)
@@ -37,7 +40,7 @@ func PublicRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	driverHandler := handlers.NewDriverHandler(driverService)
 
 	productRepo := repositories.NewProductRepository(db)
-	productService := services.NewProductService(productRepo,db)
+	productService := services.NewProductService(productRepo, db)
 	productHandler := handlers.NewProductHandler(productService)
 
 	// transactionRepo := repositories.NewTransactionRepository(db)
@@ -69,6 +72,11 @@ func PublicRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	driverGroup.GET("/", driverHandler.GetDrivers)
 	driverGroup.GET("/:id", driverHandler.GetDriver)
 
+	aiGroup := router.Group("/ai")
+	{
+		aiGroup.POST("/chat", geminiHandler.ChatPublic)
+	}
+
 	// paymentRoute := router.Group("/transactions")
 	// paymentRoute.POST("/webhooks/midtrans-notification", webhookHandler.HandleMidtransNotification)
 
@@ -78,11 +86,11 @@ func PublicRoutes(router *gin.RouterGroup, db *gorm.DB) {
 		projects.GET("/", projectHandler.FindAllProjects)
 	}
 
-	 products := router.Group("/products")
-    {
-        products.GET("/", productHandler.GetAllProducts)
-        products.GET("/:id", productHandler.GetProductByID)
-    }
+	products := router.Group("/products")
+	{
+		products.GET("/", productHandler.GetAllProducts)
+		products.GET("/:id", productHandler.GetProductByID)
+	}
 
 	// Tambahkan juga routes lain seperti: search, contracts, payments, reviews, notifications ke sini.
 }

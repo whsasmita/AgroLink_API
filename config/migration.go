@@ -16,12 +16,13 @@ import (
 
 const seedUserJSONPath = "seeders/users_seed.json"
 
-
 // List semua model untuk migrasi.
 var migrationModels = []interface{}{
 	// Base user models first
 	// 1. Model dasar tanpa banyak dependensi
 	&models.User{},
+	&models.AIChatPremiumSubscription{},
+	&models.AIChatTurn{},
 	&models.Payout{}, // Payout di sini
 	// &models.SystemSetting{},
 
@@ -57,7 +58,6 @@ var migrationModels = []interface{}{
 	&models.OrderItem{},
 	&models.ECommercePayment{},
 	&models.PlatformProfit{},
-
 }
 
 // =====================================================================
@@ -287,7 +287,6 @@ func seedUsers(db *gorm.DB) {
 	log.Println("User seeding from JSON completed.")
 }
 
-
 func CreateIndexes(db *gorm.DB) {
 	log.Println("🔄 Creating database indexes...")
 	indexes := []string{
@@ -300,7 +299,6 @@ func CreateIndexes(db *gorm.DB) {
 	}
 	log.Println("✅ Database indexes created successfully")
 }
-
 
 // =====================================================================
 // HELPER FUNCTIONS

@@ -29,13 +29,15 @@ func main() {
 
 	// Connect to database
 	db := config.ConnectDatabase()
+	geminiRepo := repositories.NewGeminiChatRepository(db)
+	geminiService := services.NewGeminiChatService(geminiRepo)
 
-	// Run migration 
+	// Run migration
 	// config.RunMigrationWithReset(db)
-	// config.AutoMigrate(db)
+	config.AutoMigrate(db)
 	// config.CreateIndexes()
 
-	// Graceful shutdown 
+	// Graceful shutdown
 	defer config.CloseDatabase()
 
 	c := make(chan os.Signal, 1)
@@ -63,7 +65,7 @@ func main() {
 
 	// Configure CORS
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:8080", "http://localhost:5173", "https://goagrolink.com", "https://admin.goagrolink.com","http://localhost:5174",},
+		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:8080", "http://localhost:5173", "https://goagrolink.com", "https://admin.goagrolink.com", "http://localhost:5174"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
@@ -72,7 +74,6 @@ func main() {
 
 	chatHub := chat.NewHub()
 	go chatHub.Run()
-
 
 	// Health check endpoint
 	r.GET("/health", func(c *gin.Context) {
@@ -93,7 +94,7 @@ func main() {
 	productRepo := repositories.NewProductRepository(db)
 	ecommPaymentRepo := repositories.NewECommercePaymentRepository(db)
 	eCommercePaymentService := services.NewECommercePaymentService(
-		ecommPaymentRepo, orderRepo, userRepo,productRepo, db,
+		ecommPaymentRepo, orderRepo, userRepo, productRepo, db,
 	)
 	paymentService := services.NewPaymentService(
 		invoiceRepo,
@@ -111,6 +112,7 @@ func main() {
 		eCommercePaymentService,
 		invoiceRepo,
 		ecommPaymentRepo,
+		geminiService,
 	)
 	chatHandler := handlers.NewChatHandler(chatHub)
 	api := r.Group("/api")
@@ -129,12 +131,12 @@ func main() {
 					return
 				}
 				// Terapkan AuthMiddleware hanya untuk non-OPTIONS requests
-				middleware.AuthMiddleware(userRepo)(c) 
+				middleware.AuthMiddleware(userRepo)(c)
 			})
 			{
 				// [PENTING] Anda perlu menyesuaikan ProtectedRoutes di file routes.go
 				// untuk menerima semua handler yang diinisialisasi di sini.
-				routes.ProtectedRoutes(protectedGroup, db, chatHandler) 
+				routes.ProtectedRoutes(protectedGroup, db, chatHandler)
 			}
 		}
 	}

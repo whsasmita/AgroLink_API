@@ -1,9 +1,10 @@
-version: "3.8"
-
 services:
   # --- Layanan API Anda ---
   agrolink-api:
-    image: darmawiguna/agrolink-api:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: agrolink-api:local
     container_name: agrolink-api-prod
     restart: always
     ports:
@@ -28,8 +29,7 @@ services:
       # Variabel ini akan digunakan oleh image MySQL untuk setup awal
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD} # Ambil dari file .env
       MYSQL_DATABASE: ${DB_NAME} # Ambil dari file .env
-      MYSQL_USER: ${DB_USER} # Ambil dari file .env
-      MYSQL_PASSWORD: ${DB_PASSWORD} # Ambil dari file .env
+      MYSQL_ROOT_HOST: "%"
     ports:
       # (Opsional) Membuka port database ke VPS untuk diakses dari luar kontainer (misal: via DBeaver)
       - "3307:3306"

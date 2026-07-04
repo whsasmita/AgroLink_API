@@ -30,6 +30,7 @@ RUN groupadd --system nonroot && \
 WORKDIR /app
 
 COPY --from=builder /out/agrolink-api /app/agrolink-api
+COPY public /app/public
 COPY templates /app/templates
 COPY seeders /app/seeders
 

@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -20,15 +21,16 @@ import (
 )
 
 type WebhookHandler struct {
-	paymentService services.PaymentService
+	paymentService      services.PaymentService
 	ecommPaymentService services.ECommercePaymentService
-	webhookLogRepo repositories.WebhookLogRepository
-	invoiceRepo      repositories.InvoiceRepository
-	ecommPaymentRepo repositories.ECommercePaymentRepository
+	geminiChatService   services.GeminiChatService
+	webhookLogRepo      repositories.WebhookLogRepository
+	invoiceRepo         repositories.InvoiceRepository
+	ecommPaymentRepo    repositories.ECommercePaymentRepository
 }
 
-func NewWebhookHandler(service services.PaymentService, logRepo repositories.WebhookLogRepository, ecommerceService services.ECommercePaymentService, invoiceRepo repositories.InvoiceRepository, ecommercePaymentRepo repositories.ECommercePaymentRepository ) *WebhookHandler {
-	return &WebhookHandler{paymentService: service, webhookLogRepo: logRepo, ecommPaymentService: ecommerceService, invoiceRepo: invoiceRepo, ecommPaymentRepo: ecommercePaymentRepo}
+func NewWebhookHandler(service services.PaymentService, logRepo repositories.WebhookLogRepository, ecommerceService services.ECommercePaymentService, invoiceRepo repositories.InvoiceRepository, ecommercePaymentRepo repositories.ECommercePaymentRepository, geminiChatService services.GeminiChatService) *WebhookHandler {
+	return &WebhookHandler{paymentService: service, webhookLogRepo: logRepo, ecommPaymentService: ecommerceService, invoiceRepo: invoiceRepo, ecommPaymentRepo: ecommercePaymentRepo, geminiChatService: geminiChatService}
 }
 
 func (h *WebhookHandler) HandleMidtransNotification(c *gin.Context) {
@@ -45,7 +47,7 @@ func (h *WebhookHandler) HandleMidtransNotification(c *gin.Context) {
 	c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes)) // Penting untuk re-buffering
 
 	log.Printf("[WEBHOOK %s] >>> NEW MIDTRANS NOTIFICATION", reqID)
-	
+
 	// 2) Parse payload
 	var payload map[string]interface{}
 	if err := json.Unmarshal(bodyBytes, &payload); err != nil {
@@ -66,7 +68,7 @@ func (h *WebhookHandler) HandleMidtransNotification(c *gin.Context) {
 		calcHex := fmt.Sprintf("%x", calc[:])
 		sigValid = (calcHex == sig)
 	}
-	
+
 	// 4) Create log entry
 	logEntry := &models.WebhookLog{
 		ID:                uuid.New(),
@@ -111,6 +113,15 @@ func (h *WebhookHandler) HandleMidtransNotification(c *gin.Context) {
 		}
 	}
 
+	// Cek 3: Premium Gemini subscription
+	if !routed && strings.HasPrefix(orderID, "ai-premium-") {
+		log.Printf("[WEBHOOK %s] Routing to Gemini Premium Service", reqID)
+		serviceErr = h.geminiChatService.HandlePremiumWebhook(payload)
+		if serviceErr == nil {
+			routed = true
+		}
+	}
+
 	// 6) Handle hasil
 	if !routed {
 		log.Printf("[WEBHOOK %s] SERVICE ERROR: OrderID %s not found in any service", reqID, orderID)
@@ -131,7 +142,6 @@ func (h *WebhookHandler) HandleMidtransNotification(c *gin.Context) {
 	log.Printf("[WEBHOOK %s] processed OK", reqID)
 	c.JSON(http.StatusOK, gin.H{"message": "Notification processed successfully"})
 }
-
 
 // --- Helpers ---
 func getString(m map[string]interface{}, key string) string {

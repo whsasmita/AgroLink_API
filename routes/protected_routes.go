@@ -40,11 +40,12 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 	ecommPaymentRepo := repositories.NewECommercePaymentRepository(db)
 	userVerificationRepo := repositories.NewUserVerificationRepository(db)
 	profitRepo := repositories.NewProfitRepository(db)
-	
+	geminiRepo := repositories.NewGeminiChatRepository(db)
 
 	// workerRepo dan projectRepo sudah ada
 
 	// 2. Inisialisasi Services
+	geminiChatService := services.NewGeminiChatService(geminiRepo)
 	authService := services.NewAuthService(userRepo)
 	profileService := services.NewProfileService(userRepo, userVerificationRepo)
 	farmService := services.NewFarmService(farmRepo)
@@ -80,6 +81,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 	profitService := services.NewProfitService(profitRepo)
 
 	notifHandler := handlers.NewNotificationHandler(notifRepo)
+	geminiChatHandler := handlers.NewGeminiChatHandler(geminiChatService)
 
 	// 3. Inisialisasi Handlers
 	authHandler := handlers.NewAuthHandler(authService)
@@ -107,6 +109,12 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 	// Dikelompokkan berdasarkan sumber daya (resource)
 	// =================================================================
 	router.GET("/ws", chatHandler.ServeWs)
+	ai := router.Group("/ai")
+	{
+		ai.POST("/chat", geminiChatHandler.ChatPrivate)
+		ai.GET("/premium/status", geminiChatHandler.PremiumStatus)
+		ai.POST("/premium/checkout", geminiChatHandler.InitiatePremiumCheckout)
+	}
 
 	// Profile Routes
 	router.GET("/profile", authHandler.GetProfile)
@@ -213,7 +221,6 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 		checkout.POST("/", checkoutHandler.CreateOrders)
 		checkout.POST("/direct", checkoutHandler.DirectCheckout)
 	}
-
 
 	admin := router.Group("/admin")
 	admin.Use(middleware.RoleMiddleware("admin")) // <-- Hanya admin yang bisa akses
