@@ -1,0 +1,2453 @@
+[
+  {
+    "ID": 1,
+    "Title": "Kopi Arabica (kg)",
+    "ItemName": "Kopi Arabica",
+    "Satuan": "kg",
+    "FarmerEmail": "i.diksa3@gmail.com",
+    "FarmerName": "i.diksa3",
+    "Category": "Kopi & Kakao",
+    "Location": "Sukasada, Buleleng",
+    "Price": 145000.0,
+    "Stock": 52,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/kopi-arabica.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2025-09-12 09:01:00",
+    "UpdatedAt": "2025-09-14 13:01:00"
+  },
+  {
+    "ID": 2,
+    "Title": "Jeruk (kg)",
+    "ItemName": "Jeruk",
+    "Satuan": "kg",
+    "FarmerEmail": "ni.putu5@gmail.com",
+    "FarmerName": "ni.putu5",
+    "Category": "Buah",
+    "Location": "Kintamani, Bangli",
+    "Price": 30000.0,
+    "Stock": 46,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/jeruk.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2025-09-19 14:41:05",
+    "UpdatedAt": "2025-09-22 15:41:05"
+  },
+  {
+    "ID": 3,
+    "Title": "Dodol (pack)",
+    "ItemName": "Dodol",
+    "Satuan": "pack",
+    "FarmerEmail": "des.sag7@gmail.com",
+    "FarmerName": "des.sag7",
+    "Category": "Hasil Olahan Tani",
+    "Location": "Selat, Karangasem",
+    "Price": 29000.0,
+    "Stock": 63,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/dodol.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2025-09-19 16:33:17",
+    "UpdatedAt": "2025-09-21 04:33:17"
+  },
+  {
+    "ID": 4,
+    "Title": "Salak Gula Bali (kg)",
+    "ItemName": "Salak Gula Bali",
+    "Satuan": "kg",
+    "FarmerEmail": "i.putu17@gmail.com",
+    "FarmerName": "i.putu17",
+    "Category": "Buah",
+    "Location": "Selat, Karangasem",
+    "Price": 30000.0,
+    "Stock": 78,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/salak-gula-bali.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2025-09-28 20:33:23",
+    "UpdatedAt": "2025-09-30 08:33:23"
+  },
+  {
+    "ID": 5,
+    "Title": "Kopi Bubuk Luwak (50 gram)",
+    "ItemName": "Kopi Bubuk Luwak",
+    "Satuan": "50 gram",
+    "FarmerEmail": "ikadeksurya1990@gmail.com",
+    "FarmerName": "ikadeksurya1990",
+    "Category": "Kopi & Kakao",
+    "Location": "Pupuan, Tabanan",
+    "Price": 26000.0,
+    "Stock": 80,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/kopi-bubuk-luwak.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2025-10-05 03:17:50",
+    "UpdatedAt": "2025-10-05 10:17:50"
+  },
+  {
+    "ID": 6,
+    "Title": "Kopi Bubuk Robusta (100 gram)",
+    "ItemName": "Kopi Bubuk Robusta",
+    "Satuan": "100 gram",
+    "FarmerEmail": "ni27puspita@gmail.com",
+    "FarmerName": "ni27puspita",
+    "Category": "Kopi & Kakao",
+    "Location": "Kusamba, Klungkung",
+    "Price": 15000.0,
+    "Stock": 103,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/kopi-bubuk-robusta.jpg"
+    ],
+    "Rating": 4.6,
+    "CreatedAt": "2025-10-15 17:52:03",
+    "UpdatedAt": "2025-10-16 05:52:03"
+  },
+  {
+    "ID": 7,
+    "Title": "Mangga (kg)",
+    "ItemName": "Mangga",
+    "Satuan": "kg",
+    "FarmerEmail": "n.krisnawati38@gmail.com",
+    "FarmerName": "n.krisnawati38",
+    "Category": "Buah",
+    "Location": "Abang, Karangasem",
+    "Price": 20000.0,
+    "Stock": 108,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/mangga.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2025-11-02 08:47:59",
+    "UpdatedAt": "2025-11-04 19:47:59"
+  },
+  {
+    "ID": 8,
+    "Title": "Green Been (Natural) (kg)",
+    "ItemName": "Green Been (Natural)",
+    "Satuan": "kg",
+    "FarmerEmail": "ni.utami42@gmail.com",
+    "FarmerName": "ni.utami42",
+    "Category": "Kopi & Kakao",
+    "Location": "Jatiluwih, Tabanan",
+    "Price": 145000.0,
+    "Stock": 64,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/green-been-natural.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2025-10-23 04:58:38",
+    "UpdatedAt": "2025-10-24 09:58:38"
+  },
+  {
+    "ID": 9,
+    "Title": "Green Been (Fullwash) (kg)",
+    "ItemName": "Green Been (Fullwash)",
+    "Satuan": "kg",
+    "FarmerEmail": "nikomangsuryaastuti.71@gmail.com",
+    "FarmerName": "nikomangsuryaastuti.71",
+    "Category": "Kopi & Kakao",
+    "Location": "Abang, Karangasem",
+    "Price": 140000.0,
+    "Stock": 80,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/green-been-fullwash.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2025-11-26 00:53:20",
+    "UpdatedAt": "2025-11-28 03:53:20"
+  },
+  {
+    "ID": 10,
+    "Title": "Cabe Rawit (kg)",
+    "ItemName": "Cabe Rawit",
+    "Satuan": "kg",
+    "FarmerEmail": "ni.putu113@gmail.com",
+    "FarmerName": "ni.putu113",
+    "Category": "Sayur",
+    "Location": "Petang, Badung",
+    "Price": 30000.0,
+    "Stock": 103,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/cabe-rawit.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2025-12-28 15:29:43",
+    "UpdatedAt": "2025-12-29 01:29:43"
+  },
+  {
+    "ID": 11,
+    "Title": "Bawang Merah (kg)",
+    "ItemName": "Bawang Merah",
+    "Satuan": "kg",
+    "FarmerEmail": "ninyomantrisnawati1991@gmail.com",
+    "FarmerName": "ninyomantrisnawati1991",
+    "Category": "Sayur",
+    "Location": "Sukasada, Buleleng",
+    "Price": 35000.0,
+    "Stock": 76,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/bawang-merah.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-01-25 12:38:18",
+    "UpdatedAt": "2026-01-27 23:38:18"
+  },
+  {
+    "ID": 12,
+    "Title": "Alpukat (kg)",
+    "ItemName": "Alpukat",
+    "Satuan": "kg",
+    "FarmerEmail": "ni.wardhani154@gmail.com",
+    "FarmerName": "ni.wardhani154",
+    "Category": "Buah",
+    "Location": "Rendang, Karangasem",
+    "Price": 25000.0,
+    "Stock": 69,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/alpukat.jpg"
+    ],
+    "Rating": 4.6,
+    "CreatedAt": "2026-02-05 00:34:03",
+    "UpdatedAt": "2026-02-05 06:34:03"
+  },
+  {
+    "ID": 13,
+    "Title": "Stowberry (kg)",
+    "ItemName": "Stowberry",
+    "Satuan": "kg",
+    "FarmerEmail": "i171suryantha@gmail.com",
+    "FarmerName": "i171suryantha",
+    "Category": "Buah",
+    "Location": "Melaya, Jembrana",
+    "Price": 25000.0,
+    "Stock": 85,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/stowberry.jpg"
+    ],
+    "Rating": 5.0,
+    "CreatedAt": "2026-02-19 08:21:08",
+    "UpdatedAt": "2026-02-21 12:21:08"
+  },
+  {
+    "ID": 14,
+    "Title": "Kelapa (biji)",
+    "ItemName": "Kelapa",
+    "Satuan": "biji",
+    "FarmerEmail": "desak173adnyani@gmail.com",
+    "FarmerName": "desak173adnyani",
+    "Category": "Hasil Olahan Tani",
+    "Location": "Sukasada, Buleleng",
+    "Price": 15000.0,
+    "Stock": 106,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/kelapa.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2026-02-17 01:43:20",
+    "UpdatedAt": "2026-02-19 04:43:20"
+  },
+  {
+    "ID": 15,
+    "Title": "Apel Manalagi (kg)",
+    "ItemName": "Apel Manalagi",
+    "Satuan": "kg",
+    "FarmerEmail": "ni_wayan189@gmail.com",
+    "FarmerName": "ni_wayan189",
+    "Category": "Buah",
+    "Location": "Sukasada, Buleleng",
+    "Price": 22000.0,
+    "Stock": 52,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/apel-manalagi.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2026-02-26 04:46:53",
+    "UpdatedAt": "2026-03-01 10:46:53"
+  },
+  {
+    "ID": 16,
+    "Title": "Jeruk Bali (kg)",
+    "ItemName": "Jeruk Bali",
+    "Satuan": "kg",
+    "FarmerEmail": "i_wayan195@gmail.com",
+    "FarmerName": "i_wayan195",
+    "Category": "Buah",
+    "Location": "Petang, Badung",
+    "Price": 24000.0,
+    "Stock": 89,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/jeruk-bali.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2026-02-19 11:17:18",
+    "UpdatedAt": "2026-02-19 14:17:18"
+  },
+  {
+    "ID": 17,
+    "Title": "Bawang Putih (kg)",
+    "ItemName": "Bawang Putih",
+    "Satuan": "kg",
+    "FarmerEmail": "iwayankertanadi.203@gmail.com",
+    "FarmerName": "iwayankertanadi.203",
+    "Category": "Sayur",
+    "Location": "Banjar, Buleleng",
+    "Price": 28000.0,
+    "Stock": 105,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/bawang-putih.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-03-01 00:26:36",
+    "UpdatedAt": "2026-03-04 09:26:36"
+  },
+  {
+    "ID": 18,
+    "Title": "Jagung Manis (kg)",
+    "ItemName": "Jagung Manis",
+    "Satuan": "kg",
+    "FarmerEmail": "iwayanduwijaya1999@gmail.com",
+    "FarmerName": "iwayanduwijaya1999",
+    "Category": "Sayur",
+    "Location": "Banjar, Buleleng",
+    "Price": 13000.0,
+    "Stock": 117,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/jagung-manis.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2026-03-07 02:31:06",
+    "UpdatedAt": "2026-03-07 13:31:06"
+  },
+  {
+    "ID": 19,
+    "Title": "Rambutan (kg)",
+    "ItemName": "Rambutan",
+    "Satuan": "kg",
+    "FarmerEmail": "n.trisnawati266@gmail.com",
+    "FarmerName": "n.trisnawati266",
+    "Category": "Buah",
+    "Location": "Banjar, Buleleng",
+    "Price": 38000.0,
+    "Stock": 99,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/rambutan.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-04-01 19:19:31",
+    "UpdatedAt": "2026-04-04 20:19:31"
+  },
+  {
+    "ID": 20,
+    "Title": "Jambu Biji Kristal (kg)",
+    "ItemName": "Jambu Biji Kristal",
+    "Satuan": "kg",
+    "FarmerEmail": "i.trisna267@gmail.com",
+    "FarmerName": "i.trisna267",
+    "Category": "Buah",
+    "Location": "Mendoyo, Jembrana",
+    "Price": 16000.0,
+    "Stock": 112,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/jambu-biji-kristal.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2026-04-05 17:54:42",
+    "UpdatedAt": "2026-04-08 04:54:42"
+  },
+  {
+    "ID": 21,
+    "Title": "Labu Siam (kg)",
+    "ItemName": "Labu Siam",
+    "Satuan": "kg",
+    "FarmerEmail": "i_gede272@gmail.com",
+    "FarmerName": "i_gede272",
+    "Category": "Sayur",
+    "Location": "Tegallalang, Gianyar",
+    "Price": 8000.0,
+    "Stock": 97,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/labu-siam.jpg"
+    ],
+    "Rating": 4.6,
+    "CreatedAt": "2026-04-05 02:16:57",
+    "UpdatedAt": "2026-04-05 12:16:57"
+  },
+  {
+    "ID": 22,
+    "Title": "Nanas (kg)",
+    "ItemName": "Nanas",
+    "Satuan": "kg",
+    "FarmerEmail": "ni284puspita@gmail.com",
+    "FarmerName": "ni284puspita",
+    "Category": "Buah",
+    "Location": "Bedugul, Tabanan",
+    "Price": 14000.0,
+    "Stock": 65,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/nanas.jpg"
+    ],
+    "Rating": 5.0,
+    "CreatedAt": "2026-04-20 22:05:37",
+    "UpdatedAt": "2026-04-23 02:05:37"
+  },
+  {
+    "ID": 23,
+    "Title": "Arabica (200 gram)",
+    "ItemName": "Arabica",
+    "Satuan": "200 gram",
+    "FarmerEmail": "ni297ariyanti@gmail.com",
+    "FarmerName": "ni297ariyanti",
+    "Category": "Hasil Olahan Tani",
+    "Location": "Plaga, Badung",
+    "Price": 29000.0,
+    "Stock": 51,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/arabica.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-04-12 14:23:25",
+    "UpdatedAt": "2026-04-15 16:23:25"
+  },
+  {
+    "ID": 24,
+    "Title": "Buah Naga (kg)",
+    "ItemName": "Buah Naga",
+    "Satuan": "kg",
+    "FarmerEmail": "i.nyo.jay299@gmail.com",
+    "FarmerName": "i.nyo.jay299",
+    "Category": "Buah",
+    "Location": "Pancasari, Buleleng",
+    "Price": 14000.0,
+    "Stock": 74,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/buah-naga.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2026-04-20 02:55:11",
+    "UpdatedAt": "2026-04-23 06:55:11"
+  },
+  {
+    "ID": 25,
+    "Title": "Cabe Besar (kg)",
+    "ItemName": "Cabe Besar",
+    "Satuan": "kg",
+    "FarmerEmail": "n.diahastuti302@gmail.com",
+    "FarmerName": "n.diahastuti302",
+    "Category": "Sayur",
+    "Location": "Kusamba, Klungkung",
+    "Price": 16000.0,
+    "Stock": 50,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/cabe-besar.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2026-04-24 09:51:01",
+    "UpdatedAt": "2026-04-27 18:51:01"
+  },
+  {
+    "ID": 26,
+    "Title": "Tomat (kg)",
+    "ItemName": "Tomat",
+    "Satuan": "kg",
+    "FarmerEmail": "muhammad_rizki304@gmail.com",
+    "FarmerName": "muhammad_rizki304",
+    "Category": "Sayur",
+    "Location": "Sukasada, Buleleng",
+    "Price": 12000.0,
+    "Stock": 35,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/tomat.jpg"
+    ],
+    "Rating": 4.6,
+    "CreatedAt": "2026-04-16 02:38:24",
+    "UpdatedAt": "2026-04-17 12:38:24"
+  },
+  {
+    "ID": 27,
+    "Title": "Kubis (kg)",
+    "ItemName": "Kubis",
+    "Satuan": "kg",
+    "FarmerEmail": "i312widana@gmail.com",
+    "FarmerName": "i312widana",
+    "Category": "Sayur",
+    "Location": "Tegallalang, Gianyar",
+    "Price": 17000.0,
+    "Stock": 44,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/kubis.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2026-04-28 11:31:16",
+    "UpdatedAt": "2026-04-28 12:31:16"
+  },
+  {
+    "ID": 28,
+    "Title": "Buncis (kg)",
+    "ItemName": "Buncis",
+    "Satuan": "kg",
+    "FarmerEmail": "niwayanpuspitasari1995@gmail.com",
+    "FarmerName": "niwayanpuspitasari1995",
+    "Category": "Sayur",
+    "Location": "Plaga, Badung",
+    "Price": 15000.0,
+    "Stock": 108,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/buncis.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2026-05-10 16:47:01",
+    "UpdatedAt": "2026-05-12 01:47:01"
+  },
+  {
+    "ID": 29,
+    "Title": "Wortel (kg)",
+    "ItemName": "Wortel",
+    "Satuan": "kg",
+    "FarmerEmail": "niluhwedayanti.361@gmail.com",
+    "FarmerName": "niluhwedayanti.361",
+    "Category": "Sayur",
+    "Location": "Pupuan, Tabanan",
+    "Price": 11000.0,
+    "Stock": 47,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/wortel.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-05-13 14:41:35",
+    "UpdatedAt": "2026-05-16 18:41:35"
+  },
+  {
+    "ID": 30,
+    "Title": "Kacang Tanah (kg)",
+    "ItemName": "Kacang Tanah",
+    "Satuan": "kg",
+    "FarmerEmail": "i364wiadnyana@gmail.com",
+    "FarmerName": "i364wiadnyana",
+    "Category": "Sayur",
+    "Location": "Bedugul, Tabanan",
+    "Price": 37000.0,
+    "Stock": 118,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/kacang-tanah.jpg"
+    ],
+    "Rating": 5.0,
+    "CreatedAt": "2026-05-18 05:37:37",
+    "UpdatedAt": "2026-05-21 17:37:37"
+  },
+  {
+    "ID": 31,
+    "Title": "Selada (kg)",
+    "ItemName": "Selada",
+    "Satuan": "kg",
+    "FarmerEmail": "iketutadnyana1992@gmail.com",
+    "FarmerName": "iketutadnyana1992",
+    "Category": "Sayur",
+    "Location": "Sukasada, Buleleng",
+    "Price": 27000.0,
+    "Stock": 59,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/selada.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2026-05-16 15:46:17",
+    "UpdatedAt": "2026-05-18 17:46:17"
+  },
+  {
+    "ID": 32,
+    "Title": "Kentang (kg)",
+    "ItemName": "Kentang",
+    "Satuan": "kg",
+    "FarmerEmail": "i_putu372@gmail.com",
+    "FarmerName": "i_putu372",
+    "Category": "Sayur",
+    "Location": "Kusamba, Klungkung",
+    "Price": 15000.0,
+    "Stock": 66,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/kentang.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-05-23 00:49:47",
+    "UpdatedAt": "2026-05-24 05:49:47"
+  },
+  {
+    "ID": 33,
+    "Title": "Salak Sibetan (kg)",
+    "ItemName": "Salak Sibetan",
+    "Satuan": "kg",
+    "FarmerEmail": "i.put.suw375@gmail.com",
+    "FarmerName": "i.put.suw375",
+    "Category": "Buah",
+    "Location": "Kintamani, Bangli",
+    "Price": 22000.0,
+    "Stock": 46,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/salak-sibetan.jpg"
+    ],
+    "Rating": 5.0,
+    "CreatedAt": "2026-05-18 14:46:39",
+    "UpdatedAt": "2026-05-18 15:46:39"
+  },
+  {
+    "ID": 34,
+    "Title": "Jeruk Kintamani (kg)",
+    "ItemName": "Jeruk Kintamani",
+    "Satuan": "kg",
+    "FarmerEmail": "n.mertayani381@gmail.com",
+    "FarmerName": "n.mertayani381",
+    "Category": "Buah",
+    "Location": "Kintamani, Bangli",
+    "Price": 28000.0,
+    "Stock": 62,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/jeruk-kintamani.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-06-02 05:57:47",
+    "UpdatedAt": "2026-06-05 13:57:47"
+  },
+  {
+    "ID": 35,
+    "Title": "Manggis Tabanan (kg)",
+    "ItemName": "Manggis Tabanan",
+    "Satuan": "kg",
+    "FarmerEmail": "ahmadzainimahardika.389@gmail.com",
+    "FarmerName": "ahmadzainimahardika.389",
+    "Category": "Buah",
+    "Location": "Tabanan",
+    "Price": 32000.0,
+    "Stock": 68,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/manggis-tabanan.jpg"
+    ],
+    "Rating": 5.0,
+    "CreatedAt": "2026-06-06 10:58:45",
+    "UpdatedAt": "2026-06-09 11:58:45"
+  },
+  {
+    "ID": 36,
+    "Title": "Durian Bestala (buah)",
+    "ItemName": "Durian Bestala",
+    "Satuan": "buah",
+    "FarmerEmail": "ni_ketut391@gmail.com",
+    "FarmerName": "ni_ketut391",
+    "Category": "Buah",
+    "Location": "Buleleng",
+    "Price": 65000.0,
+    "Stock": 54,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/durian-bestala.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2026-06-06 02:21:19",
+    "UpdatedAt": "2026-06-09 14:21:19"
+  },
+  {
+    "ID": 37,
+    "Title": "Anggur Hitam Buleleng (kg)",
+    "ItemName": "Anggur Hitam Buleleng",
+    "Satuan": "kg",
+    "FarmerEmail": "ni.nengah397@gmail.com",
+    "FarmerName": "ni.nengah397",
+    "Category": "Buah",
+    "Location": "Buleleng",
+    "Price": 35000.0,
+    "Stock": 42,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/anggur-hitam-buleleng.jpg"
+    ],
+    "Rating": 4.6,
+    "CreatedAt": "2026-05-29 21:42:21",
+    "UpdatedAt": "2026-05-30 09:42:21"
+  },
+  {
+    "ID": 38,
+    "Title": "Anggur Hijau Bali (kg)",
+    "ItemName": "Anggur Hijau Bali",
+    "Satuan": "kg",
+    "FarmerEmail": "inyomandiatmika.398@gmail.com",
+    "FarmerName": "inyomandiatmika.398",
+    "Category": "Buah",
+    "Location": "Mendoyo, Jembrana",
+    "Price": 30000.0,
+    "Stock": 45,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/anggur-hijau-bali.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-06-04 04:08:30",
+    "UpdatedAt": "2026-06-05 05:08:30"
+  },
+  {
+    "ID": 39,
+    "Title": "Pisang Rai (sisir)",
+    "ItemName": "Pisang Rai",
+    "Satuan": "sisir",
+    "FarmerEmail": "i.ged.wid404@gmail.com",
+    "FarmerName": "i.ged.wid404",
+    "Category": "Buah",
+    "Location": "Pupuan, Tabanan",
+    "Price": 18000.0,
+    "Stock": 107,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/pisang-rai.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2026-05-31 13:18:22",
+    "UpdatedAt": "2026-06-01 20:18:22"
+  },
+  {
+    "ID": 40,
+    "Title": "Pisang Saba (sisir)",
+    "ItemName": "Pisang Saba",
+    "Satuan": "sisir",
+    "FarmerEmail": "i_nengah405@gmail.com",
+    "FarmerName": "i_nengah405",
+    "Category": "Buah",
+    "Location": "Mendoyo, Jembrana",
+    "Price": 20000.0,
+    "Stock": 75,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/pisang-saba.jpg"
+    ],
+    "Rating": 5.0,
+    "CreatedAt": "2026-06-08 12:59:17",
+    "UpdatedAt": "2026-06-08 19:59:17"
+  },
+  {
+    "ID": 41,
+    "Title": "Pisang Raja Bali (sisir)",
+    "ItemName": "Pisang Raja Bali",
+    "Satuan": "sisir",
+    "FarmerEmail": "i.ketut409@gmail.com",
+    "FarmerName": "i.ketut409",
+    "Category": "Buah",
+    "Location": "Banjar, Buleleng",
+    "Price": 25000.0,
+    "Stock": 85,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/pisang-raja-bali.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2026-06-06 09:38:40",
+    "UpdatedAt": "2026-06-08 13:38:40"
+  },
+  {
+    "ID": 42,
+    "Title": "Pisang Cavendish Bali (kg)",
+    "ItemName": "Pisang Cavendish Bali",
+    "Satuan": "kg",
+    "FarmerEmail": "n.ariani423@gmail.com",
+    "FarmerName": "n.ariani423",
+    "Category": "Buah",
+    "Location": "Kintamani, Bangli",
+    "Price": 22000.0,
+    "Stock": 93,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/pisang-cavendish-bali.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2026-06-17 02:38:37",
+    "UpdatedAt": "2026-06-19 04:38:37"
+  },
+  {
+    "ID": 43,
+    "Title": "Pisang Ambon (sisir)",
+    "ItemName": "Pisang Ambon",
+    "Satuan": "sisir",
+    "FarmerEmail": "ikomangpurnayasa.431@gmail.com",
+    "FarmerName": "ikomangpurnayasa.431",
+    "Category": "Buah",
+    "Location": "Banjar, Buleleng",
+    "Price": 20000.0,
+    "Stock": 51,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/pisang-ambon.jpg"
+    ],
+    "Rating": 5.0,
+    "CreatedAt": "2026-06-17 19:53:48",
+    "UpdatedAt": "2026-06-19 04:53:48"
+  },
+  {
+    "ID": 44,
+    "Title": "Pisang Kepok (sisir)",
+    "ItemName": "Pisang Kepok",
+    "Satuan": "sisir",
+    "FarmerEmail": "ikadekdiatmika435@gmail.com",
+    "FarmerName": "ikadekdiatmika435",
+    "Category": "Buah",
+    "Location": "Payangan, Gianyar",
+    "Price": 22000.0,
+    "Stock": 55,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/pisang-kepok.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2026-06-23 12:02:13",
+    "UpdatedAt": "2026-06-24 18:02:13"
+  },
+  {
+    "ID": 45,
+    "Title": "Pepaya California Tabanan (kg)",
+    "ItemName": "Pepaya California Tabanan",
+    "Satuan": "kg",
+    "FarmerEmail": "abdullatiefsuryawan2001@gmail.com",
+    "FarmerName": "abdullatiefsuryawan2001",
+    "Category": "Buah",
+    "Location": "Tabanan",
+    "Price": 10000.0,
+    "Stock": 119,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/pepaya-california-tabanan.jpg"
+    ],
+    "Rating": 4.6,
+    "CreatedAt": "2026-06-19 07:19:19",
+    "UpdatedAt": "2026-06-19 18:19:19"
+  },
+  {
+    "ID": 46,
+    "Title": "Sirsak (kg)",
+    "ItemName": "Sirsak",
+    "Satuan": "kg",
+    "FarmerEmail": "ni.sriastuti457@gmail.com",
+    "FarmerName": "ni.sriastuti457",
+    "Category": "Buah",
+    "Location": "Plaga, Badung",
+    "Price": 15000.0,
+    "Stock": 69,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/sirsak.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2026-06-25 13:09:28",
+    "UpdatedAt": "2026-06-25 15:09:28"
+  },
+  {
+    "ID": 47,
+    "Title": "Sawo (kg)",
+    "ItemName": "Sawo",
+    "Satuan": "kg",
+    "FarmerEmail": "i_komang460@gmail.com",
+    "FarmerName": "i_komang460",
+    "Category": "Buah",
+    "Location": "Banjar, Buleleng",
+    "Price": 18000.0,
+    "Stock": 99,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/sawo.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2026-06-15 14:21:17",
+    "UpdatedAt": "2026-06-17 01:21:17"
+  },
+  {
+    "ID": 48,
+    "Title": "Kedondong (kg)",
+    "ItemName": "Kedondong",
+    "Satuan": "kg",
+    "FarmerEmail": "nikadeksriastuti1997@gmail.com",
+    "FarmerName": "nikadeksriastuti1997",
+    "Category": "Buah",
+    "Location": "Bedugul, Tabanan",
+    "Price": 12000.0,
+    "Stock": 35,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/kedondong.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2026-06-26 13:45:52",
+    "UpdatedAt": "2026-06-29 18:45:52"
+  },
+  {
+    "ID": 49,
+    "Title": "Nangka Matang (kg)",
+    "ItemName": "Nangka Matang",
+    "Satuan": "kg",
+    "FarmerEmail": "ninyomanwirati1991@gmail.com",
+    "FarmerName": "ninyomanwirati1991",
+    "Category": "Buah",
+    "Location": "Kusamba, Klungkung",
+    "Price": 25000.0,
+    "Stock": 105,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/nangka-matang.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-06-15 11:20:32",
+    "UpdatedAt": "2026-06-16 23:20:32"
+  },
+  {
+    "ID": 50,
+    "Title": "Nangka Muda (Tewel) (kg)",
+    "ItemName": "Nangka Muda (Tewel)",
+    "Satuan": "kg",
+    "FarmerEmail": "inyomanadnyana.477@gmail.com",
+    "FarmerName": "inyomanadnyana.477",
+    "Category": "Buah",
+    "Location": "Plaga, Badung",
+    "Price": 10000.0,
+    "Stock": 104,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/nangka-muda-tewel.jpg"
+    ],
+    "Rating": 4.6,
+    "CreatedAt": "2026-06-20 20:39:49",
+    "UpdatedAt": "2026-06-21 08:39:49"
+  },
+  {
+    "ID": 51,
+    "Title": "Belimbing Manis (kg)",
+    "ItemName": "Belimbing Manis",
+    "Satuan": "kg",
+    "FarmerEmail": "imadesukarta512@gmail.com",
+    "FarmerName": "imadesukarta512",
+    "Category": "Buah",
+    "Location": "Plaga, Badung",
+    "Price": 18000.0,
+    "Stock": 40,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/belimbing-manis.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2026-06-20 11:13:35",
+    "UpdatedAt": "2026-06-21 18:13:35"
+  },
+  {
+    "ID": 52,
+    "Title": "Jambu Air Citra (kg)",
+    "ItemName": "Jambu Air Citra",
+    "Satuan": "kg",
+    "FarmerEmail": "i_wayan524@gmail.com",
+    "FarmerName": "i_wayan524",
+    "Category": "Buah",
+    "Location": "Sukasada, Buleleng",
+    "Price": 25000.0,
+    "Stock": 120,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/jambu-air-citra.jpg"
+    ],
+    "Rating": 4.6,
+    "CreatedAt": "2026-06-29 11:53:39",
+    "UpdatedAt": "2026-07-01 15:53:39"
+  },
+  {
+    "ID": 53,
+    "Title": "Markisa Bedugul (kg)",
+    "ItemName": "Markisa Bedugul",
+    "Satuan": "kg",
+    "FarmerEmail": "iketutdharmayasa1993@gmail.com",
+    "FarmerName": "iketutdharmayasa1993",
+    "Category": "Buah",
+    "Location": "Bedugul, Tabanan",
+    "Price": 30000.0,
+    "Stock": 65,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/markisa-bedugul.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-06-28 05:13:40",
+    "UpdatedAt": "2026-07-01 15:13:40"
+  },
+  {
+    "ID": 54,
+    "Title": "Sukun (buah)",
+    "ItemName": "Sukun",
+    "Satuan": "buah",
+    "FarmerEmail": "i.ket.wig527@gmail.com",
+    "FarmerName": "i.ket.wig527",
+    "Category": "Buah",
+    "Location": "Petang, Badung",
+    "Price": 15000.0,
+    "Stock": 77,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/sukun.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-06-27 18:14:43",
+    "UpdatedAt": "2026-06-30 19:14:43"
+  },
+  {
+    "ID": 55,
+    "Title": "Kangkung Bali (ikat)",
+    "ItemName": "Kangkung Bali",
+    "Satuan": "ikat",
+    "FarmerEmail": "ni528diani@gmail.com",
+    "FarmerName": "ni528diani",
+    "Category": "Sayur",
+    "Location": "Petang, Badung",
+    "Price": 4000.0,
+    "Stock": 48,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/kangkung-bali.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2026-06-22 10:16:05",
+    "UpdatedAt": "2026-06-23 15:16:05"
+  },
+  {
+    "ID": 56,
+    "Title": "Bayam Hijau (ikat)",
+    "ItemName": "Bayam Hijau",
+    "Satuan": "ikat",
+    "FarmerEmail": "iwayanwibawa2001@gmail.com",
+    "FarmerName": "iwayanwibawa2001",
+    "Category": "Sayur",
+    "Location": "Abang, Karangasem",
+    "Price": 4000.0,
+    "Stock": 74,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/bayam-hijau.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-06-17 03:25:35",
+    "UpdatedAt": "2026-06-18 11:25:35"
+  },
+  {
+    "ID": 57,
+    "Title": "Bayam Merah (ikat)",
+    "ItemName": "Bayam Merah",
+    "Satuan": "ikat",
+    "FarmerEmail": "ni.ariani555@gmail.com",
+    "FarmerName": "ni.ariani555",
+    "Category": "Sayur",
+    "Location": "Pancasari, Buleleng",
+    "Price": 5000.0,
+    "Stock": 86,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/bayam-merah.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2026-06-30 01:50:12",
+    "UpdatedAt": "2026-06-30 12:50:12"
+  },
+  {
+    "ID": 58,
+    "Title": "Daun Kelor (Moringa) (ikat)",
+    "ItemName": "Daun Kelor (Moringa)",
+    "Satuan": "ikat",
+    "FarmerEmail": "des.sag563@gmail.com",
+    "FarmerName": "des.sag563",
+    "Category": "Sayur",
+    "Location": "Mendoyo, Jembrana",
+    "Price": 5000.0,
+    "Stock": 86,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/daun-kelor-moringa.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-06-30 01:14:12",
+    "UpdatedAt": "2026-07-02 07:14:12"
+  },
+  {
+    "ID": 59,
+    "Title": "Daun Singkong (ikat)",
+    "ItemName": "Daun Singkong",
+    "Satuan": "ikat",
+    "FarmerEmail": "n.wirati566@gmail.com",
+    "FarmerName": "n.wirati566",
+    "Category": "Sayur",
+    "Location": "Banjar, Buleleng",
+    "Price": 3500.0,
+    "Stock": 57,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/daun-singkong.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2026-06-30 18:44:30",
+    "UpdatedAt": "2026-06-30 20:44:30"
+  },
+  {
+    "ID": 60,
+    "Title": "Daun Paku (Pakis) (ikat)",
+    "ItemName": "Daun Paku (Pakis)",
+    "Satuan": "ikat",
+    "FarmerEmail": "muhammad_nasir575@gmail.com",
+    "FarmerName": "muhammad_nasir575",
+    "Category": "Sayur",
+    "Location": "Tegallalang, Gianyar",
+    "Price": 5000.0,
+    "Stock": 90,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/daun-paku-pakis.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2026-06-21 12:27:50",
+    "UpdatedAt": "2026-06-24 18:27:50"
+  },
+  {
+    "ID": 61,
+    "Title": "Terong Ungu (kg)",
+    "ItemName": "Terong Ungu",
+    "Satuan": "kg",
+    "FarmerEmail": "ni.dewi580@gmail.com",
+    "FarmerName": "ni.dewi580",
+    "Category": "Sayur",
+    "Location": "Bedugul, Tabanan",
+    "Price": 12000.0,
+    "Stock": 90,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/terong-ungu.jpg"
+    ],
+    "Rating": 4.6,
+    "CreatedAt": "2026-06-25 17:06:28",
+    "UpdatedAt": "2026-06-26 22:06:28"
+  },
+  {
+    "ID": 62,
+    "Title": "Terong Hijau Bulat (kg)",
+    "ItemName": "Terong Hijau Bulat",
+    "Satuan": "kg",
+    "FarmerEmail": "ni584yulianti@gmail.com",
+    "FarmerName": "ni584yulianti",
+    "Category": "Sayur",
+    "Location": "Selat, Karangasem",
+    "Price": 10000.0,
+    "Stock": 43,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/terong-hijau-bulat.jpg"
+    ],
+    "Rating": 5.0,
+    "CreatedAt": "2026-07-02 11:17:22",
+    "UpdatedAt": "2026-07-03 17:17:22"
+  },
+  {
+    "ID": 63,
+    "Title": "Terong Belanda Bedugul (kg)",
+    "ItemName": "Terong Belanda Bedugul",
+    "Satuan": "kg",
+    "FarmerEmail": "iketutdana.599@gmail.com",
+    "FarmerName": "iketutdana.599",
+    "Category": "Sayur",
+    "Location": "Bedugul, Tabanan",
+    "Price": 30000.0,
+    "Stock": 73,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/terong-belanda-bedugul.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2026-07-02 20:24:11",
+    "UpdatedAt": "2026-07-05 07:24:11"
+  },
+  {
+    "ID": 64,
+    "Title": "Pare (kg)",
+    "ItemName": "Pare",
+    "Satuan": "kg",
+    "FarmerEmail": "niluhyaniasih611@gmail.com",
+    "FarmerName": "niluhyaniasih611",
+    "Category": "Sayur",
+    "Location": "Payangan, Gianyar",
+    "Price": 14000.0,
+    "Stock": 105,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/pare.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2026-06-29 08:34:38",
+    "UpdatedAt": "2026-07-02 20:34:38"
+  },
+  {
+    "ID": 65,
+    "Title": "Gambas (Oyong) (kg)",
+    "ItemName": "Gambas (Oyong)",
+    "Satuan": "kg",
+    "FarmerEmail": "i.sudarsana613@gmail.com",
+    "FarmerName": "i.sudarsana613",
+    "Category": "Sayur",
+    "Location": "Payangan, Gianyar",
+    "Price": 12000.0,
+    "Stock": 86,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/gambas-oyong.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2026-06-25 17:36:43",
+    "UpdatedAt": "2026-06-27 03:36:43"
+  },
+  {
+    "ID": 66,
+    "Title": "Timun Lokal (kg)",
+    "ItemName": "Timun Lokal",
+    "Satuan": "kg",
+    "FarmerEmail": "ni.wayan615@gmail.com",
+    "FarmerName": "ni.wayan615",
+    "Category": "Sayur",
+    "Location": "Tegallalang, Gianyar",
+    "Price": 10000.0,
+    "Stock": 94,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/timun-lokal.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2026-06-19 07:12:25",
+    "UpdatedAt": "2026-06-20 14:12:25"
+  },
+  {
+    "ID": 67,
+    "Title": "Daun Bawang (kg)",
+    "ItemName": "Daun Bawang",
+    "Satuan": "kg",
+    "FarmerEmail": "i617suparta@gmail.com",
+    "FarmerName": "i617suparta",
+    "Category": "Sayur",
+    "Location": "Petang, Badung",
+    "Price": 24000.0,
+    "Stock": 119,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/daun-bawang.jpg"
+    ],
+    "Rating": 4.6,
+    "CreatedAt": "2026-06-29 06:44:26",
+    "UpdatedAt": "2026-07-02 18:44:26"
+  },
+  {
+    "ID": 68,
+    "Title": "Seledri (kg)",
+    "ItemName": "Seledri",
+    "Satuan": "kg",
+    "FarmerEmail": "ni621setianingsih@gmail.com",
+    "FarmerName": "ni621setianingsih",
+    "Category": "Sayur",
+    "Location": "Sukasada, Buleleng",
+    "Price": 25000.0,
+    "Stock": 74,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/seledri.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2026-06-28 10:36:18",
+    "UpdatedAt": "2026-06-30 12:36:18"
+  },
+  {
+    "ID": 69,
+    "Title": "Brokoli Bedugul (kg)",
+    "ItemName": "Brokoli Bedugul",
+    "Satuan": "kg",
+    "FarmerEmail": "inengahmahardika2004@gmail.com",
+    "FarmerName": "inengahmahardika2004",
+    "Category": "Sayur",
+    "Location": "Bedugul, Tabanan",
+    "Price": 28000.0,
+    "Stock": 113,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/brokoli-bedugul.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-06-23 17:18:06",
+    "UpdatedAt": "2026-06-23 21:18:06"
+  },
+  {
+    "ID": 70,
+    "Title": "Kembang Kol Bedugul (kg)",
+    "ItemName": "Kembang Kol Bedugul",
+    "Satuan": "kg",
+    "FarmerEmail": "ni636handayani@gmail.com",
+    "FarmerName": "ni636handayani",
+    "Category": "Sayur",
+    "Location": "Bedugul, Tabanan",
+    "Price": 26000.0,
+    "Stock": 98,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/kembang-kol-bedugul.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2026-06-22 05:15:41",
+    "UpdatedAt": "2026-06-23 17:15:41"
+  },
+  {
+    "ID": 71,
+    "Title": "Pakcoy Organik (kg)",
+    "ItemName": "Pakcoy Organik",
+    "Satuan": "kg",
+    "FarmerEmail": "i.pradnyana645@gmail.com",
+    "FarmerName": "i.pradnyana645",
+    "Category": "Sayur",
+    "Location": "Selat, Karangasem",
+    "Price": 16000.0,
+    "Stock": 63,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/pakcoy-organik.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2026-06-24 05:46:50",
+    "UpdatedAt": "2026-06-24 07:46:50"
+  },
+  {
+    "ID": 72,
+    "Title": "Sawi Hijau (Caisim) (kg)",
+    "ItemName": "Sawi Hijau (Caisim)",
+    "Satuan": "kg",
+    "FarmerEmail": "ni.ket.and657@gmail.com",
+    "FarmerName": "ni.ket.and657",
+    "Category": "Sayur",
+    "Location": "Sukasada, Buleleng",
+    "Price": 10000.0,
+    "Stock": 50,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/sawi-hijau-caisim.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2026-07-03 22:44:49",
+    "UpdatedAt": "2026-07-04 07:44:49"
+  },
+  {
+    "ID": 73,
+    "Title": "Sawi Putih (kg)",
+    "ItemName": "Sawi Putih",
+    "Satuan": "kg",
+    "FarmerEmail": "desakpurwaningsih660@gmail.com",
+    "FarmerName": "desakpurwaningsih660",
+    "Category": "Sayur",
+    "Location": "Mendoyo, Jembrana",
+    "Price": 12000.0,
+    "Stock": 89,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/sawi-putih.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-07-04 23:57:46",
+    "UpdatedAt": "2026-07-07 07:57:46"
+  },
+  {
+    "ID": 74,
+    "Title": "Paprika Merah (kg)",
+    "ItemName": "Paprika Merah",
+    "Satuan": "kg",
+    "FarmerEmail": "igedesuryantara2002@gmail.com",
+    "FarmerName": "igedesuryantara2002",
+    "Category": "Sayur",
+    "Location": "Melaya, Jembrana",
+    "Price": 45000.0,
+    "Stock": 92,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/paprika-merah.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2026-07-01 03:45:45",
+    "UpdatedAt": "2026-07-02 15:45:45"
+  },
+  {
+    "ID": 75,
+    "Title": "Paprika Hijau (kg)",
+    "ItemName": "Paprika Hijau",
+    "Satuan": "kg",
+    "FarmerEmail": "i.diksa3@gmail.com",
+    "FarmerName": "i.diksa3",
+    "Category": "Sayur",
+    "Location": "Sukasada, Buleleng",
+    "Price": 35000.0,
+    "Stock": 70,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/paprika-hijau.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2025-09-06 02:17:00",
+    "UpdatedAt": "2025-09-09 13:17:00"
+  },
+  {
+    "ID": 76,
+    "Title": "Paprika Kuning (kg)",
+    "ItemName": "Paprika Kuning",
+    "Satuan": "kg",
+    "FarmerEmail": "ni.putu5@gmail.com",
+    "FarmerName": "ni.putu5",
+    "Category": "Sayur",
+    "Location": "Tegallalang, Gianyar",
+    "Price": 45000.0,
+    "Stock": 104,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/paprika-kuning.jpg"
+    ],
+    "Rating": 4.6,
+    "CreatedAt": "2025-09-20 06:51:05",
+    "UpdatedAt": "2025-09-22 12:51:05"
+  },
+  {
+    "ID": 77,
+    "Title": "Kacang Panjang (ikat)",
+    "ItemName": "Kacang Panjang",
+    "Satuan": "ikat",
+    "FarmerEmail": "des.sag7@gmail.com",
+    "FarmerName": "des.sag7",
+    "Category": "Sayur",
+    "Location": "Pancasari, Buleleng",
+    "Price": 6000.0,
+    "Stock": 43,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/kacang-panjang.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2025-09-13 04:56:17",
+    "UpdatedAt": "2025-09-14 16:56:17"
+  },
+  {
+    "ID": 78,
+    "Title": "Kecipir (kg)",
+    "ItemName": "Kecipir",
+    "Satuan": "kg",
+    "FarmerEmail": "i.putu17@gmail.com",
+    "FarmerName": "i.putu17",
+    "Category": "Sayur",
+    "Location": "Pancasari, Buleleng",
+    "Price": 15000.0,
+    "Stock": 88,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/kecipir.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2025-09-30 13:14:23",
+    "UpdatedAt": "2025-10-03 14:14:23"
+  },
+  {
+    "ID": 79,
+    "Title": "Labu Kuning (Waluh) (kg)",
+    "ItemName": "Labu Kuning (Waluh)",
+    "Satuan": "kg",
+    "FarmerEmail": "ikadeksurya1990@gmail.com",
+    "FarmerName": "ikadeksurya1990",
+    "Category": "Sayur",
+    "Location": "Rendang, Karangasem",
+    "Price": 8000.0,
+    "Stock": 96,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/labu-kuning-waluh.jpg"
+    ],
+    "Rating": 4.6,
+    "CreatedAt": "2025-10-14 11:55:50",
+    "UpdatedAt": "2025-10-14 21:55:50"
+  },
+  {
+    "ID": 80,
+    "Title": "Zucchini Bedugul (kg)",
+    "ItemName": "Zucchini Bedugul",
+    "Satuan": "kg",
+    "FarmerEmail": "ni27puspita@gmail.com",
+    "FarmerName": "ni27puspita",
+    "Category": "Sayur",
+    "Location": "Bedugul, Tabanan",
+    "Price": 22000.0,
+    "Stock": 97,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/zucchini-bedugul.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2025-10-11 18:49:03",
+    "UpdatedAt": "2025-10-15 01:49:03"
+  },
+  {
+    "ID": 81,
+    "Title": "Asparagus Plaga (kg)",
+    "ItemName": "Asparagus Plaga",
+    "Satuan": "kg",
+    "FarmerEmail": "n.krisnawati38@gmail.com",
+    "FarmerName": "n.krisnawati38",
+    "Category": "Sayur",
+    "Location": "Plaga, Badung",
+    "Price": 85000.0,
+    "Stock": 56,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/asparagus-plaga.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2025-10-25 11:43:59",
+    "UpdatedAt": "2025-10-28 17:43:59"
+  },
+  {
+    "ID": 82,
+    "Title": "Bit Merah (Beetroot) (kg)",
+    "ItemName": "Bit Merah (Beetroot)",
+    "Satuan": "kg",
+    "FarmerEmail": "ni.utami42@gmail.com",
+    "FarmerName": "ni.utami42",
+    "Category": "Sayur",
+    "Location": "Kintamani, Bangli",
+    "Price": 28000.0,
+    "Stock": 45,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/bit-merah-beetroot.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2025-11-05 07:55:38",
+    "UpdatedAt": "2025-11-05 14:55:38"
+  },
+  {
+    "ID": 83,
+    "Title": "Jamur Tiram Segar (kg)",
+    "ItemName": "Jamur Tiram Segar",
+    "Satuan": "kg",
+    "FarmerEmail": "nikomangsuryaastuti.71@gmail.com",
+    "FarmerName": "nikomangsuryaastuti.71",
+    "Category": "Sayur",
+    "Location": "Rendang, Karangasem",
+    "Price": 20000.0,
+    "Stock": 76,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/jamur-tiram-segar.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2025-11-22 06:35:20",
+    "UpdatedAt": "2025-11-22 11:35:20"
+  },
+  {
+    "ID": 84,
+    "Title": "Jamur Kuping Basah (kg)",
+    "ItemName": "Jamur Kuping Basah",
+    "Satuan": "kg",
+    "FarmerEmail": "ni.putu113@gmail.com",
+    "FarmerName": "ni.putu113",
+    "Category": "Sayur",
+    "Location": "Selat, Karangasem",
+    "Price": 25000.0,
+    "Stock": 67,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/jamur-kuping-basah.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2025-12-29 03:18:43",
+    "UpdatedAt": "2026-01-01 08:18:43"
+  },
+  {
+    "ID": 85,
+    "Title": "Jamur Kancing Segar (kg)",
+    "ItemName": "Jamur Kancing Segar",
+    "Satuan": "kg",
+    "FarmerEmail": "ninyomantrisnawati1991@gmail.com",
+    "FarmerName": "ninyomantrisnawati1991",
+    "Category": "Sayur",
+    "Location": "Sukasada, Buleleng",
+    "Price": 45000.0,
+    "Stock": 118,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/jamur-kancing-segar.jpg"
+    ],
+    "Rating": 4.6,
+    "CreatedAt": "2026-01-29 23:01:18",
+    "UpdatedAt": "2026-01-30 05:01:18"
+  },
+  {
+    "ID": 86,
+    "Title": "Singkong Ketela Tabanan (kg)",
+    "ItemName": "Singkong Ketela Tabanan",
+    "Satuan": "kg",
+    "FarmerEmail": "ni.wardhani154@gmail.com",
+    "FarmerName": "ni.wardhani154",
+    "Category": "Sayur",
+    "Location": "Tabanan",
+    "Price": 6000.0,
+    "Stock": 37,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/singkong-ketela-tabanan.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2026-02-03 01:08:03",
+    "UpdatedAt": "2026-02-03 05:08:03"
+  },
+  {
+    "ID": 87,
+    "Title": "Ubi Jalar Ungu (kg)",
+    "ItemName": "Ubi Jalar Ungu",
+    "Satuan": "kg",
+    "FarmerEmail": "i171suryantha@gmail.com",
+    "FarmerName": "i171suryantha",
+    "Category": "Hasil Olahan Tani",
+    "Location": "Pancasari, Buleleng",
+    "Price": 9000.0,
+    "Stock": 94,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/ubi-jalar-ungu.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-02-07 17:55:08",
+    "UpdatedAt": "2026-02-08 03:55:08"
+  },
+  {
+    "ID": 88,
+    "Title": "Ubi Cilembu Lokal Bali (kg)",
+    "ItemName": "Ubi Cilembu Lokal Bali",
+    "Satuan": "kg",
+    "FarmerEmail": "desak173adnyani@gmail.com",
+    "FarmerName": "desak173adnyani",
+    "Category": "Hasil Olahan Tani",
+    "Location": "Payangan, Gianyar",
+    "Price": 14000.0,
+    "Stock": 48,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/ubi-cilembu-lokal-bali.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2026-02-18 22:44:20",
+    "UpdatedAt": "2026-02-19 01:44:20"
+  },
+  {
+    "ID": 89,
+    "Title": "Keladi (Talas Bali) (kg)",
+    "ItemName": "Keladi (Talas Bali)",
+    "Satuan": "kg",
+    "FarmerEmail": "ni_wayan189@gmail.com",
+    "FarmerName": "ni_wayan189",
+    "Category": "Sayur",
+    "Location": "Pancasari, Buleleng",
+    "Price": 18000.0,
+    "Stock": 44,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/keladi-talas-bali.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2026-02-28 19:55:53",
+    "UpdatedAt": "2026-03-04 02:55:53"
+  },
+  {
+    "ID": 90,
+    "Title": "Porang Basah (kg)",
+    "ItemName": "Porang Basah",
+    "Satuan": "kg",
+    "FarmerEmail": "i_wayan195@gmail.com",
+    "FarmerName": "i_wayan195",
+    "Category": "Sayur",
+    "Location": "Payangan, Gianyar",
+    "Price": 7000.0,
+    "Stock": 111,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/porang-basah.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-03-04 05:37:18",
+    "UpdatedAt": "2026-03-04 17:37:18"
+  },
+  {
+    "ID": 91,
+    "Title": "Bengkuang (kg)",
+    "ItemName": "Bengkuang",
+    "Satuan": "kg",
+    "FarmerEmail": "iwayankertanadi.203@gmail.com",
+    "FarmerName": "iwayankertanadi.203",
+    "Category": "Sayur",
+    "Location": "Selat, Karangasem",
+    "Price": 10000.0,
+    "Stock": 119,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/bengkuang.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2026-03-07 06:38:36",
+    "UpdatedAt": "2026-03-07 12:38:36"
+  },
+  {
+    "ID": 92,
+    "Title": "Jahe Merah (kg)",
+    "ItemName": "Jahe Merah",
+    "Satuan": "kg",
+    "FarmerEmail": "iwayanduwijaya1999@gmail.com",
+    "FarmerName": "iwayanduwijaya1999",
+    "Category": "Bumbu & Rempah",
+    "Location": "Melaya, Jembrana",
+    "Price": 35000.0,
+    "Stock": 48,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/jahe-merah.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2026-03-15 01:06:06",
+    "UpdatedAt": "2026-03-15 08:06:06"
+  },
+  {
+    "ID": 93,
+    "Title": "Jahe Gajah (kg)",
+    "ItemName": "Jahe Gajah",
+    "Satuan": "kg",
+    "FarmerEmail": "n.trisnawati266@gmail.com",
+    "FarmerName": "n.trisnawati266",
+    "Category": "Bumbu & Rempah",
+    "Location": "Plaga, Badung",
+    "Price": 24000.0,
+    "Stock": 90,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/jahe-gajah.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2026-04-03 03:06:31",
+    "UpdatedAt": "2026-04-06 15:06:31"
+  },
+  {
+    "ID": 94,
+    "Title": "Kunyit Segar (kg)",
+    "ItemName": "Kunyit Segar",
+    "Satuan": "kg",
+    "FarmerEmail": "i.trisna267@gmail.com",
+    "FarmerName": "i.trisna267",
+    "Category": "Bumbu & Rempah",
+    "Location": "Selat, Karangasem",
+    "Price": 15000.0,
+    "Stock": 110,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/kunyit-segar.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2026-04-06 10:16:42",
+    "UpdatedAt": "2026-04-09 18:16:42"
+  },
+  {
+    "ID": 95,
+    "Title": "Lengkuas (Isen) (kg)",
+    "ItemName": "Lengkuas (Isen)",
+    "Satuan": "kg",
+    "FarmerEmail": "i_gede272@gmail.com",
+    "FarmerName": "i_gede272",
+    "Category": "Bumbu & Rempah",
+    "Location": "Kusamba, Klungkung",
+    "Price": 14000.0,
+    "Stock": 66,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/lengkuas-isen.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-04-13 04:35:57",
+    "UpdatedAt": "2026-04-13 09:35:57"
+  },
+  {
+    "ID": 96,
+    "Title": "Kencur (Cekuh) (kg)",
+    "ItemName": "Kencur (Cekuh)",
+    "Satuan": "kg",
+    "FarmerEmail": "ni284puspita@gmail.com",
+    "FarmerName": "ni284puspita",
+    "Category": "Bumbu & Rempah",
+    "Location": "Kintamani, Bangli",
+    "Price": 32000.0,
+    "Stock": 98,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/kencur-cekuh.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-04-16 05:51:37",
+    "UpdatedAt": "2026-04-19 11:51:37"
+  },
+  {
+    "ID": 97,
+    "Title": "Temulawak (kg)",
+    "ItemName": "Temulawak",
+    "Satuan": "kg",
+    "FarmerEmail": "ni297ariyanti@gmail.com",
+    "FarmerName": "ni297ariyanti",
+    "Category": "Bumbu & Rempah",
+    "Location": "Tegallalang, Gianyar",
+    "Price": 16000.0,
+    "Stock": 70,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/temulawak.jpg"
+    ],
+    "Rating": 5.0,
+    "CreatedAt": "2026-04-14 02:50:25",
+    "UpdatedAt": "2026-04-16 07:50:25"
+  },
+  {
+    "ID": 98,
+    "Title": "Serai (kg)",
+    "ItemName": "Serai",
+    "Satuan": "kg",
+    "FarmerEmail": "i.nyo.jay299@gmail.com",
+    "FarmerName": "i.nyo.jay299",
+    "Category": "Bumbu & Rempah",
+    "Location": "Pancasari, Buleleng",
+    "Price": 12000.0,
+    "Stock": 45,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/serai.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2026-04-23 06:14:11",
+    "UpdatedAt": "2026-04-23 15:14:11"
+  },
+  {
+    "ID": 99,
+    "Title": "Daun Salam Segar (ikat)",
+    "ItemName": "Daun Salam Segar",
+    "Satuan": "ikat",
+    "FarmerEmail": "n.diahastuti302@gmail.com",
+    "FarmerName": "n.diahastuti302",
+    "Category": "Bumbu & Rempah",
+    "Location": "Melaya, Jembrana",
+    "Price": 3000.0,
+    "Stock": 117,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/daun-salam-segar.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-04-20 05:03:01",
+    "UpdatedAt": "2026-04-21 17:03:01"
+  },
+  {
+    "ID": 100,
+    "Title": "Daun Jeruk Purut (ons)",
+    "ItemName": "Daun Jeruk Purut",
+    "Satuan": "ons",
+    "FarmerEmail": "muhammad_rizki304@gmail.com",
+    "FarmerName": "muhammad_rizki304",
+    "Category": "Buah",
+    "Location": "Rendang, Karangasem",
+    "Price": 5000.0,
+    "Stock": 66,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/daun-jeruk-purut.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2026-04-21 16:42:24",
+    "UpdatedAt": "2026-04-23 20:42:24"
+  },
+  {
+    "ID": 101,
+    "Title": "Lada Hitam Pupuan (kg)",
+    "ItemName": "Lada Hitam Pupuan",
+    "Satuan": "kg",
+    "FarmerEmail": "i312widana@gmail.com",
+    "FarmerName": "i312widana",
+    "Category": "Bumbu & Rempah",
+    "Location": "Pupuan, Tabanan",
+    "Price": 95000.0,
+    "Stock": 80,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/lada-hitam-pupuan.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-04-27 21:47:16",
+    "UpdatedAt": "2026-04-30 04:47:16"
+  },
+  {
+    "ID": 102,
+    "Title": "Lada Putih Butir (kg)",
+    "ItemName": "Lada Putih Butir",
+    "Satuan": "kg",
+    "FarmerEmail": "niwayanpuspitasari1995@gmail.com",
+    "FarmerName": "niwayanpuspitasari1995",
+    "Category": "Bumbu & Rempah",
+    "Location": "Pancasari, Buleleng",
+    "Price": 120000.0,
+    "Stock": 75,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/lada-putih-butir.jpg"
+    ],
+    "Rating": 4.6,
+    "CreatedAt": "2026-05-10 04:32:01",
+    "UpdatedAt": "2026-05-11 06:32:01"
+  },
+  {
+    "ID": 103,
+    "Title": "Cengkeh Kering Buleleng (kg)",
+    "ItemName": "Cengkeh Kering Buleleng",
+    "Satuan": "kg",
+    "FarmerEmail": "niluhwedayanti.361@gmail.com",
+    "FarmerName": "niluhwedayanti.361",
+    "Category": "Bumbu & Rempah",
+    "Location": "Buleleng",
+    "Price": 125000.0,
+    "Stock": 70,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/cengkeh-kering-buleleng.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-05-18 21:01:35",
+    "UpdatedAt": "2026-05-20 01:01:35"
+  },
+  {
+    "ID": 104,
+    "Title": "Bunga Cengkeh Basah (kg)",
+    "ItemName": "Bunga Cengkeh Basah",
+    "Satuan": "kg",
+    "FarmerEmail": "i364wiadnyana@gmail.com",
+    "FarmerName": "i364wiadnyana",
+    "Category": "Bumbu & Rempah",
+    "Location": "Pancasari, Buleleng",
+    "Price": 38000.0,
+    "Stock": 72,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/bunga-cengkeh-basah.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2026-05-25 08:49:37",
+    "UpdatedAt": "2026-05-27 10:49:37"
+  },
+  {
+    "ID": 105,
+    "Title": "Biji Pala Kering (kg)",
+    "ItemName": "Biji Pala Kering",
+    "Satuan": "kg",
+    "FarmerEmail": "iketutadnyana1992@gmail.com",
+    "FarmerName": "iketutadnyana1992",
+    "Category": "Bumbu & Rempah",
+    "Location": "Bedugul, Tabanan",
+    "Price": 110000.0,
+    "Stock": 41,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/biji-pala-kering.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2026-05-17 23:21:17",
+    "UpdatedAt": "2026-05-19 04:21:17"
+  },
+  {
+    "ID": 106,
+    "Title": "Kulit Kayu Manis Bali (kg)",
+    "ItemName": "Kulit Kayu Manis Bali",
+    "Satuan": "kg",
+    "FarmerEmail": "i_putu372@gmail.com",
+    "FarmerName": "i_putu372",
+    "Category": "Bumbu & Rempah",
+    "Location": "Kintamani, Bangli",
+    "Price": 75000.0,
+    "Stock": 108,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/kulit-kayu-manis-bali.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2026-05-27 01:02:47",
+    "UpdatedAt": "2026-05-30 03:02:47"
+  },
+  {
+    "ID": 107,
+    "Title": "Asam Jawa Matang (kg)",
+    "ItemName": "Asam Jawa Matang",
+    "Satuan": "kg",
+    "FarmerEmail": "i.put.suw375@gmail.com",
+    "FarmerName": "i.put.suw375",
+    "Category": "Bumbu & Rempah",
+    "Location": "Banjar, Buleleng",
+    "Price": 25000.0,
+    "Stock": 96,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/asam-jawa-matang.jpg"
+    ],
+    "Rating": 4.6,
+    "CreatedAt": "2026-05-24 14:16:39",
+    "UpdatedAt": "2026-05-25 15:16:39"
+  },
+  {
+    "ID": 108,
+    "Title": "Kemiri Kupas (kg)",
+    "ItemName": "Kemiri Kupas",
+    "Satuan": "kg",
+    "FarmerEmail": "n.mertayani381@gmail.com",
+    "FarmerName": "n.mertayani381",
+    "Category": "Bumbu & Rempah",
+    "Location": "Bedugul, Tabanan",
+    "Price": 48000.0,
+    "Stock": 54,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/kemiri-kupas.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2026-05-21 11:18:47",
+    "UpdatedAt": "2026-05-21 21:18:47"
+  },
+  {
+    "ID": 109,
+    "Title": "Terasi Tradisional Kusamba (pack)",
+    "ItemName": "Terasi Tradisional Kusamba",
+    "Satuan": "pack",
+    "FarmerEmail": "ahmadzainimahardika.389@gmail.com",
+    "FarmerName": "ahmadzainimahardika.389",
+    "Category": "Hasil Olahan Tani",
+    "Location": "Kusamba, Klungkung",
+    "Price": 15000.0,
+    "Stock": 112,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/terasi-tradisional-kusamba.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2026-06-01 18:53:45",
+    "UpdatedAt": "2026-06-02 20:53:45"
+  },
+  {
+    "ID": 110,
+    "Title": "Garam Laut Kusamba (kg)",
+    "ItemName": "Garam Laut Kusamba",
+    "Satuan": "kg",
+    "FarmerEmail": "ni_ketut391@gmail.com",
+    "FarmerName": "ni_ketut391",
+    "Category": "Hasil Olahan Tani",
+    "Location": "Kusamba, Klungkung",
+    "Price": 25000.0,
+    "Stock": 73,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/garam-laut-kusamba.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-06-02 19:52:19",
+    "UpdatedAt": "2026-06-06 03:52:19"
+  },
+  {
+    "ID": 111,
+    "Title": "Garam Organik Amed (kg)",
+    "ItemName": "Garam Organik Amed",
+    "Satuan": "kg",
+    "FarmerEmail": "ni.nengah397@gmail.com",
+    "FarmerName": "ni.nengah397",
+    "Category": "Hasil Olahan Tani",
+    "Location": "Karangasem",
+    "Price": 30000.0,
+    "Stock": 61,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/garam-organik-amed.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-06-02 05:41:21",
+    "UpdatedAt": "2026-06-02 15:41:21"
+  },
+  {
+    "ID": 112,
+    "Title": "Gula Aren Asli Pupuan (kg)",
+    "ItemName": "Gula Aren Asli Pupuan",
+    "Satuan": "kg",
+    "FarmerEmail": "inyomandiatmika.398@gmail.com",
+    "FarmerName": "inyomandiatmika.398",
+    "Category": "Hasil Olahan Tani",
+    "Location": "Pupuan, Tabanan",
+    "Price": 35000.0,
+    "Stock": 105,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/gula-aren-asli-pupuan.jpg"
+    ],
+    "Rating": 4.6,
+    "CreatedAt": "2026-06-01 08:15:30",
+    "UpdatedAt": "2026-06-02 12:15:30"
+  },
+  {
+    "ID": 113,
+    "Title": "Gula Kelapa (Gula Bali Batok) (kg)",
+    "ItemName": "Gula Kelapa (Gula Bali Batok)",
+    "Satuan": "kg",
+    "FarmerEmail": "i.ged.wid404@gmail.com",
+    "FarmerName": "i.ged.wid404",
+    "Category": "Hasil Olahan Tani",
+    "Location": "Bedugul, Tabanan",
+    "Price": 28000.0,
+    "Stock": 64,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/gula-kelapa-gula-bali-batok.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2026-05-30 07:42:22",
+    "UpdatedAt": "2026-06-02 12:42:22"
+  },
+  {
+    "ID": 114,
+    "Title": "Virgin Coconut Oil (VCO) Bali (250 ml)",
+    "ItemName": "Virgin Coconut Oil (VCO) Bali",
+    "Satuan": "250 ml",
+    "FarmerEmail": "i_nengah405@gmail.com",
+    "FarmerName": "i_nengah405",
+    "Category": "Hasil Olahan Tani",
+    "Location": "Sukasada, Buleleng",
+    "Price": 35000.0,
+    "Stock": 68,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/virgin-coconut-oil-vco-bali.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-06-04 10:15:17",
+    "UpdatedAt": "2026-06-07 12:15:17"
+  },
+  {
+    "ID": 115,
+    "Title": "Minyak Kelapa Tandusan (liter)",
+    "ItemName": "Minyak Kelapa Tandusan",
+    "Satuan": "liter",
+    "FarmerEmail": "i.ketut409@gmail.com",
+    "FarmerName": "i.ketut409",
+    "Category": "Hasil Olahan Tani",
+    "Location": "Pupuan, Tabanan",
+    "Price": 32000.0,
+    "Stock": 104,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/minyak-kelapa-tandusan.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2026-06-13 06:35:40",
+    "UpdatedAt": "2026-06-14 13:35:40"
+  },
+  {
+    "ID": 116,
+    "Title": "Kopi Arabica Kintamani Wine Process (200 gram)",
+    "ItemName": "Kopi Arabica Kintamani Wine Process",
+    "Satuan": "200 gram",
+    "FarmerEmail": "n.ariani423@gmail.com",
+    "FarmerName": "n.ariani423",
+    "Category": "Kopi & Kakao",
+    "Location": "Kintamani, Bangli",
+    "Price": 65000.0,
+    "Stock": 56,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/kopi-arabica-kintamani-wine-process.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-06-09 02:01:37",
+    "UpdatedAt": "2026-06-10 04:01:37"
+  },
+  {
+    "ID": 117,
+    "Title": "Kopi Arabica Kintamani Honey Process (200 gram)",
+    "ItemName": "Kopi Arabica Kintamani Honey Process",
+    "Satuan": "200 gram",
+    "FarmerEmail": "ikomangpurnayasa.431@gmail.com",
+    "FarmerName": "ikomangpurnayasa.431",
+    "Category": "Kopi & Kakao",
+    "Location": "Kintamani, Bangli",
+    "Price": 55000.0,
+    "Stock": 94,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/kopi-arabica-kintamani-honey-process.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-06-18 11:47:48",
+    "UpdatedAt": "2026-06-20 19:47:48"
+  },
+  {
+    "ID": 118,
+    "Title": "Green Bean Robusta Pupuan (kg)",
+    "ItemName": "Green Bean Robusta Pupuan",
+    "Satuan": "kg",
+    "FarmerEmail": "ikadekdiatmika435@gmail.com",
+    "FarmerName": "ikadekdiatmika435",
+    "Category": "Kopi & Kakao",
+    "Location": "Pupuan, Tabanan",
+    "Price": 90000.0,
+    "Stock": 111,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/green-bean-robusta-pupuan.jpg"
+    ],
+    "Rating": 4.6,
+    "CreatedAt": "2026-06-20 21:23:13",
+    "UpdatedAt": "2026-06-24 05:23:13"
+  },
+  {
+    "ID": 119,
+    "Title": "Biji Kakao Fermentasi Jembrana (kg)",
+    "ItemName": "Biji Kakao Fermentasi Jembrana",
+    "Satuan": "kg",
+    "FarmerEmail": "abdullatiefsuryawan2001@gmail.com",
+    "FarmerName": "abdullatiefsuryawan2001",
+    "Category": "Kopi & Kakao",
+    "Location": "Jembrana",
+    "Price": 110000.0,
+    "Stock": 64,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/biji-kakao-fermentasi-jembrana.jpg"
+    ],
+    "Rating": 5.0,
+    "CreatedAt": "2026-06-16 19:38:19",
+    "UpdatedAt": "2026-06-18 20:38:19"
+  },
+  {
+    "ID": 120,
+    "Title": "Bubuk Cokelat Murni Bali (250 gram)",
+    "ItemName": "Bubuk Cokelat Murni Bali",
+    "Satuan": "250 gram",
+    "FarmerEmail": "ni.sriastuti457@gmail.com",
+    "FarmerName": "ni.sriastuti457",
+    "Category": "Kopi & Kakao",
+    "Location": "Banjar, Buleleng",
+    "Price": 45000.0,
+    "Stock": 108,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/bubuk-cokelat-murni-bali.jpg"
+    ],
+    "Rating": 4.6,
+    "CreatedAt": "2026-06-25 03:30:28",
+    "UpdatedAt": "2026-06-25 14:30:28"
+  },
+  {
+    "ID": 121,
+    "Title": "Beras Merah Jatiluwih Organik (kg)",
+    "ItemName": "Beras Merah Jatiluwih Organik",
+    "Satuan": "kg",
+    "FarmerEmail": "i_komang460@gmail.com",
+    "FarmerName": "i_komang460",
+    "Category": "Hasil Olahan Tani",
+    "Location": "Tabanan",
+    "Price": 26000.0,
+    "Stock": 109,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/beras-merah-jatiluwih-organik.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2026-06-23 21:30:17",
+    "UpdatedAt": "2026-06-27 02:30:17"
+  },
+  {
+    "ID": 122,
+    "Title": "Beras Hitam Tabanan (kg)",
+    "ItemName": "Beras Hitam Tabanan",
+    "Satuan": "kg",
+    "FarmerEmail": "nikadeksriastuti1997@gmail.com",
+    "FarmerName": "nikadeksriastuti1997",
+    "Category": "Hasil Olahan Tani",
+    "Location": "Tabanan",
+    "Price": 32000.0,
+    "Stock": 77,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/beras-hitam-tabanan.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2026-06-26 03:45:52",
+    "UpdatedAt": "2026-06-29 09:45:52"
+  },
+  {
+    "ID": 123,
+    "Title": "Beras Putih Bali Premium (kg)",
+    "ItemName": "Beras Putih Bali Premium",
+    "Satuan": "kg",
+    "FarmerEmail": "ninyomanwirati1991@gmail.com",
+    "FarmerName": "ninyomanwirati1991",
+    "Category": "Hasil Olahan Tani",
+    "Location": "Melaya, Jembrana",
+    "Price": 16000.0,
+    "Stock": 71,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/beras-putih-bali-premium.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-06-13 20:25:32",
+    "UpdatedAt": "2026-06-17 08:25:32"
+  },
+  {
+    "ID": 124,
+    "Title": "Teh Bunga Telang Kering (50 gram)",
+    "ItemName": "Teh Bunga Telang Kering",
+    "Satuan": "50 gram",
+    "FarmerEmail": "inyomanadnyana.477@gmail.com",
+    "FarmerName": "inyomanadnyana.477",
+    "Category": "Bunga & Tanaman",
+    "Location": "Tegallalang, Gianyar",
+    "Price": 20000.0,
+    "Stock": 67,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/teh-bunga-telang-kering.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2026-06-19 13:34:49",
+    "UpdatedAt": "2026-06-22 15:34:49"
+  },
+  {
+    "ID": 125,
+    "Title": "Madu Kele-kele (Trigona Bali) (250 ml)",
+    "ItemName": "Madu Kele-kele (Trigona Bali)",
+    "Satuan": "250 ml",
+    "FarmerEmail": "imadesukarta512@gmail.com",
+    "FarmerName": "imadesukarta512",
+    "Category": "Hasil Olahan Tani",
+    "Location": "Kusamba, Klungkung",
+    "Price": 85000.0,
+    "Stock": 87,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/madu-kele-kele-trigona-bali.jpg"
+    ],
+    "Rating": 4.6,
+    "CreatedAt": "2026-06-27 05:33:35",
+    "UpdatedAt": "2026-06-27 16:33:35"
+  },
+  {
+    "ID": 126,
+    "Title": "Madu Hutan Karangasem (500 ml)",
+    "ItemName": "Madu Hutan Karangasem",
+    "Satuan": "500 ml",
+    "FarmerEmail": "i_wayan524@gmail.com",
+    "FarmerName": "i_wayan524",
+    "Category": "Hasil Olahan Tani",
+    "Location": "Karangasem",
+    "Price": 95000.0,
+    "Stock": 41,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/madu-hutan-karangasem.jpg"
+    ],
+    "Rating": 4.7,
+    "CreatedAt": "2026-06-23 21:35:39",
+    "UpdatedAt": "2026-06-27 08:35:39"
+  },
+  {
+    "ID": 127,
+    "Title": "Bunga Gumitir (Marigold) (kg)",
+    "ItemName": "Bunga Gumitir (Marigold)",
+    "Satuan": "kg",
+    "FarmerEmail": "iketutdharmayasa1993@gmail.com",
+    "FarmerName": "iketutdharmayasa1993",
+    "Category": "Bunga & Tanaman",
+    "Location": "Melaya, Jembrana",
+    "Price": 25000.0,
+    "Stock": 50,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/bunga-gumitir-marigold.jpg"
+    ],
+    "Rating": 4.6,
+    "CreatedAt": "2026-06-23 16:16:40",
+    "UpdatedAt": "2026-06-26 00:16:40"
+  },
+  {
+    "ID": 128,
+    "Title": "Bunga Pacar Air (Kembang Pacah) (kg)",
+    "ItemName": "Bunga Pacar Air (Kembang Pacah)",
+    "Satuan": "kg",
+    "FarmerEmail": "i.ket.wig527@gmail.com",
+    "FarmerName": "i.ket.wig527",
+    "Category": "Bunga & Tanaman",
+    "Location": "Petang, Badung",
+    "Price": 20000.0,
+    "Stock": 74,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/bunga-pacar-air-kembang-pacah.jpg"
+    ],
+    "Rating": 4.8,
+    "CreatedAt": "2026-06-26 08:09:43",
+    "UpdatedAt": "2026-06-27 20:09:43"
+  },
+  {
+    "ID": 129,
+    "Title": "Bunga Jepun Kering (kg)",
+    "ItemName": "Bunga Jepun Kering",
+    "Satuan": "kg",
+    "FarmerEmail": "ni528diani@gmail.com",
+    "FarmerName": "ni528diani",
+    "Category": "Bunga & Tanaman",
+    "Location": "Kusamba, Klungkung",
+    "Price": 85000.0,
+    "Stock": 50,
+    "ReservedStock": 0,
+    "ImageURLs": [
+      "/public/uploads/products/bunga-jepun-kering.jpg"
+    ],
+    "Rating": 4.9,
+    "CreatedAt": "2026-06-24 01:26:05",
+    "UpdatedAt": "2026-06-25 03:26:05"
+  }
+]

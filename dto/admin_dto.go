@@ -42,6 +42,8 @@ type UserDetailResponse struct {
 	Role          string    `json:"role"`
 	IsActive      bool      `json:"is_active"`
 	EmailVerified bool      `json:"email_verified"`
+	Type          *string   `json:"type,omitempty"`
+	Skills        []string  `json:"skills,omitempty"`
 	CreatedAt     time.Time `json:"created_at"`
 }
 

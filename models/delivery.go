@@ -25,7 +25,7 @@ type Delivery struct {
 	Status string `gorm:"type:enum('pending_driver', 'pending_signature', 'pending_payment', 'in_transit', 'delivered', 'cancelled');default:'pending_driver'"`
 
 	// Relasi
-	Contract  *Contract
+	Contract  *Contract `gorm:"foreignKey:ContractID;references:ID;constraint:false"`
 	CreatedAt time.Time `json:"created_at"`
 }
 

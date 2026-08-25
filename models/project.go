@@ -12,13 +12,14 @@ type Project struct {
 	ID            uuid.UUID `gorm:"type:char(36);primary_key"`
 	FarmerID      uuid.UUID `gorm:"type:char(36);not null"`
 	Title         string    `gorm:"type:varchar(100);not null"`
+	Type          string    `gorm:"type:enum('agriculture','livestock','construction','fishery','carpentry','electrician','plumbing','gardening');not null"`
 	Description   string    `gorm:"type:text;not null"`
 	Location      string    `gorm:"type:varchar(100);not null"`
 	WorkersNeeded int       `gorm:"default:1"`
 	StartDate     time.Time `gorm:"type:date;not null"`
 	EndDate       time.Time `gorm:"type:date;not null"`
-	PaymentRate   *float64  `gorm:"type:decimal(10,2)"`   // Tarif pembayaran
-	PaymentType   string    `gorm:"type:enum('per_day')"` // Jenis pembayaran
+	PaymentRate   *float64  `gorm:"type:decimal(10,2)"`                                                                // Tarif pembayaran
+	PaymentType   string    `gorm:"type:enum('per_day', 'per_project', 'per_hour', 'per_week', 'per_month');not null"` // Jenis pembayaran
 	Status        string    `gorm:"type:enum('open','direct_offer','waiting_payment','in_progress','completed','cancelled');default:open"`
 	Invoice       Invoice   `gorm:"foreignKey:ProjectID"`
 	CreatedAt     time.Time

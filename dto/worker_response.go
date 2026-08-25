@@ -21,6 +21,7 @@ type WorkerResponse struct {
 	CurrentLocationLat   *float64  `json:"current_location_lat"`
 	CurrentLocationLng   *float64  `json:"current_location_lng"`
 	Rating               float64   `json:"rating"`
+	ReviewCount          int       `json:"review_count"`
 	TotalJobsCompleted   int       `json:"total_jobs_completed"`
 	CreatedAt            time.Time `json:"created_at"`
 

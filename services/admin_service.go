@@ -2,9 +2,11 @@ package services
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"sort"
 	"time"
 
@@ -90,24 +92,156 @@ func (s *adminService) GetDashboardStats() (*dto.AdminDashboardResponse, error) 
 		NewECommerceOrders:  int(newECommerceOrders),
 	}
 
-	// 2. Ambil Data Antrean "Butuh Tindakan"
-	// openDisputes, _ := s.disputeRepo.CountOpen() // Perlu repo sengketa
-
-	actionQueue := dto.DashboardActionQueue{
-		PendingPayouts: int(pendingPayoutCount),
-		OpenDisputes:   0, // Ganti dengan data asli nanti
+	// 2. Ambil Statistik Pengguna Lengkap dari DB (TotalUsers mengecualikan admin)
+	var userStats dto.DashboardUserStats
+	var userCounts []struct {
+		Role  string
+		Count int64
+	}
+	s.db.Model(&models.User{}).Select("role, count(*) as count").Group("role").Scan(&userCounts)
+	for _, uc := range userCounts {
+		switch uc.Role {
+		case "worker":
+			userStats.TotalWorker = uc.Count
+			userStats.TotalUsers += uc.Count
+		case "farmer":
+			userStats.TotalFarmer = uc.Count
+			userStats.TotalUsers += uc.Count
+		case "driver":
+			userStats.TotalDriver = uc.Count
+			userStats.TotalUsers += uc.Count
+		case "general":
+			userStats.TotalGeneral = uc.Count
+			userStats.TotalUsers += uc.Count
+		case "mitra":
+			userStats.TotalMitra = uc.Count
+			userStats.TotalUsers += uc.Count
+		case "admin":
+			userStats.TotalAdmin = uc.Count
+		}
 	}
 
-	// 3. Ambil Data Grafik
-	revenueTrend, _ := s.transactionRepo.GetDailyRevenueTrend(thirtyDaysAgo)
-	userTrend, _ := s.userRepo.GetDailyUserTrend(thirtyDaysAgo)
+	// 3. Ambil Breakdown Layanan & Financial Summary dari Seed JSON / DB
+	serviceOrder := []string{"Pekerja", "Ekspedisi", "E-Commerce", "Chatbot Premium", "Tukang", "Peternak", "Kemitraan"}
+	serviceMap := make(map[string]*dto.ServiceSummary)
+	for _, name := range serviceOrder {
+		serviceMap[name] = &dto.ServiceSummary{Name: name}
+	}
 
-	// 4. Susun Respons Final
+	var financialSummary dto.DashboardFinancialSummary
+	var trendMap = make(map[string]float64)
+
+	seedData, err := os.ReadFile("seeders/new_transaction.json")
+	if err == nil {
+		type seedItem struct {
+			Layanan            string   `json:"Layanan"`
+			NominalTransaksi   *float64 `json:"NominalTransaksi"`
+			KeuntunganKotor    *float64 `json:"KeuntunganKotor"`
+			BiayaMidtrans      *float64 `json:"BiayaMidtrans"`
+			KeuntunganBersih   *float64 `json:"KeuntunganBersih"`
+			TotalDiterimaMitra *float64 `json:"TotalDiterimaMitra"`
+			Tanggal            string   `json:"Tanggal"`
+		}
+		var rows []seedItem
+		if err := json.Unmarshal(seedData, &rows); err == nil {
+			for _, r := range rows {
+				nom := 0.0
+				if r.NominalTransaksi != nil {
+					nom = *r.NominalTransaksi
+				}
+				kotor := 0.0
+				if r.KeuntunganKotor != nil {
+					kotor = *r.KeuntunganKotor
+				}
+				fee := 0.0
+				if r.BiayaMidtrans != nil {
+					fee = *r.BiayaMidtrans
+				}
+				bersih := 0.0
+				if r.KeuntunganBersih != nil {
+					bersih = *r.KeuntunganBersih
+				}
+				mitra := 0.0
+				if r.TotalDiterimaMitra != nil {
+					mitra = *r.TotalDiterimaMitra
+				}
+
+				financialSummary.TotalTransactions++
+				financialSummary.TotalGMV += nom
+				financialSummary.TotalGrossProfit += kotor
+				financialSummary.TotalGatewayFee += fee
+				financialSummary.TotalNetProfit += bersih
+				financialSummary.TotalMitraShare += mitra
+
+				if r.Tanggal <= "2026-05-31" {
+					financialSummary.Phase1Transactions++
+					financialSummary.Phase1GMV += nom
+					financialSummary.Phase1GrossProfit += kotor
+					financialSummary.Phase1GatewayFee += fee
+					financialSummary.Phase1NetProfit += bersih
+				} else {
+					financialSummary.Phase2Transactions++
+					financialSummary.Phase2GMV += nom
+					financialSummary.Phase2GrossProfit += kotor
+					financialSummary.Phase2GatewayFee += fee
+					financialSummary.Phase2NetProfit += bersih
+				}
+
+				if sm, exists := serviceMap[r.Layanan]; exists {
+					sm.TransactionCount++
+					sm.TotalAmount += nom
+					sm.GrossProfit += kotor
+					sm.GatewayFee += fee
+					sm.NetProfit += bersih
+					sm.TotalMitraShare += mitra
+				}
+
+				if len(r.Tanggal) >= 10 {
+					trendMap[r.Tanggal[:10]] += nom
+				}
+			}
+		}
+	}
+
+	var serviceSummaries []dto.ServiceSummary
+	for _, name := range serviceOrder {
+		if sm, ok := serviceMap[name]; ok {
+			if financialSummary.TotalGMV > 0 {
+				sm.Percentage = (sm.TotalAmount / financialSummary.TotalGMV) * 100.0
+			}
+			serviceSummaries = append(serviceSummaries, *sm)
+		}
+	}
+
+	// 4. Ambil Data Antrean "Butuh Tindakan"
+	actionQueue := dto.DashboardActionQueue{
+		PendingPayouts: int(pendingPayoutCount),
+		OpenDisputes:   0,
+	}
+
+	// 5. Data Grafik Revenue Trend
+	var revenueTrend []dto.DailyDataPoint
+	for date, val := range trendMap {
+		revenueTrend = append(revenueTrend, dto.DailyDataPoint{
+			Date:  date,
+			Value: val,
+		})
+	}
+	sort.Slice(revenueTrend, func(i, j int) bool {
+		return revenueTrend[i].Date < revenueTrend[j].Date
+	})
+
+	userTrend, _ := s.userRepo.GetDailyUserTrend(time.Now().AddDate(-1, 0, 0))
+
+	// 6. Susun Respons Final
 	response := &dto.AdminDashboardResponse{
-		KPIs:         kpis,
-		ActionQueue:  actionQueue,
-		RevenueTrend: revenueTrend,
-		UserTrend:    userTrend,
+		KPIs:             kpis,
+		FinancialSummary: financialSummary,
+		ServiceSummaries: serviceSummaries,
+		UserStats:        userStats,
+		ActionQueue:      actionQueue,
+		RevenueTrend:     revenueTrend,
+		UserTrend:        userTrend,
 	}
 
 	return response, nil
@@ -325,15 +459,29 @@ func (s *adminService) GetAllUsers(page, limit int, search string, roleFilter st
 
 	var userResponses []dto.UserDetailResponse
 	for _, u := range users {
+		var farmerType *string
+		if u.Farmer != nil && u.Farmer.Type != "" {
+			farmerType = &u.Farmer.Type
+		}
+
+		var workerSkills []string
+		if u.Worker != nil && u.Worker.Skills != "" {
+			if err := json.Unmarshal([]byte(u.Worker.Skills), &workerSkills); err != nil {
+				workerSkills = []string{u.Worker.Skills}
+			}
+		}
+
 		userResponses = append(userResponses, dto.UserDetailResponse{
-			ID:           u.ID,
-			Name:         u.Name,
-			Email:        u.Email,
-			PhoneNumber:  u.PhoneNumber,
-			Role:         u.Role,
-			IsActive:     u.IsActive,
+			ID:            u.ID,
+			Name:          u.Name,
+			Email:         u.Email,
+			PhoneNumber:   u.PhoneNumber,
+			Role:          u.Role,
+			IsActive:      u.IsActive,
 			EmailVerified: u.EmailVerified,
-			CreatedAt:    u.CreatedAt,
+			Type:          farmerType,
+			Skills:        workerSkills,
+			CreatedAt:     u.CreatedAt,
 		})
 	}
 

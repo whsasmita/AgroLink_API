@@ -37,6 +37,7 @@ type RoleDetailsInput struct {
 
 // Definisikan struct input sementara untuk setiap peran
 type farmerInput struct {
+	Type           *string `json:"type"`
 	Address        *string `json:"address"`
 	AdditionalInfo *string `json:"additional_info"`
 }
@@ -112,8 +113,14 @@ func (s *profileService) UpdateRoleDetails(userID string, userRole string, input
 			return nil, fmt.Errorf("invalid farmer details format: %w", err)
 		}
 
+		farmerType := "agriculture"
+		if details.Type != nil && *details.Type != "" {
+			farmerType = *details.Type
+		}
+
 		farmerModel := models.Farmer{
 			UserID:         parsedUserID,
+			Type:           farmerType,
 			Address:        details.Address,
 			AdditionalInfo: details.AdditionalInfo,
 		}

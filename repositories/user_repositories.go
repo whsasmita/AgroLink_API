@@ -138,7 +138,8 @@ func (r *userRepository) FindAllUsers(page, limit int, search string, roleFilter
 	}
 
 	// Ambil data dengan limit dan offset
-	err := query.Order("created_at DESC").
+	err := query.Preload("Farmer").Preload("Worker").
+		Order("created_at DESC").
 		Offset(offset).Limit(limit).
 		Find(&users).Error
 

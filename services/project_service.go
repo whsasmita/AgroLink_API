@@ -52,6 +52,7 @@ func (s *projectService) CreateProject(request dto.CreateProjectRequest, farmerI
 	project := &models.Project{
 		FarmerID:      farmerID,
 		Title:         request.Title,
+		Type:          request.Type,
 		Location:      request.Location,
 		Description:   request.Description,
 		WorkersNeeded: request.WorkersNeeded,
@@ -87,6 +88,7 @@ func (s *projectService) FindByID(id string) (*dto.ProjectDetailResponse, error)
 	response := &dto.ProjectDetailResponse{
 		ID:             project.ID,
 		Title:          project.Title,
+		Type:           project.Type,
 		Description:    project.Description,
 		Location:       project.Location,
 		StartDate:      project.StartDate,
@@ -172,7 +174,7 @@ func (s *projectService) CheckAndFinalizeProject(projectID uuid.UUID) error {
 		if err := s.invoiceRepo.Create(nil, invoice); err != nil {
 			return fmt.Errorf("failed to create invoice: %w", err)
 		}
-		return s.projectRepo.UpdateStatus(project.ID.String(), "waiting_payment") 
+		return s.projectRepo.UpdateStatus(project.ID.String(), "waiting_payment")
 	}
 	return nil
 }

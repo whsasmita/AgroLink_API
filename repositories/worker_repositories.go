@@ -56,10 +56,11 @@ func (r *workerRepository) GetWorkers(search, sortBy, order string, limit, offse
 
 	// ... (kode sorting dan find tetap sama)
 	allowedSortBy := map[string]bool{
-		"created_at":  true,
-		"rating":      true,
-		"hourly_rate": true,
-		"daily_rate":  true,
+		"created_at":           true,
+		"rating":               true,
+		"hourly_rate":          true,
+		"daily_rate":           true,
+		"total_jobs_completed": true,
 	}
 	if !allowedSortBy[sortBy] {
 		sortBy = "created_at"

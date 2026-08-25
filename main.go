@@ -34,7 +34,12 @@ func main() {
 
 	// Run migration
 	// config.RunMigrationWithReset(db)
-	config.AutoMigrate(db)
+	if os.Getenv("RESET_DATABASE_ON_START") == "true" {
+		config.RunMigrationWithReset(db)
+	} else {
+		config.AutoMigrate(db)
+		config.SeedDefaultData(db)
+	}
 	// config.CreateIndexes()
 
 	// Graceful shutdown
@@ -93,6 +98,10 @@ func main() {
 	orderRepo := repositories.NewOrderRepository(db)
 	productRepo := repositories.NewProductRepository(db)
 	ecommPaymentRepo := repositories.NewECommercePaymentRepository(db)
+	mitraCoopRepo := repositories.NewMitraCooperationRepository(db)
+	contractRepo := repositories.NewContractRepository(db)
+	mitraProfileRepo := repositories.NewMitraProfileRepository(db)
+
 	eCommercePaymentService := services.NewECommercePaymentService(
 		ecommPaymentRepo, orderRepo, userRepo, productRepo, db,
 	)
@@ -104,6 +113,9 @@ func main() {
 		projectRepo,
 		userRepo,
 		deliveryRepo,
+		mitraCoopRepo,
+		contractRepo,
+		mitraProfileRepo,
 		db,
 	)
 	webhookHandler := handlers.NewWebhookHandler(

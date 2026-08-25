@@ -6,12 +6,13 @@ import (
 )
 
 type InvoiceRepository interface {
-	Create(tx *gorm.DB ,invoice *models.Invoice) error
+	Create(tx *gorm.DB, invoice *models.Invoice) error
 	FindByID(id string) (*models.Invoice, error)
 	FindByProjectID(projectID string) (*models.Invoice, error)
 	FindFirstPending() (*models.Invoice, error)
 	UpdateStatus(id string, status string) error
 	FindByDeliveryID(deliveryID string) (*models.Invoice, error)
+	FindByMitraCooperationID(cooperationID string) (*models.Invoice, error)
 }
 
 type invoiceRepository struct{ db *gorm.DB }
@@ -21,6 +22,9 @@ func NewInvoiceRepository(db *gorm.DB) InvoiceRepository {
 }
 
 func (r *invoiceRepository) Create(tx *gorm.DB, invoice *models.Invoice) error {
+	if tx != nil {
+		return tx.Create(invoice).Error
+	}
 	return r.db.Create(invoice).Error
 }
 
@@ -49,5 +53,11 @@ func (r *invoiceRepository) FindFirstPending() (*models.Invoice, error) {
 func (r *invoiceRepository) FindByDeliveryID(deliveryID string) (*models.Invoice, error) {
 	var invoice models.Invoice
 	err := r.db.Where("delivery_id = ?", deliveryID).First(&invoice).Error
+	return &invoice, err
+}
+
+func (r *invoiceRepository) FindByMitraCooperationID(cooperationID string) (*models.Invoice, error) {
+	var invoice models.Invoice
+	err := r.db.Where("mitra_cooperation_id = ?", cooperationID).First(&invoice).Error
 	return &invoice, err
 }

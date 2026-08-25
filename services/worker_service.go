@@ -40,12 +40,13 @@ func (s *workerService) GetWorkers(search, sortBy, order string, limit, offset i
             CurrentLocationLat:   worker.CurrentLocationLat,
             CurrentLocationLng:   worker.CurrentLocationLng,
             Rating:               worker.Rating,
+            ReviewCount:          worker.ReviewCount,
             TotalJobsCompleted:   worker.TotalJobsCompleted,
             CreatedAt:            worker.CreatedAt,
             Name:                 worker.User.Name,
             Email:                worker.User.Email,
             PhoneNumber:          worker.User.PhoneNumber,
-            ProfilePicture: worker.User.ProfilePicture,
+            ProfilePicture:       worker.User.ProfilePicture,
         })
     }
 
@@ -70,12 +71,13 @@ func (s *workerService) GetWorkerProfile(id string) (dto.WorkerResponse, error) 
         CurrentLocationLat:   worker.CurrentLocationLat,
         CurrentLocationLng:   worker.CurrentLocationLng,
         Rating:               worker.Rating,
+        ReviewCount:          worker.ReviewCount,
         TotalJobsCompleted:   worker.TotalJobsCompleted,
         CreatedAt:            worker.CreatedAt,
         Name:                 worker.User.Name,
         Email:                worker.User.Email,
         PhoneNumber:          worker.User.PhoneNumber,
-        ProfilePicture: worker.User.ProfilePicture,
+        ProfilePicture:       worker.User.ProfilePicture,
     }
 
     return response, nil

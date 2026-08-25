@@ -60,6 +60,7 @@ func (h *ProjectHandler) CreateProject(c *gin.Context) {
 		FarmerID:      project.FarmerID,
 		FarmerName:    project.Farmer.User.Name,
 		Title:         project.Title,
+		Type:          project.Type,
 		Location:      project.Location,
 		Description:   project.Description,
 		WorkersNeeded: project.WorkersNeeded,
@@ -89,11 +90,12 @@ func (h *ProjectHandler) FindAllProjects(c *gin.Context) {
 	var projectDTOs []dto.ProjectBriefResponse
 	for _, p := range *projects {
 		projectDTOs = append(projectDTOs, dto.ProjectBriefResponse{
-			ID:          p.ID,
-			Title:       p.Title,
-			PaymentRate: p.PaymentRate,
-			PaymentType: p.PaymentType,
-			StartDate:   p.StartDate,
+			ID:            p.ID,
+			Title:         p.Title,
+			ProjectType:   p.Type,
+			PaymentRate:   p.PaymentRate,
+			PaymentType:   p.PaymentType,
+			StartDate:     p.StartDate,
 			WorkersNeeded: p.WorkersNeeded,
 		})
 	}
@@ -124,7 +126,6 @@ func (h *ProjectHandler) GetProjectByID(c *gin.Context) {
 	// Langsung kirim DTO sebagai respons
 	utils.SuccessResponse(c, http.StatusOK, "Project retrieved successfully", projectDTO)
 }
-
 
 func (h *ProjectHandler) GetMyProjects(c *gin.Context) {
 	currentUser := c.MustGet("user").(*models.User)

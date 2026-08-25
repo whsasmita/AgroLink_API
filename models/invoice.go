@@ -10,20 +10,22 @@ import (
 // Invoice merepresentasikan tagihan total untuk satu proyek.
 type Invoice struct {
 	ID        uuid.UUID `gorm:"type:char(36);primary_key"`
-	ProjectID   *uuid.UUID `gorm:"type:char(36)"`
-	DeliveryID  *uuid.UUID `gorm:"type:char(36)"` // <-- [TAMBAHAN]
-	FarmerID  uuid.UUID `gorm:"type:char(36);not null"`
-	Amount    float64   `gorm:"type:decimal(12,2)"`
-	PlatformFee float64 `gorm:"type:decimal(10,2)"`
-	TotalAmount float64   `gorm:"type:decimal(12,2)"`
-	Status    string    `gorm:"type:enum('pending','paid','failed');default:'pending'"`
-	DueDate   time.Time
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ProjectID          *uuid.UUID        `gorm:"type:char(36)"`
+	DeliveryID         *uuid.UUID        `gorm:"type:char(36)"` // <-- [TAMBAHAN]
+	MitraCooperationID *uuid.UUID        `gorm:"type:char(36)"`
+	FarmerID           uuid.UUID         `gorm:"type:char(36);not null"`
+	Amount             float64           `gorm:"type:decimal(12,2)"`
+	PlatformFee        float64           `gorm:"type:decimal(10,2)"`
+	TotalAmount        float64           `gorm:"type:decimal(12,2)"`
+	Status             string            `gorm:"type:enum('pending','paid','failed');default:'pending'"`
+	DueDate            time.Time
+	CreatedAt          time.Time
+	UpdatedAt          time.Time
 
-	Farmer   *Farmer   `gorm:"foreignKey:FarmerID"`
-	Project  *Project  `gorm:"foreignKey:ProjectID"`
-	Delivery *Delivery `gorm:"foreignKey:DeliveryID"`
+	Farmer           *Farmer           `gorm:"foreignKey:FarmerID"`
+	Project          *Project          `gorm:"foreignKey:ProjectID"`
+	Delivery         *Delivery         `gorm:"foreignKey:DeliveryID"`
+	MitraCooperation *MitraCooperation `gorm:"foreignKey:MitraCooperationID"`
 }
 
 func (i *Invoice) BeforeCreate(tx *gorm.DB) (err error) {

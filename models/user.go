@@ -15,7 +15,7 @@ type User struct {
 	Email          string    `gorm:"type:varchar(100);uniqueIndex;not null" json:"email"`
 	Password       string    `gorm:"type:varchar(255);not null" json:"-"`
 	PhoneNumber    *string   `gorm:"type:varchar(20)" json:"phone_number"`
-	Role           string    `gorm:"type:enum('farmer','worker','driver','admin','general');not null" json:"role"`
+	Role           string    `gorm:"type:enum('farmer','worker','driver','admin','general','mitra');not null" json:"role"`
 	ProfilePicture *string   `gorm:"type:text" json:"profile_picture"`
 	IsActive       bool      `gorm:"default:true" json:"is_active"`
 	EmailVerified  bool      `gorm:"default:false" json:"email_verified"`
@@ -24,9 +24,10 @@ type User struct {
 	UpdatedAt      time.Time `json:"updated_at"`
 
 	// Relationships
-	Farmer *Farmer `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"farmer,omitempty"`
-	Worker *Worker `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"worker,omitempty"`
-	Driver *Driver `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"driver,omitempty"`
+	Farmer *Farmer       `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"farmer,omitempty"`
+	Worker *Worker       `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"worker,omitempty"`
+	Driver *Driver       `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"driver,omitempty"`
+	Mitra  *MitraProfile `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"mitra,omitempty"`
 }
 
 // BeforeCreate hook to generate UUID
@@ -40,6 +41,7 @@ func (u *User) BeforeCreate(tx *gorm.DB) error {
 // Farmer represents farmer profile details
 type Farmer struct {
 	UserID         uuid.UUID `gorm:"type:char(36);primary_key" json:"user_id"`
+	Type           string    `gorm:"type:enum('agriculture','livestock','construction');not null;default:'agriculture'" json:"type"`
 	Address        *string   `gorm:"type:text" json:"address"`
 	AdditionalInfo *string   `gorm:"type:text" json:"additional_info"`
 	CreatedAt      time.Time `json:"created_at"`
@@ -80,16 +82,16 @@ type Driver struct {
 	UserID  uuid.UUID `gorm:"type:char(36);primary_key" json:"user_id"`
 	Address *string   `gorm:"type:text" json:"company_address"`
 	// ServiceAreas    string    `gorm:"type:json;not null" json:"service_areas"` // JSON array as string
-	PricingScheme   string    `gorm:"type:json;not null" json:"pricing_scheme"`
-	BankName             *string   `gorm:"type:varchar(50)" json:"bank_name"`
-	BankAccountNumber    *string   `gorm:"type:varchar(50)" json:"bank_account_number"`
-	BankAccountHolder    *string   `gorm:"type:varchar(100)" json:"bank_account_holder"`
-	VehicleTypes    string    `gorm:"type:json;not null" json:"vehicle_types"` // JSON array as string
-	Rating          float64   `gorm:"default:0" json:"rating"`
-	ReviewCount     int       `gorm:"default:0" json:"review_count"`
-	TotalDeliveries int       `gorm:"default:0" json:"total_deliveries"`
-	CreatedAt       time.Time `json:"created_at"`
-	Distance        float64   `gorm:"-" json:"distance"`
+	PricingScheme     string    `gorm:"type:json;not null" json:"pricing_scheme"`
+	BankName          *string   `gorm:"type:varchar(50)" json:"bank_name"`
+	BankAccountNumber *string   `gorm:"type:varchar(50)" json:"bank_account_number"`
+	BankAccountHolder *string   `gorm:"type:varchar(100)" json:"bank_account_holder"`
+	VehicleTypes      string    `gorm:"type:json;not null" json:"vehicle_types"` // JSON array as string
+	Rating            float64   `gorm:"default:0" json:"rating"`
+	ReviewCount       int       `gorm:"default:0" json:"review_count"`
+	TotalDeliveries   int       `gorm:"default:0" json:"total_deliveries"`
+	CreatedAt         time.Time `json:"created_at"`
+	Distance          float64   `gorm:"-" json:"distance"`
 
 	CurrentLat *float64 `gorm:"type:decimal(10,8)"`
 	CurrentLng *float64 `gorm:"type:decimal(11,8)"`

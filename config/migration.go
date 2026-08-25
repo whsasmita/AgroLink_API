@@ -1,51 +1,50 @@
 package config
 
 import (
-	"encoding/json"
 	"log"
 	"math/rand"
-	"os"
 	"strings"
 	"time"
 
 	"github.com/whsasmita/AgroLink_API/models"
 	"github.com/whsasmita/AgroLink_API/seeders"
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
-
-const seedUserJSONPath = "seeders/users_seed.json"
 
 // List semua model untuk migrasi.
 var migrationModels = []interface{}{
 	// Base user models first
 	// 1. Model dasar tanpa banyak dependensi
 	&models.User{},
+	&models.EmailOTP{},
 	&models.AIChatPremiumSubscription{},
 	&models.AIChatTurn{},
-	&models.Payout{}, // Payout di sini
 	// &models.SystemSetting{},
 
 	// 2. Model profil yang bergantung pada User
 	&models.Farmer{},
 	&models.Worker{},
 	&models.Driver{},
+	&models.MitraProfile{},
 
 	// 3. Model utama yang bergantung pada profil
 	&models.Project{},
+	&models.Contract{},
 	&models.Delivery{},
 	&models.FarmLocation{},
+	&models.MitraCooperation{},
 
 	// 4. Model transaksi & perjanjian yang bergantung pada Project/Delivery
 	&models.Invoice{},
 	&models.Transaction{},
-	&models.Contract{},
+	&models.Payout{},
 
 	// 5. Model-model pendukung yang memiliki banyak relasi
 	&models.ProjectApplication{},
 	&models.ProjectAssignment{},
 
 	&models.Review{},
+	&models.MitraReview{},
 	&models.WorkerAvailability{},
 	&models.LocationTrack{},
 	&models.WebhookLog{},
@@ -83,8 +82,10 @@ func RunMigrationWithReset(db *gorm.DB) {
 // AutoMigrate hanya membuat atau memperbarui tabel tanpa menghapus data.
 func AutoMigrate(db *gorm.DB) {
 	log.Println("🔄 Running database migrations...")
+	migrationDB := db.Session(&gorm.Session{NewDB: true})
+	migrationDB.Config.DisableForeignKeyConstraintWhenMigrating = true
 	for _, model := range migrationModels {
-		if err := db.AutoMigrate(model); err != nil {
+		if err := migrationDB.AutoMigrate(model); err != nil {
 			log.Fatalf("Failed to migrate %T: %v", model, err)
 		}
 	}
@@ -122,169 +123,10 @@ func dropAllTables(db *gorm.DB) error {
 // SeedDefaultData adalah fungsi utama untuk memanggil semua seeder.
 func SeedDefaultData(db *gorm.DB) {
 	log.Println("🌱 Seeding default data...")
-	seedUsers(db)
-	seeders.SeedTransactionsAndInvoices(db)
-	seeders.SeedEcommerceTransactions(db)
+	seeders.SeedUsers(db)
+	seeders.SeedNewTransactions(db)
 	seeders.SeedProducts(db)
 	log.Println("✅ Default data seeded successfully")
-}
-
-// seedUsers membuat data dummy untuk pengguna (Admin, Farmer, Worker).
-func seedUsers(db *gorm.DB) {
-	log.Println("Seeding users from JSON...")
-	rand.Seed(time.Now().UnixNano())
-	startDate := time.Date(2024, 9, 1, 0, 0, 0, 0, time.Local)
-	endDate := time.Now()
-
-	// 1. Baca file JSON
-	data, err := os.ReadFile(seedUserJSONPath)
-	if err != nil {
-		log.Printf("Failed to open seed file %s: %v", seedUserJSONPath, err)
-		return
-	}
-
-	// 2. Parse JSON ke slice struct
-	var rows []seeders.SeedUserRow
-	if err := json.Unmarshal(data, &rows); err != nil {
-		log.Printf("Failed to parse seed JSON: %v", err)
-		return
-	}
-
-	for _, row := range rows {
-		email := strings.TrimSpace(row.Email)
-		if email == "" {
-			log.Printf("Skipping row without email: %+v", row)
-			continue
-		}
-
-		// 3. Cek apakah user sudah ada
-		var existing models.User
-		if err := db.Where("email = ?", email).First(&existing).Error; err == nil {
-			log.Printf("User with email %s already exists, skipping seed.", email)
-			continue
-		}
-
-		// 4. Tentukan password
-		password := strings.TrimSpace(row.Password)
-		if password == "" {
-			password = "password123"
-		}
-
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-		if err != nil {
-			log.Printf("Failed to hash password for %s: %v", email, err)
-			continue
-		}
-
-		role := strings.ToLower(strings.TrimSpace(row.Role))
-		addressPtr := StringPtr(row.Alamat)
-
-		// 5. Bentuk object User dasar
-		user := models.User{
-			Name:          strings.TrimSpace(row.Nama),
-			Email:         email,
-			Password:      string(hashedPassword),
-			Role:          role,
-			EmailVerified: true,
-			PhoneNumber:   StringPtr(normalizePhone(row.NoHP)),
-		}
-
-		// 6. Mapping role ke relasi
-		switch role {
-		case "farmer":
-			user.Farmer = &models.Farmer{
-				Address: addressPtr,
-			}
-
-		case "worker":
-			// Skills: []string → string JSON
-			var skillsJSON string
-			if len(row.Skills) > 0 {
-				if b, err := json.Marshal(row.Skills); err != nil {
-					log.Printf("Failed to marshal skills for %s: %v", email, err)
-				} else {
-					skillsJSON = string(b)
-				}
-			}
-
-			worker := &models.Worker{
-				Address:           addressPtr,
-				Skills:            skillsJSON, // string JSON, sesuai model
-				NationalID:        StringPtr(row.NationalID),
-				BankName:          StringPtr(row.BankName),
-				BankAccountNumber: StringPtr(row.BankAccountNumber),
-				BankAccountHolder: StringPtr(row.BankAccountHolder),
-			}
-
-			if row.DailyRate != nil {
-				worker.DailyRate = row.DailyRate // type *float64, cocok dengan model
-			}
-
-			user.Worker = worker
-
-		case "driver":
-			// PricingScheme: map → string JSON
-			var pricingJSON string
-			if row.PricingScheme != nil {
-				if b, err := json.Marshal(row.PricingScheme); err != nil {
-					log.Printf("Failed to marshal pricing scheme for %s: %v", email, err)
-				} else {
-					pricingJSON = string(b)
-				}
-			}
-
-			// VehicleTypes: []string → string JSON
-			var vehicleTypesJSON string
-			if len(row.VehicleTypes) > 0 {
-				if b, err := json.Marshal(row.VehicleTypes); err != nil {
-					log.Printf("Failed to marshal vehicle types for %s: %v", email, err)
-				} else {
-					vehicleTypesJSON = string(b)
-				}
-			}
-
-			driver := &models.Driver{
-				Address:           addressPtr,
-				PricingScheme:     pricingJSON,      // string JSON
-				VehicleTypes:      vehicleTypesJSON, // string JSON
-				BankName:          StringPtr(row.BankName),
-				BankAccountNumber: StringPtr(row.BankAccountNumber),
-				BankAccountHolder: StringPtr(row.BankAccountHolder),
-			}
-
-			// CurrentLat/CurrentLng: *float64 → *float64
-			if row.CurrentLat != nil {
-				driver.CurrentLat = row.CurrentLat
-			}
-			if row.CurrentLng != nil {
-				driver.CurrentLng = row.CurrentLng
-			}
-
-			user.Driver = driver
-
-		case "admin":
-			// Admin tidak punya relasi khusus, cukup user saja.
-
-		case "general":
-			// General user juga tidak punya relasi khusus,
-			// cukup simpan di tabel users dengan role = "general".
-
-		default:
-			// Role lain yang belum didukung akan dilewati
-			log.Printf("Unknown role '%s' for email %s, skipping.", role, email)
-			continue
-		}
-
-		// 7. Set CreatedAt acak (September–sekarang)
-		user.CreatedAt = randomBetween(startDate, endDate)
-
-		// 8. Simpan user (beserta relasinya)
-		if err := db.Create(&user).Error; err != nil {
-			log.Printf("Failed to create user %s: %v", email, err)
-		}
-	}
-
-	log.Println("User seeding from JSON completed.")
 }
 
 func CreateIndexes(db *gorm.DB) {

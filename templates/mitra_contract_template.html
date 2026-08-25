@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Kontrak Kerjasama Kemitraan - {{.Contract.MitraCooperation.Title}}</title>
+    <style>
+      @page {
+        size: A4;
+        margin: 2cm;
+      }
+      body {
+        font-family: "Times New Roman", Times, serif;
+        font-size: 12pt;
+        color: #000;
+      }
+      .header {
+        text-align: center;
+        font-weight: bold;
+      }
+      .header .title {
+        text-decoration: underline;
+        font-size: 14pt;
+      }
+      .header .subtitle {
+        font-size: 12pt;
+        font-weight: normal;
+      }
+      hr {
+        border: none;
+        border-top: 1px solid #000;
+        margin-top: 1em;
+        margin-bottom: 1.5em;
+      }
+      p {
+        text-align: justify;
+        line-height: 1.5;
+        margin: 0 0 1em 0;
+      }
+      .party-table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-bottom: 1em;
+      }
+      .party-table td {
+        vertical-align: top;
+        padding: 2px 0;
+      }
+      .pasal-block {
+        page-break-inside: avoid;
+      }
+      .pasal-title {
+        text-align: center;
+        font-weight: bold;
+        margin-top: 1.5em;
+        margin-bottom: 1em;
+      }
+      .signature-section {
+        margin-top: 50px;
+        overflow: auto;
+      }
+      .signature-box {
+        float: left;
+        width: 45%;
+        text-align: center;
+      }
+      .signature-box.right {
+        float: right;
+      }
+      .signature-name {
+        margin-top: 80px;
+        text-decoration: underline;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="title">SURAT PERJANJIAN KERJASAMA KEMITRAAN (MITRA LINK)</div>
+      <div class="subtitle">Nomor: {{.Contract.ID}}</div>
+    </div>
+    <hr />
+
+    <p>
+      Pada hari ini, {{.TanggalPembuatan}}, dibuat dan disepakati Perjanjian Kerjasama Kemitraan ("Perjanjian") secara elektronik oleh dan antara:
+    </p>
+
+    <table class="party-table">
+      <tr>
+        <td width="20px" valign="top">I.</td>
+        <td colspan="2">Pihak Pertama (Petani / Mitra Pengelola), selanjutnya disebut <strong>PIHAK PERTAMA</strong>:</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td width="150px">Nama Lengkap</td>
+        <td>: <strong>{{.Contract.Farmer.User.Name}}</strong></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>Email / Telepon</td>
+        <td>: {{.Contract.Farmer.User.Email}} / {{or .Contract.Farmer.User.PhoneNumber "-"}}</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>Alamat</td>
+        <td>: {{or .Contract.Farmer.Address "[DATA BELUM DIISI]"}}</td>
+      </tr>
+      <tr>
+        <td width="20px" valign="top">II.</td>
+        <td colspan="2">Pihak Kedua (Mitra / Investor / Instansi), selanjutnya disebut <strong>PIHAK KEDUA</strong>:</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td width="150px">Nama Mitra / Usaha</td>
+        <td>: <strong>{{.Contract.Mitra.NamaMitra}}</strong> ({{.Contract.Mitra.JenisMitra}})</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>Email Bisnis</td>
+        <td>: {{.Contract.Mitra.EmailBisnis}}</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>Telepon Bisnis</td>
+        <td>: {{.Contract.Mitra.NomorTeleponBisnis}}</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>Alamat Lengkap</td>
+        <td>: {{.Contract.Mitra.AlamatLengkap}}, {{.Contract.Mitra.KotaKabupaten}}, {{.Contract.Mitra.Provinsi}}</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>Legalitas (NIB/NIK)</td>
+        <td>: {{or .Contract.Mitra.NIB (or .Contract.Mitra.NIKKTP "[TIDAK ADA]")}}</td>
+      </tr>
+    </table>
+
+    <p>
+      Kedua belah pihak dengan ini menyatakan sepakat untuk mengikatkan diri dalam kerjasama kemitraan bidang pertanian dengan syarat dan ketentuan sebagai berikut:
+    </p>
+
+    <div class="pasal-block">
+      <div class="pasal-title">Pasal 1<br />OBJEK KERJASAMA</div>
+      <p>
+        1. PIHAK PERTAMA dan PIHAK KEDUA sepakat melaksanakan proyek kerjasama kemitraan dengan judul: <strong>{{.Contract.MitraCooperation.Title}}</strong>.<br />
+        2. Rincian dan deskripsi kegiatan kerjasama adalah sebagai berikut:<br />
+        {{.Contract.MitraCooperation.Description}}
+      </p>
+    </div>
+
+    <div class="pasal-block">
+      <div class="pasal-title">Pasal 2<br />JANGKA WAKTU</div>
+      <p>
+        Perjanjian kerjasama ini berlaku terhitung sejak tanggal <strong>{{.TanggalMulai}}</strong> sampai dengan tanggal <strong>{{.TanggalSelesai}}</strong>.
+      </p>
+    </div>
+
+    <div class="pasal-block">
+      <div class="pasal-title">Pasal 3<br />NILAI KERJASAMA DAN SKEMA PEMBAYARAN</div>
+      <p>
+        1. Nilai total kesepakatan kerjasama adalah sebesar <strong>{{.NilaiKerjasama}}</strong>.<br />
+        2. Sesuai ketentuan platform AgroLink, dana disetor oleh PIHAK KEDUA dan ditahan dalam rekening penampungan sementara (Escrow System).<br />
+        3. Platform memotong biaya layanan sebesar 11% (sebelas persen) dari total nilai kerjasama. Jumlah dana netto yang akan diteruskan kepada PIHAK PERTAMA setelah pekerjaan/kemitraan selesai adalah sebesar <strong>{{.NilaiNetto}}</strong>.<br />
+        4. Pencairan dana kepada PIHAK PERTAMA dilakukan oleh Admin AgroLink setelah seluruh tahapan kerjasama diselesaikan.
+      </p>
+    </div>
+
+    <div class="pasal-block">
+      <div class="pasal-title">Pasal 4<br />HAK DAN KEWAJIBAN</div>
+      <p>
+        1. PIHAK PERTAMA berkewajiban melaksanakan pengelolaan pertanian dan melaporkan perkembangan kerjasama secara berkala.<br />
+        2. PIHAK KEDUA berhak menerima laporan perkembangan dan hasil akhir sesuai yang diperjanjikan.<br />
+        3. Para Pihak wajib mematuhi seluruh standar keamanan dan etika kemitraan yang berlaku di AgroLink.
+      </p>
+    </div>
+
+    <div class="pasal-block">
+      <div class="pasal-title">Pasal 5<br />PENGAKHIRAN PERJANJIAN & PERSELISIHAN</div>
+      <p>
+        1. Perjanjian ini berakhir saat jangka waktu berakhir atau persetujuan pencairan dana telah selesai.<br />
+        2. Apabila terjadi perselisihan, Para Pihak sepakat menyelesaikannya secara musyawarah mufakat dengan mediasi dari pihak AgroLink.
+      </p>
+    </div>
+
+    <div class="pasal-block">
+      <div class="pasal-title">Pasal 6<br />PENGESAHAN ELEKTRONIK</div>
+      <p>
+        Perjanjian ini disahkan secara otomatis dan sah secara hukum melalui sistem verifikasi & transaksi escrow platform AgroLink pada saat pembayaran dikonfirmasi oleh gateway pembayaran.
+      </p>
+    </div>
+
+    <div class="signature-section">
+      <div class="signature-box left">
+        <p>PIHAK PERTAMA (Petani),</p>
+        <p class="signature-name">{{.Contract.Farmer.User.Name}}</p>
+      </div>
+      <div class="signature-box right">
+        <p>PIHAK KEDUA (Mitra),</p>
+        <p class="signature-name">{{.Contract.Mitra.NamaMitra}}</p>
+      </div>
+    </div>
+  </body>
+</html>

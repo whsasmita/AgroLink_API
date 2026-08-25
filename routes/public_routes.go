@@ -14,10 +14,12 @@ func PublicRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	// DEPENDENCY INJECTION (Inisialisasi semua komponen di sini)
 	// =================================================================
 	userRepo := repositories.NewUserRepository(db)
+	otpRepo := repositories.NewOTPRepository(db)
+	emailService := services.NewEmailService()
 	geminiRepo := repositories.NewGeminiChatRepository(db)
 
 	// Komponen untuk Autentikasi & Profil (Get)
-	authService := services.NewAuthService(userRepo)
+	authService := services.NewAuthService(userRepo, otpRepo, emailService)
 	authHandler := handlers.NewAuthHandler(authService)
 	geminiService := services.NewGeminiChatService(geminiRepo)
 	geminiHandler := handlers.NewGeminiChatHandler(geminiService)
@@ -43,16 +45,6 @@ func PublicRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	productService := services.NewProductService(productRepo, db)
 	productHandler := handlers.NewProductHandler(productService)
 
-	// transactionRepo := repositories.NewTransactionRepository(db)
-	// userRepo sudah diinisialisasi di atas
-
-	// 2. Inisialisasi Service Pembayaran
-	// PaymentService membutuhkan TransactionRepository dan UserRepository
-	// paymentService := services.NewPaymentService(transactionRepo, userRepo)
-
-	// 3. Inisialisasi Handler Pembayaran (untuk rute terproteksi)
-	// webhookHandler := handlers.NewWebhookHandler(paymentService)
-
 	// =================================================================
 	// ROUTE DEFINITIONS (Daftarkan semua endpoint di sini)
 	// =================================================================
@@ -60,6 +52,8 @@ func PublicRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	// Auth Routes
 	authGroup := router.Group("/auth")
 	authGroup.POST("/register", authHandler.Register)
+	authGroup.POST("/verify-otp", authHandler.VerifyOTP)
+	authGroup.POST("/resend-otp", authHandler.ResendOTP)
 	authGroup.POST("/login", authHandler.Login)
 
 	// Worker Routes

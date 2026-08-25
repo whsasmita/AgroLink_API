@@ -64,6 +64,8 @@ func (s *contractService) GetMyContracts(userID uuid.UUID) ([]dto.MyContractResp
 			dto.Title = contract.Project.Title
 		} else if contract.ContractType == "delivery" && contract.Delivery != nil {
 			dto.Title = "Pengiriman: " + contract.Delivery.ItemDescription
+		} else if contract.ContractType == "mitra" && contract.MitraCooperation != nil {
+			dto.Title = "Kemitraan: " + contract.MitraCooperation.Title
 		}
 		responseDTOs = append(responseDTOs, dto)
 	}
@@ -105,6 +107,9 @@ func (s *contractService) SignContract(contractID string, userID uuid.UUID) (*dt
 			return nil, errors.New("forbidden: you are not the designated driver for this contract")
 		}
 		contract.SignedBySecondParty = true
+	case "mitra":
+		tx.Rollback()
+		return nil, errors.New("kontrak Mitra Link ditandatangani secara otomatis saat sistem pembayaran escrow dikonfirmasi")
 	default:
 		tx.Rollback()
 		return nil, errors.New("unknown contract type")
@@ -175,6 +180,60 @@ func (s *contractService) GenerateContractPDF(contractID string) (*bytes.Buffer,
 	contract, err := s.contractRepo.FindByIDWithDetails(contractID)
 	if err != nil {
 		return nil, errors.New("contract details not found")
+	}
+
+	if contract.ContractType == "mitra" {
+		var tglMulai, tglSelesai string
+		var nilaiTotal, nilaiNetto string
+
+		if contract.MitraCooperation != nil {
+			if contract.MitraCooperation.StartDate != nil {
+				tglMulai = contract.MitraCooperation.StartDate.Format("2 January 2006")
+			} else {
+				tglMulai = "[BELUM DITENTUKAN]"
+			}
+			if contract.MitraCooperation.EndDate != nil {
+				tglSelesai = contract.MitraCooperation.EndDate.Format("2 January 2006")
+			} else {
+				tglSelesai = "[BELUM DITENTUKAN]"
+			}
+
+			agreed := contract.MitraCooperation.ProposedAmount
+			if contract.MitraCooperation.AgreedAmount != nil {
+				agreed = *contract.MitraCooperation.AgreedAmount
+			}
+			nilaiTotal = fmt.Sprintf("Rp %.0f", agreed)
+			netto := agreed * 0.89
+			nilaiNetto = fmt.Sprintf("Rp %.0f", netto)
+		}
+
+		data := gin.H{
+			"Contract":         contract,
+			"TanggalPembuatan": contract.CreatedAt.Format("2 January 2006"),
+			"TanggalMulai":     tglMulai,
+			"TanggalSelesai":   tglSelesai,
+			"NilaiKerjasama":   nilaiTotal,
+			"NilaiNetto":       nilaiNetto,
+		}
+
+		tmpl, err := template.ParseFiles("templates/mitra_contract_template.html")
+		if err != nil {
+			return nil, fmt.Errorf("could not parse html template: %w", err)
+		}
+		var htmlBuffer bytes.Buffer
+		if err := tmpl.Execute(&htmlBuffer, data); err != nil {
+			return nil, fmt.Errorf("could not execute html template: %w", err)
+		}
+
+		pdfg, err := wkhtmltopdf.NewPDFGenerator()
+		if err != nil {
+			return nil, fmt.Errorf("could not create PDF generator: %w", err)
+		}
+		pdfg.AddPage(wkhtmltopdf.NewPageReader(&htmlBuffer))
+		if err := pdfg.Create(); err != nil {
+			return nil, fmt.Errorf("could not create PDF: %w", err)
+		}
+		return pdfg.Buffer(), nil
 	}
 
 	var durationDays float64

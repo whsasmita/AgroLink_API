@@ -4,43 +4,37 @@ name: Deploy AgroLink API to VPS
 # Pemicu: Jalankan workflow ini setiap kali ada 'push' ke branch 'main'.
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 # Daftar pekerjaan (jobs) yang akan dilakukan.
 jobs:
   # Job 1: Membangun dan mengunggah image.
   build-and-push:
     name: Build and Push Docker Image
-    # Dijalankan di server virtual Ubuntu milik GitHub.
     runs-on: ubuntu-latest
     steps:
-      # Mengambil source code dari repositori Anda.
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Login ke Docker Hub menggunakan username dan token yang disimpan di GitHub Secrets.
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # Membangun image dari Dockerfile dan mengunggahnya ke Docker Hub.
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
           context: .
           push: true
-          tags: darmawiguna/agrolink-api:latest
+          tags: whsasmita/agrolink-api:latest
 
   # Job 2: Mendeploy ke VPS.
   deploy:
     name: Deploy to VPS
-    # Job ini baru akan berjalan setelah 'build-and-push' berhasil.
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
-      # Masuk ke VPS menggunakan SSH. Kredensial diambil dari GitHub Secrets.
       - name: Deploy to VPS via SSH
         uses: appleboy/ssh-action@master
         with:
@@ -48,29 +42,24 @@ jobs:
           username: ${{ secrets.VPS_SSH_USERNAME }}
           key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
           port: 2607
-          # Daftar perintah yang akan dijalankan di VPS secara berurutan.
           script: |
-            # 1. Pindah ke direktori aplikasi.
-            cd /home/ubuntu/agrolink
-            
-            # 2. Ambil versi terbaru dari file konfigurasi (docker-compose.yml) dari Git.
+            # 1. Pindah ke direktori utama proyek di VPS
+            cd /root/goagrolink-project
+
+            # 2. Ambil perubahan terbaru konfigurasi dari Git (opsional)
             echo "Pulling latest changes from Git..."
-            git pull origin main
-            
-            # 3. Unduh image Docker terbaru dari Docker Hub yang baru saja di-push.
+            git pull origin main || true
+
+            # 3. Pull image terbaru dari Docker Hub
             echo "Pulling latest image from Docker Hub..."
-            docker-compose pull
-            
-            # [PERBAIKAN] Hentikan & hapus environment lama untuk memastikan "clean state".
-            echo "Bringing down old environment..."
-            docker-compose down
-            
-            # Buat & jalankan environment baru dari awal.
-            echo "Bringing up new environment..."
-            docker-compose up -d
-            
-            # Bersihkan image-image lama yang tidak lagi digunakan.
+            docker compose pull go-backend
+
+            # 4. Restart layanan backend Go secara aman tanpa mematikan database
+            echo "Restarting go-backend service..."
+            docker compose up -d --no-deps --build go-backend
+
+            # 5. Bersihkan image lama yang tidak terpakai
             echo "Cleaning up old images..."
             docker image prune -f
-            
+
             echo "Deployment complete!"

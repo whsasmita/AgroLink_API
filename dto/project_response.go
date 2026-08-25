@@ -9,6 +9,7 @@ import (
 // CreateProjectRequest adalah DTO untuk membuat proyek baru.
 type CreateProjectRequest struct {
 	Title         string  `json:"title" binding:"required,max=100"`
+	Type          string  `json:"type" binding:"required,oneof=agriculture livestock construction fishery carpentry electrician plumbing gardening"`
 	Description   string  `json:"description" binding:"required"`
 	Location      string  `json:"location" binding:"required"`
 	WorkersNeeded int     `json:"workers_needed" binding:"required,min=1"`
@@ -40,6 +41,7 @@ type FarmerInfoResponse struct {
 type ProjectDetailResponse struct {
 	ID             uuid.UUID          `json:"id"`
 	Title          string             `json:"title"`
+	Type           string             `json:"type"`
 	Description    string             `json:"description"`
 	Location       string             `json:"location" `
 	WorkersNeeded  int                `json:"workers_needed"`
@@ -50,13 +52,14 @@ type ProjectDetailResponse struct {
 	Status         string             `json:"status"`
 	Farmer         FarmerInfoResponse `json:"farmer"`
 	// CreatedAt indicates the timestamp when the project was created.
-	CreatedAt      time.Time          `json:"created_at"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type CreateProjectResponse struct {
 	ID            uuid.UUID `json:"id"`
 	FarmerID      uuid.UUID `json:"farmer_id"`
 	FarmerName    string    `json:"farmer_name"`
+	Type          string    `json:"type"`
 	Location      string    `json:"location" `
 	Title         string    `json:"title"`
 	Description   string    `json:"description"`

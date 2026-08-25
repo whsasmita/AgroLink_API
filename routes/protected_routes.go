@@ -42,19 +42,23 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 	profitRepo := repositories.NewProfitRepository(db)
 	geminiRepo := repositories.NewGeminiChatRepository(db)
 
-	// workerRepo dan projectRepo sudah ada
+	mitraProfileRepo := repositories.NewMitraProfileRepository(db)
+	mitraCoopRepo := repositories.NewMitraCooperationRepository(db)
+	mitraReviewRepo := repositories.NewMitraReviewRepository(db)
+
+	otpRepo := repositories.NewOTPRepository(db)
+	emailService := services.NewEmailService()
 
 	// 2. Inisialisasi Services
 	geminiChatService := services.NewGeminiChatService(geminiRepo)
-	authService := services.NewAuthService(userRepo)
+	authService := services.NewAuthService(userRepo, otpRepo, emailService)
 	profileService := services.NewProfileService(userRepo, userVerificationRepo)
 	farmService := services.NewFarmService(farmRepo)
 	projectService := services.NewProjectService(projectRepo, assignRepo, invoiceRepo)
 	contractService := services.NewContractService(contractRepo, projectService, invoiceRepo, deliveryRepo, db)
-	emailService := services.NewEmailService()
 	notificationService := services.NewNotificationService(notifRepo, emailService, userRepo)
 	appService := services.NewApplicationService(appRepo, projectRepo, contractRepo, assignRepo, notificationService, db)
-	paymentService := services.NewPaymentService(invoiceRepo, transactionRepo, payoutRepo, assignRepo, projectRepo, userRepo, deliveryRepo, db)
+	paymentService := services.NewPaymentService(invoiceRepo, transactionRepo, payoutRepo, assignRepo, projectRepo, userRepo, deliveryRepo, mitraCoopRepo, contractRepo, mitraProfileRepo, db)
 	reviewService := services.NewReviewService(reviewRepo, workerRepo, projectRepo, driverRepo, deliveryRepo, db)
 	deliveryService := services.NewDeliveryService(deliveryRepo, driverRepo, contractRepo, db)
 	offerService := services.NewOfferService(projectRepo, contractRepo, assignRepo, userRepo, db)
@@ -79,6 +83,8 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 		db,
 	)
 	profitService := services.NewProfitService(profitRepo)
+	mitraProfileService := services.NewMitraProfileService(mitraProfileRepo, userRepo, db)
+	mitraCoopService := services.NewMitraCooperationService(mitraCoopRepo, mitraProfileRepo, invoiceRepo, mitraReviewRepo, userRepo, db)
 
 	notifHandler := handlers.NewNotificationHandler(notifRepo)
 	geminiChatHandler := handlers.NewGeminiChatHandler(geminiChatService)
@@ -99,8 +105,8 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 	checkoutHandler := handlers.NewCheckoutHandler(checkoutService)
 	adminHandler := handlers.NewAdminHandler(adminService)
 	profitHandler := handlers.NewProfitHandler(profitService)
-
-	// deliveryRepo sudah diinisialisasi sebelumnya
+	mitraProfileHandler := handlers.NewMitraProfileHandler(mitraProfileService)
+	mitraCoopHandler := handlers.NewMitraCooperationHandler(mitraCoopService, paymentService)
 
 	trackingHandler := handlers.NewTrackingHandler(trackingService)
 
@@ -122,7 +128,26 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 	router.POST("/profile/details", profileHandler.UpdateRoleDetails)
 	router.POST("/profile/upload-photo", profileHandler.UploadProfilePhoto)
 	router.POST("/profile/upload-document", profileHandler.UploadVerificationDocument)
-	// ... (rute profil lainnya)
+
+	// Mitra Profile & List Routes
+	router.GET("/mitra", mitraProfileHandler.GetAllVerified)
+	router.GET("/mitra/:id", mitraProfileHandler.GetByID)
+	router.POST("/mitra/profile", middleware.RoleMiddleware("mitra"), mitraProfileHandler.CreateProfile)
+	router.GET("/mitra/profile/my", middleware.RoleMiddleware("mitra"), mitraProfileHandler.GetMyProfile)
+
+	// Cooperation Routes
+	cooperations := router.Group("/cooperations")
+	{
+		cooperations.POST("/offer", middleware.RoleMiddleware("mitra"), mitraCoopHandler.CreateOffer)
+		cooperations.POST("/apply", middleware.RoleMiddleware("farmer"), mitraCoopHandler.CreateApplication)
+		cooperations.GET("/my", middleware.RoleMiddleware("farmer", "mitra"), mitraCoopHandler.GetMyCooperations)
+		cooperations.GET("/:id", middleware.RoleMiddleware("farmer", "mitra"), mitraCoopHandler.GetByID)
+		cooperations.POST("/:id/review", middleware.RoleMiddleware("farmer", "mitra"), mitraCoopHandler.ReviewCooperation)
+		cooperations.POST("/:id/approve", middleware.RoleMiddleware("farmer", "mitra"), mitraCoopHandler.ApproveCooperation)
+		cooperations.POST("/:id/reject", middleware.RoleMiddleware("farmer", "mitra"), mitraCoopHandler.RejectCooperation)
+		cooperations.POST("/:id/initiate-payment", middleware.RoleMiddleware("mitra"), mitraCoopHandler.InitiatePayment)
+		cooperations.POST("/:id/reviews", middleware.RoleMiddleware("farmer", "mitra"), mitraCoopHandler.CreateReview)
+	}
 
 	// Farm Routes (Hanya untuk Petani)
 	farms := router.Group("/farms")
@@ -159,7 +184,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 	// Contract Routes
 	contracts := router.Group("/contracts")
 	{
-		contracts.GET("/my", middleware.RoleMiddleware("worker", "driver"), contractHandler.GetMyContracts)
+		contracts.GET("/my", middleware.RoleMiddleware("worker", "driver", "mitra", "farmer"), contractHandler.GetMyContracts)
 		contracts.POST("/:id/sign", middleware.RoleMiddleware("worker", "driver"), contractHandler.SignContract)
 		contracts.GET("/:id/download", contractHandler.DownloadContractPDF)
 	}
@@ -170,8 +195,6 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 		// Endpoint untuk petani memulai pembayaran via Midtrans
 		invoices.POST("/:id/initiate-payment", middleware.RoleMiddleware("farmer"), paymentHandler.InitiateInvoicePayment)
 		invoices.POST("/:id/release", middleware.RoleMiddleware("farmer"), paymentHandler.ReleaseProjectPayment)
-		// Endpoint untuk melihat riwayat invoice
-		// invoices.GET("/", paymentHandler.GetUserInvoices)
 	}
 
 	notifications := router.Group("/notifications")
@@ -185,7 +208,6 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 	}
 
 	deliveries := router.Group("/deliveries")
-	// Middleware di sini bisa disesuaikan jika ada endpoint yang bisa diakses kedua peran
 	{
 		deliveries.POST("/", middleware.RoleMiddleware("farmer"), deliveryHandler.CreateDelivery)
 		deliveries.GET("/:id/find-drivers", middleware.RoleMiddleware("farmer"), deliveryHandler.FindDrivers)
@@ -197,9 +219,7 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 	}
 	products := router.Group("/products")
 	{
-		// [RUTE BARU] Pastikan ini didaftarkan SEBELUM rute /:id
 		products.GET("/my", middleware.RoleMiddleware("farmer"), productHandler.GetMyProducts)
-		// Rute lain untuk farmer
 		products.Use(middleware.RoleMiddleware("farmer"))
 		{
 			products.POST("/", productHandler.CreateProduct)
@@ -240,5 +260,10 @@ func ProtectedRoutes(router *gin.RouterGroup, db *gorm.DB, chatHandler *handlers
 		admin.GET("/transactions", adminHandler.GetTransactions)
 		admin.GET("/transactions/export", adminHandler.ExportTransactions)
 		admin.GET("/reports/profit", profitHandler.GetPlatformProfitReport)
+
+		// Mitra Link Admin Routes
+		admin.GET("/mitra/pending-verification", mitraProfileHandler.GetPendingVerifications)
+		admin.POST("/mitra/:id/verify", mitraProfileHandler.ReviewVerification)
+		admin.POST("/cooperations/:id/release", mitraCoopHandler.ReleasePayment)
 	}
 }

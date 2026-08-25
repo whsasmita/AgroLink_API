@@ -16,8 +16,6 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 	CheckOrigin: func(r *http.Request) bool {
 		origin := r.Header.Get("Origin")
-		// *** DEV / TEST ***
-		// saat buka HTML via file:// origin bisa "" atau "null"
 		if origin == "" || origin == "null" {
 			return true
 		}
@@ -26,7 +24,7 @@ var upgrader = websocket.Upgrader{
 			"http://localhost:3000",
 			"http://localhost:5173",
 			"http://localhost:8080",
-			"http://localhost:5500": // kalau pakai http-server local
+			"http://localhost:5500":
 			return true
 		default:
 			log.Printf("WS blocked origin: %q", origin)
@@ -44,7 +42,6 @@ func NewChatHandler(hub *chat.Hub) *ChatHandler {
 }
 
 func (h *ChatHandler) ServeWs(c *gin.Context) {
-	// 1) Ambil user dari context (diset oleh AuthMiddleware)
 	currentUser, ok := c.Get("user")
 	if !ok {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
@@ -54,14 +51,12 @@ func (h *ChatHandler) ServeWs(c *gin.Context) {
 
 	log.Printf("WS handshake OK user=%s origin=%s", user.ID, c.GetHeader("Origin"))
 
-	// 2) Upgrade koneksi
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		log.Printf("WS upgrade failed: %v", err)
 		return
 	}
 
-	// 3) Register client & kirim self_id agar tester bisa menampilkan ID
 	client := &chat.Client{ID: user.ID, Conn: conn, Hub: h.hub}
 	h.hub.RegisterClient(client)
 
@@ -70,7 +65,6 @@ func (h *ChatHandler) ServeWs(c *gin.Context) {
 		"content": client.ID.String(),
 	})
 
-	// 4) Reader loop
 	go h.clientReader(client)
 }
 
@@ -93,7 +87,6 @@ func (h *ChatHandler) clientReader(client *chat.Client) {
 			continue
 		}
 
-		// server enforce sender
 		msg.SenderID = client.ID
 
 		client.Hub.RoutePrivateMessage(&msg)

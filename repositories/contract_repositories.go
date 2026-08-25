@@ -33,10 +33,10 @@ func (r *contractRepository) Create(tx *gorm.DB, contract *models.Contract) erro
 }
 
 // FindByID mencari satu kontrak berdasarkan ID-nya.
-// Menggunakan Preload untuk mengambil data proyek yang berelasi.
+// Menggunakan Preload untuk mengambil data proyek & mitra yang berelasi.
 func (r *contractRepository) FindByID(id string) (*models.Contract, error) {
 	var contract models.Contract
-	err := r.db.Preload("Project").Where("id = ?", id).First(&contract).Error
+	err := r.db.Preload("Project").Preload("MitraCooperation").Where("id = ?", id).First(&contract).Error
 	return &contract, err
 }
 
@@ -50,8 +50,10 @@ func (r *contractRepository) FindByIDWithDetails(id string) (*models.Contract, e
 	var contract models.Contract
 	err := r.db.
 		Preload("Project").
+		Preload("MitraCooperation").
 		Preload("Farmer.User").
 		Preload("Worker.User").
+		Preload("Mitra.User").
 		Where("id = ?", id).
 		First(&contract).Error
 	return &contract, err
@@ -59,11 +61,12 @@ func (r *contractRepository) FindByIDWithDetails(id string) (*models.Contract, e
 
 func (r *contractRepository) FindByUserID(userID uuid.UUID) ([]models.Contract, error) {
 	var contracts []models.Contract
-	// Preload Project dan Delivery agar bisa menampilkan judulnya
+	// Preload Project, Delivery, dan MitraCooperation agar bisa menampilkan judulnya
 	err := r.db.
 		Preload("Project").
 		Preload("Delivery").
-		Where("worker_id = ? OR driver_id = ?", userID, userID).
+		Preload("MitraCooperation").
+		Where("worker_id = ? OR driver_id = ? OR mitra_id = ? OR farmer_id = ?", userID, userID, userID, userID).
 		Order("created_at DESC").
 		Find(&contracts).Error
 	return contracts, err
