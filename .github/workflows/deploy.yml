@@ -41,7 +41,7 @@ jobs:
           host: ${{ secrets.VPS_SSH_HOST }}
           username: ${{ secrets.VPS_SSH_USERNAME }}
           key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
-          port: 22
+          port: 2607
           script: |
             # 1. Pindah ke direktori utama proyek di VPS
             cd /root/goagrolink-project
