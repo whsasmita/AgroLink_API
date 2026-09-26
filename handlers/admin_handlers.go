@@ -136,16 +136,22 @@ func (h *AdminHandler) ReviewVerification(c *gin.Context) {
 }
 
 func (h *AdminHandler) GetTransactions(c *gin.Context) {
-    page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
-    limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+	search := c.Query("search")
+	status := c.DefaultQuery("status", c.Query("status_transaksi"))
+	layanan := c.DefaultQuery("layanan", c.Query("service_type"))
+	sektor := c.Query("sektor")
+	startDate := c.Query("start_date")
+	endDate := c.Query("end_date")
 
-    response, err := h.adminService.GetCombinedTransactions(page, limit)
-    if err != nil {
-        utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to get transactions", err)
-        return
-    }
-    
-    utils.SuccessResponse(c, http.StatusOK, "Transactions retrieved", response)
+	response, err := h.adminService.GetCombinedTransactions(page, limit, search, status, layanan, sektor, startDate, endDate)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to get transactions", err)
+		return
+	}
+
+	utils.SuccessResponse(c, http.StatusOK, "Transactions retrieved", response)
 }
 
 func (h *AdminHandler) GetAllUsers(c *gin.Context) {
@@ -192,18 +198,25 @@ func (h *AdminHandler) GetRevenueAnalytics(c *gin.Context) {
 }
 
 func (h *AdminHandler) ExportTransactions(c *gin.Context) {
-    buffer, err := h.adminService.ExportTransactionsToExcel()
-    if err != nil {
-        utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to generate excel", err)
-        return
-    }
+	search := c.Query("search")
+	status := c.DefaultQuery("status", c.Query("status_transaksi"))
+	layanan := c.DefaultQuery("layanan", c.Query("service_type"))
+	sektor := c.Query("sektor")
+	startDate := c.Query("start_date")
+	endDate := c.Query("end_date")
 
-    // Set Headers untuk download file
-    filename := fmt.Sprintf("transaksi_agrolink_%s.xlsx", time.Now().Format("20060102"))
-    c.Header("Content-Disposition", "attachment; filename="+filename)
-    c.Header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    c.Header("Content-Length", fmt.Sprintf("%d", buffer.Len()))
+	buffer, err := h.adminService.ExportTransactionsToExcel(search, status, layanan, sektor, startDate, endDate)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to generate excel", err)
+		return
+	}
 
-    // Tulis buffer ke response body
-    c.Data(http.StatusOK, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", buffer.Bytes())
+	// Set Headers untuk download file
+	filename := fmt.Sprintf("transaksi_agrolink_%s.xlsx", time.Now().Format("20060102_150405"))
+	c.Header("Content-Disposition", "attachment; filename="+filename)
+	c.Header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	c.Header("Content-Length", fmt.Sprintf("%d", buffer.Len()))
+
+	// Tulis buffer ke response body
+	c.Data(http.StatusOK, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", buffer.Bytes())
 }

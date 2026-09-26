@@ -9,10 +9,10 @@ import (
 
 // Delivery represents delivery/expedition orders
 type Delivery struct {
-	ID         uuid.UUID `gorm:"type:char(36);primary_key"`
-	FarmerID   uuid.UUID `gorm:"type:char(36);not null"`
-	DriverID   *uuid.UUID
-	ContractID *uuid.UUID
+	ID         uuid.UUID  `gorm:"type:char(36);primary_key"`
+	FarmerID   uuid.UUID  `gorm:"type:char(36);not null;index"`
+	DriverID   *uuid.UUID `gorm:"type:char(36);index"`
+	ContractID *uuid.UUID `gorm:"type:char(36);index"`
 
 	PickupAddress      string
 	PickupLat          float64

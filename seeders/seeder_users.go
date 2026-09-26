@@ -123,9 +123,9 @@ func SeedUsers(db *gorm.DB) {
 		}
 
 		// 3. Parse CreatedAt persis apa adanya
-		createdAt, err := time.Parse("2006-01-02 15:04:05", row.CreatedAt)
+		createdAt, err := time.ParseInLocation("2006-01-02 15:04:05", row.CreatedAt, time.Local)
 		if err != nil {
-			if t, errDate := time.Parse("2006-01-02", row.CreatedAt); errDate == nil {
+			if t, errDate := time.ParseInLocation("2006-01-02", row.CreatedAt, time.Local); errDate == nil {
 				createdAt = t
 			} else {
 				log.Printf("Failed to parse CreatedAt '%s' for %s: %v", row.CreatedAt, row.Email, err)

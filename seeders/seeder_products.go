@@ -35,7 +35,7 @@ type ProductSeedRow struct {
 }
 
 func SeedProducts(db *gorm.DB) {
-	log.Println("🌱 Seeding products from products_seed.json for 74 agriculture farmers...")
+	log.Println("🌱 Seeding products from products_seed.json...")
 
 	data, err := os.ReadFile(productsSeedJSONPath)
 	if err != nil {
@@ -70,11 +70,11 @@ func SeedProducts(db *gorm.DB) {
 			continue
 		}
 
-		createdAt, err := time.Parse("2006-01-02 15:04:05", row.CreatedAt)
+		createdAt, err := time.ParseInLocation("2006-01-02 15:04:05", row.CreatedAt, time.Local)
 		if err != nil {
 			createdAt = time.Now()
 		}
-		updatedAt, err := time.Parse("2006-01-02 15:04:05", row.UpdatedAt)
+		updatedAt, err := time.ParseInLocation("2006-01-02 15:04:05", row.UpdatedAt, time.Local)
 		if err != nil {
 			updatedAt = createdAt
 		}
@@ -123,5 +123,5 @@ func SeedProducts(db *gorm.DB) {
 		}
 	}
 
-	log.Printf("✅ Seeding produk selesai: %d produk berhasil dimasukkan untuk 74 petani agriculture.", seededCount)
+	log.Printf("✅ Seeding produk selesai: %d produk berhasil dimasukkan.", seededCount)
 }

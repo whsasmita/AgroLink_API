@@ -29,11 +29,19 @@ type NewTransactionSeedRow struct {
 	KeuntunganBersih   *float64 `json:"KeuntunganBersih"`
 	TotalDiterimaMitra *float64 `json:"TotalDiterimaMitra"`
 
-	FarmerEmail string `json:"FarmerEmail"`
-	WorkerEmail string `json:"WorkerEmail"`
-	DriverEmail string `json:"DriverEmail"`
-	MitraEmail  string `json:"MitraEmail"`
-	BuyerEmail  string `json:"BuyerEmail"`
+	StatusTransaksi string `json:"StatusTransaksi"`
+	KomentarUser    string `json:"KomentarUser"`
+
+	FarmerEmail       string `json:"FarmerEmail"`
+	WorkerEmail       string `json:"WorkerEmail"`
+	DriverEmail       string `json:"DriverEmail"`
+	MitraEmail        string `json:"MitraEmail"`
+	BuyerEmail        string `json:"BuyerEmail"`
+	PemberiKerjaEmail string `json:"PemberiKerjaEmail"`
+	PekerjaEmail      string `json:"PekerjaEmail"`
+	PenjualEmail      string `json:"PenjualEmail"`
+	PembeliEmail      string `json:"PembeliEmail"`
+	UserEmail         string `json:"UserEmail"`
 }
 
 func SeedNewTransactions(db *gorm.DB) {
@@ -50,6 +58,15 @@ func SeedNewTransactions(db *gorm.DB) {
 		log.Printf("Failed to parse new transaction seed JSON: %v", err)
 		return
 	}
+
+	// Clean existing transaction/invoice data for fresh replacement
+	log.Println("🧹 Cleaning old seed transaction, payment, profit, and invoice records...")
+	db.Exec("SET FOREIGN_KEY_CHECKS = 0;")
+	db.Exec("DELETE FROM platform_profits;")
+	db.Exec("DELETE FROM transactions;")
+	db.Exec("DELETE FROM e_commerce_payments;")
+	db.Exec("DELETE FROM invoices;")
+	db.Exec("SET FOREIGN_KEY_CHECKS = 1;")
 
 	// Load all users to resolve email -> UUID
 	var users []models.User
@@ -97,7 +114,7 @@ func seedSingleNewTransaction(db *gorm.DB, row NewTransactionSeedRow, userMap ma
 	var txnDate time.Time
 	var err error
 	if strings.TrimSpace(row.Timestamp) != "" {
-		txnDate, err = time.Parse("2006-01-02 15:04:05", strings.TrimSpace(row.Timestamp))
+		txnDate, err = time.ParseInLocation("2006-01-02 15:04:05", strings.TrimSpace(row.Timestamp), time.Local)
 	}
 	if err != nil || txnDate.IsZero() {
 		txnDate, err = parseDateFlexible(row.Tanggal)
@@ -113,13 +130,13 @@ func seedSingleNewTransaction(db *gorm.DB, row NewTransactionSeedRow, userMap ma
 
 	// Resolve farmer or payer ID
 	payerID := fallbackFarmerID
-	if row.FarmerEmail != "" {
-		if id, ok := userMap[strings.ToLower(strings.TrimSpace(row.FarmerEmail))]; ok {
-			payerID = id
-		}
-	} else if row.BuyerEmail != "" {
-		if id, ok := userMap[strings.ToLower(strings.TrimSpace(row.BuyerEmail))]; ok {
-			payerID = id
+	candidateEmails := []string{row.FarmerEmail, row.PemberiKerjaEmail, row.PenjualEmail, row.BuyerEmail, row.PembeliEmail, row.UserEmail}
+	for _, em := range candidateEmails {
+		if em != "" {
+			if id, ok := userMap[strings.ToLower(strings.TrimSpace(em))]; ok {
+				payerID = id
+				break
+			}
 		}
 	}
 
@@ -133,6 +150,17 @@ func seedSingleNewTransaction(db *gorm.DB, row NewTransactionSeedRow, userMap ma
 	gatewayFee := 0.0
 	if row.BiayaMidtrans != nil {
 		gatewayFee = *row.BiayaMidtrans
+	}
+
+	status := "paid"
+	amountPaid := totalAmount
+	if strings.EqualFold(strings.TrimSpace(row.StatusTransaksi), "Gagal") {
+		status = "failed"
+		amountPaid = 0.0
+		grossProfit = 0.0
+		gatewayFee = 0.0
+		netProfit = 0.0
+		amount = 0.0
 	}
 
 	paymentMethod := strings.TrimSpace(row.MetodePembayaran)
@@ -152,7 +180,7 @@ func seedSingleNewTransaction(db *gorm.DB, row NewTransactionSeedRow, userMap ma
 				Amount:      amount,
 				PlatformFee: grossProfit,
 				TotalAmount: totalAmount,
-				Status:      "paid",
+				Status:      status,
 				DueDate:     txnDate,
 				CreatedAt:   txnDate.AddDate(0, 0, -1),
 				UpdatedAt:   txnDate,
@@ -165,7 +193,7 @@ func seedSingleNewTransaction(db *gorm.DB, row NewTransactionSeedRow, userMap ma
 				ID:         uuid.New(),
 				UserID:     payerID,
 				GrandTotal: totalAmount,
-				Status:     "paid",
+				Status:     status,
 				SnapToken:  "SEED-" + refIDValue,
 				CreatedAt:  txnDate,
 				UpdatedAt:  txnDate,
@@ -181,6 +209,8 @@ func seedSingleNewTransaction(db *gorm.DB, row NewTransactionSeedRow, userMap ma
 				GatewayFee:         gatewayFee,
 				NetProfit:          netProfit,
 				ProfitDate:         txnDate,
+				CreatedAt:          txnDate,
+				UpdatedAt:          txnDate,
 			}
 			if err := tx.Create(&profit).Error; err != nil {
 				return fmt.Errorf("create platform profit: %w", err)
@@ -203,7 +233,7 @@ func seedSingleNewTransaction(db *gorm.DB, row NewTransactionSeedRow, userMap ma
 			Amount:      amount,
 			PlatformFee: grossProfit,
 			TotalAmount: totalAmount,
-			Status:      "paid",
+			Status:      status,
 			DueDate:     txnDate,
 			CreatedAt:   txnDate.AddDate(0, 0, -1),
 			UpdatedAt:   txnDate,
@@ -216,7 +246,7 @@ func seedSingleNewTransaction(db *gorm.DB, row NewTransactionSeedRow, userMap ma
 			InvoiceID:                 invoice.ID,
 			PaymentGateway:            "midtrans",
 			PaymentGatewayReferenceID: &refIDValue,
-			AmountPaid:                totalAmount,
+			AmountPaid:                amountPaid,
 			PaymentMethod:             &paymentMethod,
 			TransactionDate:           txnDate,
 		}
@@ -231,6 +261,8 @@ func seedSingleNewTransaction(db *gorm.DB, row NewTransactionSeedRow, userMap ma
 			GatewayFee:    gatewayFee,
 			NetProfit:     netProfit,
 			ProfitDate:    txnDate,
+			CreatedAt:     txnDate,
+			UpdatedAt:     txnDate,
 		}
 		if err := tx.Create(&profit).Error; err != nil {
 			return fmt.Errorf("create platform profit: %w", err)

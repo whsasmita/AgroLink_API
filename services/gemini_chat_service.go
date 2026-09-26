@@ -177,7 +177,7 @@ func (s *geminiChatService) InitiatePremiumCheckout(user *models.User) (*dto.Pay
 		return nil, errors.New("premium subscription is already active")
 	}
 
-	amount := float64(getEnvInt("AI_PREMIUM_PRICE_IDR", 150000))
+	amount := float64(getEnvInt("AI_PREMIUM_PRICE_IDR", 30000))
 	orderID := fmt.Sprintf("ai-premium-%s", uuid.NewString())
 
 	snapReq := &snap.Request{
